@@ -1,4 +1,25 @@
 pragma solidity ^0.7.4;
+ 
+contract voteFactory{
+    address[] public deployedElections;
+    address[] public deployedPetitions;
+    
+    function createElection(uint minimum) public{
+        address newElection = address new Vote(msg.sender, "election");
+        deployedElections.push(newElection);
+    }
+    function createPetition(uint minimum) public{
+        address newPetition = address new Vote(msg.sender, "petition");
+        deployedPetitions.push(newPetition);
+    }
+    function getDeployedElections() public view returns (address[] memory) {
+        return deployedElections;
+    }
+    function getDeployedPetitions() public view returns (address[] memory) {
+        return deployedPetitions;
+    }
+    
+}
 
 contract Vote{
     //fields
@@ -23,13 +44,14 @@ contract Vote{
         string title;
         // Petition
     }
-    address[] elections;
-    address[] petitions;
+    constructor(address manager, string type) {
+        //
+    }
     
-    function getElections() public view returns(address[] memory){
-        return elections;
-    }
-    function getPetitions() public view returns(address[] memory){
-        return petitions;
-    }
+    // function getElections() public view returns(address[] memory){
+    //     return elections;
+    // }
+    // function getPetitions() public view returns(address[] memory){
+    //     return petitions;
+    // }
 }
