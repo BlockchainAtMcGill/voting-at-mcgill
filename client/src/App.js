@@ -35,13 +35,13 @@ class App extends Component {
     }
   };
 
-  runExample = async () => {
-    const { accounts, contract } = this.state;
+  // runExample = async () => {
+    // const { accounts, contract } = this.state;
     // Get the value from the contract to prove it worked.
-    const response = await contract.methods.getTest().call();
+    // const response = await contract.methods.getTest().call();
     // Update state with the result.
-    this.setState({ storageValue: response });
-  };
+    // this.setState({ storageValue: response });
+  // };
 
   render() {
     if (!this.state.web3) {
@@ -50,7 +50,7 @@ class App extends Component {
     return (
       <div className="App">
         <div>stored value should be 1</div>
-        <div>The stored value is: {this.state.storageValue}</div>
+        {/* <div>The stored value is: {this.state.storageValue}</div> */}
       </div>
     );
   }
