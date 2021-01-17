@@ -85,10 +85,11 @@ contract Vote{
         //Check if the candidate is already in the election
         require(msg.sender in candidates);
 
-        for (uint i = 0; i<running.length; i++){
-          if(msg.sender.equals(elections[i])){
-            elections[i]=elections[elections.length-1];
-            elections.pop();
+        //removes candidate from the list of adresses
+        for (uint i = 0; i<candidates.length; i++){
+          if(msg.sender.equals(candidates[i])){
+            candidates[i]=candidates[candidates.length-1];
+            candidates.pop();
           }
 
         }
