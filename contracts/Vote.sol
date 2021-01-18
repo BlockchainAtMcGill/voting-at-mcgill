@@ -1,31 +1,35 @@
 pragma solidity ^0.7.4;
-
+ 
 contract voteFactory{
     address[] public deployedElections;
     address[] public deployedPetitions;
-
-    function createElection(uint minimum) public{
-        address newElection = address new Vote(msg.sender, "election");
+    
+    function createElection() public{
+        address newElection = address(new Vote(msg.sender, 0));
         deployedElections.push(newElection);
     }
-    function createPetition(uint minimum) public{
-        address newPetition = address new Vote(msg.sender, "petition");
+    function createPetition() public{
+        address newPetition = address(new Vote(msg.sender, 1));
         deployedPetitions.push(newPetition);
     }
+    //add edit function for created eletions
+
     function getDeployedElections() public view returns (address[] memory) {
         return deployedElections;
     }
     function getDeployedPetitions() public view returns (address[] memory) {
         return deployedPetitions;
     }
-
+    
 }
 
 contract Vote{
     //fields
     //admin address
+    address manager;
     //array of voters
-
+    address[] voters;
+    
     struct user{
         string name;
         string email;
@@ -34,63 +38,56 @@ contract Vote{
         address[] running;
         address[] createdElection;
         address[] createdPetition;
-        bool userType;
+        string userType;
     }
-    struct election{
-        string title;
-        string deadline;
-        address[] candidates;
-        //Election
-    }
-    struct candidateDescription{
-        address candidate;
+
+    /*struct candidate {
         string name;
-        string position;
+        address userAddress;
         string description;
+    }*/
+    struct group {
+        string name;
+        string password;
+        address[] members;
+        address[] admins;
+
+    }
+
+    struct election {
+        string title;
+        string startDate;
+        string endDate;
+        mapping(uint=>group) groups;
+        string description;
+        //think about mapping?
+        mapping(address=>uint) candidates; //number of current votes for each candidate
+        mapping(address=>bool) voters; //see if a voter has voted
 
     }
     struct petition{
         string title;
-        // Petition
+        string startDate;
+        string endDate;
+        mapping(uint=>group) groups;
+        string description;
+        mapping(address=>bool) signed; //see if a user has signed
+
     }
-    constructor(address manager, string type) {
-        //
-    }
-
-    // function getElections() public view returns(address[] memory){
-    //     return elections;
-    // }
-    // function getPetitions() public view returns(address[] memory){
-    //     return petitions;
-    // }
-
-    //enter as a candidate
-    function enter_election( address election, string position, string current_date) public payable {
-
-        //Check if the registration is before the required deadline
-        require(current_date<=deadline);
-
-        //Check if the candidate is not already in the election
-        require(msg.sender not in candidates);
-
-        candidates.push(msg.sender);
-    }
-
-    //leave the election
-    function leave_election(address election, string current_date) public payable{
-
-        //Check if the registration is before the required deadline
-        require(current_date<=deadline)
-
-        //Check if the candidate is already in the election
-        require(msg.sender in candidates);
-
-        //removes candidate from the list of adresses
-        for (uint i = 0; i<candidates.length; i++){
-          if(msg.sender.equals(candidates[i])){
-            candidates[i]=candidates[candidates.length-1];
-            candidates.pop();
-          }
-
+    constructor (address managerOfVote, uint typeOf) restricted {   //how does one become an admin?
+        // constructor
+        manager = managerOfVote;
+        if (typeOf == 0) {
+            //create an election
         }
+        else if (typeOf == 1) {
+            //create an petition
+        }
+    
     }
+    modifier restricted() {
+        require(msg.sender == manager);
+        _;
+    }
+
+}
