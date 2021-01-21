@@ -25,6 +25,9 @@ contract("VoteFactory", accounts => {
     it('creates an empty election and returns it',() =>{
       assert.ok(electionAddress);
     })
+    it('creates an empty election and returns it',() =>{
+      assert.ok(petitionAddress);
+    })
     
   });
   describe('Election', async () =>{
