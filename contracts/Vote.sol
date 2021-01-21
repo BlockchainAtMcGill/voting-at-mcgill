@@ -1,24 +1,9 @@
 pragma solidity ^0.7.4;
 //"SPDX-License-Identifier: UNLICENSED"
- 
-contract voteFactory{
-    address[] public deployedVotes;
-    
-    function createVote(uint typeOf) public{
-        address newVote = address(new Vote(msg.sender, typeOf));
-        deployedVotes.push(newVote);
-    }
-
-    function getDeployedVotes() public view returns (address[] memory) {
-        return deployedVotes;
-    }
-
-    
-}
 
 contract Vote{
     //admin address
-    address manager;
+    address public manager;
     
     struct user{
         string name;
