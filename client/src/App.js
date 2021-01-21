@@ -1,11 +1,14 @@
 import React, { Component } from "react";
-// import VoteContract from "./contracts/Vote.json";
+import VoteFactoryContract from "./contracts/VoteFactory.json";
 import getWeb3 from "./getWeb3";
+import { General } from './components/general';
+import { Header } from './components/header'
+import { BrowserRouter as Router } from "react-router-dom";
 
 import "./App.css";
 
 class App extends Component {
-  state = { storageValue: '', web3: null, accounts: null, contract: null };
+  state = { testValue: '', web3: null, accounts: null, contract: null };
 
   componentDidMount = async () => {
     try {
@@ -17,9 +20,9 @@ class App extends Component {
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
-      const deployedNetwork = VoteContract.networks[networkId];
+      const deployedNetwork = VoteFactoryContract.networks[networkId];
       const instance = new web3.eth.Contract(
-        VoteContract.abi,
+        VoteFactoryContract.abi,
         deployedNetwork && deployedNetwork.address,
       );
 
@@ -35,13 +38,18 @@ class App extends Component {
     }
   };
 
-  // runExample = async () => {
-    // const { accounts, contract } = this.state;
+  runExample = async () => {
+    const { accounts, contract } = this.state;
     // Get the value from the contract to prove it worked.
-    // const response = await contract.methods.getTest().call();
+//uncomment for testing purposes
+    // await contract.methods.createVote(0).send({
+    //   from: accounts[0]
+    // });
+
+    const response = await contract.methods.getDeployedVotes().call();
     // Update state with the result.
-    // this.setState({ storageValue: response });
-  // };
+    this.setState({ testValue: response });
+  };
 
   render() {
     if (!this.state.web3) {
@@ -49,8 +57,11 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <div>stored value should be 1</div>
-        {/* <div>The stored value is: {this.state.storageValue}</div> */}
+        <Header></Header>
+        <br></br>
+        <p> uncomment "runExample" above for testing purposes</p>
+        <div>{this.state.testValue}</div>
+        <General></General>
       </div>
     );
   }
