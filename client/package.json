@@ -12,6 +12,7 @@
     "web3": "1.2.2"
   },
   "scripts": {
+    "dev": "next dev",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

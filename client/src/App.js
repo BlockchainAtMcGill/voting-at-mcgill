@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import VoteFactoryContract from "./contracts/VoteFactory.json";
 import getWeb3 from "./getWeb3";
-import { General } from './components/general';
+import { General } from './components/home';
 import { Header } from './components/header'
-import { BrowserRouter as Router } from "react-router-dom";
 
 import "./App.css";
 
@@ -42,10 +41,9 @@ class App extends Component {
     const { accounts, contract } = this.state;
     // Get the value from the contract to prove it worked.
 //uncomment for testing purposes
-    // await contract.methods.createVote(0).send({
-    //   from: accounts[0]
-    // });
-
+    await contract.methods.createVote(0).send({
+      from: accounts[0]
+    });
     const response = await contract.methods.getDeployedVotes().call();
     // Update state with the result.
     this.setState({ testValue: response });

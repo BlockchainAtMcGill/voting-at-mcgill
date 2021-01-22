@@ -4,21 +4,22 @@ import {
     Toolbar, 
     Typography, 
     makeStyles,
+    Button
 } from "@material-ui/core";
-import { BrowserRouter as Router, Link } from "react-router-dom";
+import { BrowserRouter as Router, Link as RouterLink } from "react-router-dom";
 
 const headersData = [
     {
-      label: "Listings",
-      href: "/listings",
+      label: "Home",
+      href: "/home",
     },
     {
-      label: "Mentors",
-      href: "/mentors",
+      label: "Create Vote",
+      href: "/createVote",
     },
     {
-      label: "My Account",
-      href: "/account",
+      label: "About Us",
+      href: "/aboutUs",
     },
     {
       label: "Log Out",
@@ -45,11 +46,7 @@ export const Header = () => {
         return (
           <Toolbar>
             {logo}
-            <Router>
-              <button>
-                <Link to="/General">hello</Link>
-              </button>
-            </Router>
+            {getMenuButtons()}
           </Toolbar>
         );
     };
@@ -58,6 +55,25 @@ export const Header = () => {
           McGill Votes
         </Typography>
       );
+
+    const getMenuButtons = () => {
+      return headersData.map(({ label, href }) => {
+        return (
+          <Router>
+            <Button
+              {...{
+                key: label,
+                color: "inherit",
+                to: href,
+                component: RouterLink,
+              }}
+            >
+              {label}
+            </Button>
+          </Router>
+        );
+      });
+    };
     return (
         <header>
             <AppBar className={header}>{displayDesktop()}</AppBar>
