@@ -6,24 +6,28 @@ import {
     makeStyles,
     Button
 } from "@material-ui/core";
-import { BrowserRouter as Router, Link as RouterLink } from "react-router-dom";
-
+import { BrowserRouter as Router, Link as RouterLink, Switch, Route } from "react-router-dom";
+import { Home } from './home';
 const headersData = [
     {
       label: "Home",
       href: "/home",
+      key:1
     },
     {
       label: "Create Vote",
       href: "/createVote",
+      key:2
     },
     {
       label: "About Us",
       href: "/aboutUs",
+      key:3
     },
     {
       label: "Log Out",
       href: "/logout",
+      key:4
     },
   ];
 
@@ -70,6 +74,13 @@ export const Header = () => {
             >
               {label}
             </Button>
+
+            <Switch>
+            <Route path="/home">
+              <Home />
+            </Route>
+
+            </Switch>
           </Router>
         );
       });

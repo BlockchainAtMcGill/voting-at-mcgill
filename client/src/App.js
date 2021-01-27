@@ -1,8 +1,14 @@
 import React, { Component } from "react";
 import VoteFactoryContract from "./contracts/VoteFactory.json";
 import getWeb3 from "./getWeb3";
-import { General } from './components/home';
-import { Header } from './components/header'
+import { Home } from './components/home';
+import { AboutUs } from './components/aboutus';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 import "./App.css";
 
@@ -40,10 +46,10 @@ class App extends Component {
   runExample = async () => {
     const { accounts, contract } = this.state;
     // Get the value from the contract to prove it worked.
-//uncomment for testing purposes
-    await contract.methods.createVote(0).send({
-      from: accounts[0]
-    });
+    //uncomment for testing purposes
+    // await contract.methods.createVote(0).send({
+    //   from: accounts[0]
+    // });
     const response = await contract.methods.getDeployedVotes().call();
     // Update state with the result.
     this.setState({ testValue: response });
@@ -55,14 +61,49 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <Header></Header>
+            <Router>
+              <div>
+                <ul>
+                  <li>
+                    <Link to="/home">Home</Link>
+                  </li>
+                  <li>
+                    <Link to="/createvote">createvote</Link>
+                  </li>
+                  <li>
+                    <Link to="/aboutus">About Us</Link>
+                  </li>
+                  <li>
+                    <Link to="/logout">logout</Link>
+                  </li>
+                </ul>
+                <hr />
+                <Switch>
+                  <Route path="/">
+                    <Home />
+                  </Route>
+                  <Route path="/home">
+                    <Home />
+                  </Route>
+                  <Route path="/createvote">
+                    {/* <Home /> */}
+                  </Route>
+                  <Route path="/aboutus">
+                    <AboutUs></AboutUs>
+                  </Route>
+                  <Route path="/logout">
+                    {/* <Home /> */}
+                  </Route>
+                </Switch>
+              </div>
+            </Router>
         <br></br>
         <p> uncomment "runExample" above for testing purposes</p>
         <div>{this.state.testValue}</div>
-        <General></General>
       </div>
     );
   }
+
 }
 
 export default App;

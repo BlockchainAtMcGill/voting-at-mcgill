@@ -1,11 +1,9 @@
 import React from 'react';
-import { Header } from '../components/header';
 
-export const General = () => {
+export const Home = () => {
     return (
         <>
-            {/* <Header/> */}
-            <h1>General works!</h1>
+            <h1>Home Works!</h1>
         </>
     )
 }
