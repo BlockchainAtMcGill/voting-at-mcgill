@@ -6,7 +6,7 @@ import {
     makeStyles,
     Button
 } from "@material-ui/core";
-import { BrowserRouter as Router, Link as RouterLink, Switch, Route } from "react-router-dom";
+import Link from 'next/link'
 import { Home } from './home';
 const headersData = [
     {
@@ -55,39 +55,34 @@ export const Header = () => {
         );
     };
     const logo = (
-        <Typography variant="h6" component="h1" className={logoStyle}>
-          McGill Votes
-        </Typography>
+        <Link href="/">
+        <Button style={{color:"#FFFEFE"}}>
+            <Typography variant="h6" component="h1" className={logoStyle} >
+              McGill Votes
+            </Typography>
+        </Button>
+        </Link>
       );
 
     const getMenuButtons = () => {
       return headersData.map(({ label, href }) => {
         return (
-          <Router>
+          <Link href = {href} key ={href}>
             <Button
               {...{
                 key: label,
                 color: "inherit",
-                to: href,
-                component: RouterLink,
               }}
             >
               {label}
             </Button>
-
-            <Switch>
-            <Route path="/home">
-              <Home />
-            </Route>
-
-            </Switch>
-          </Router>
+          </Link>
         );
       });
     };
     return (
         <header>
-            <AppBar className={header}>{displayDesktop()}</AppBar>
+            <AppBar style={{backgroundColor: "#ED1B2F", position: "absolute"}}>{displayDesktop()}</AppBar>
         </header>
 
     )

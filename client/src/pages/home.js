@@ -1,9 +1,14 @@
 import React from 'react';
+import { Header } from '../components/header';
 
 const Home = () => {
     return (
         <>
-            <h1>General works!</h1>
+            <Header/>
+            <br></br>
+            <br></br>
+            <br></br>
+            <h1>Home works!</h1>
         </>
     )
 }
