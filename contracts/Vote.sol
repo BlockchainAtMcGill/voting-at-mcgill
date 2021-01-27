@@ -4,7 +4,7 @@ pragma solidity ^0.7.4;
 contract Vote{
     //admin address
     address public manager;
-    
+
     struct user{
         string name;
         string email;
@@ -17,11 +17,11 @@ contract Vote{
     }
 
     struct candidate {
+        address candidateAddr;
         string name;
         string description;
-        uint votes;
     }
-    
+
     struct group {
         string name;
         string password;
@@ -54,13 +54,13 @@ contract Vote{
     candidate[] public candidateArray;
     election public currentElection;
     petition public currentPetition;
-    
+
     constructor (address managerOfVote, uint typeOf){   //how does one become an admin?
         // constructor
         manager = managerOfVote;
         typeOfVote = (0 == typeOf) ? 0 : 1;
     }
-    
+
     function editElection (string memory title, uint256 startDate, uint256 endDate, string memory description, uint[] memory addedGroups)
     public restricted typeElection {
         election storage e = currentElection;
@@ -72,7 +72,7 @@ contract Vote{
             includedGroups[addedGroups[i]] = allGroups[addedGroups[i]];
         }
     }
-    
+
     function editPetition (string memory title, uint256 startDate, uint256 endDate, string memory description, uint[] memory addedGroups)
     public restricted typePetition {
         petition storage p = currentPetition;
@@ -84,9 +84,9 @@ contract Vote{
             includedGroups[addedGroups[i]] = allGroups[addedGroups[i]];
         }
     }
-    
+
     //enter as a candidate
-    function enter_election(string memory name, string memory description, uint256 current_date) 
+    function enterElection(string memory name, string memory description, uint256 current_date)
     public typeElection {
         //Check if the registration is before the required deadline
         require(current_date > currentElection.startDate && current_date < currentElection.endDate);
@@ -98,7 +98,7 @@ contract Vote{
     }
 
     //leave the election
-    function leave_election(uint256 current_date) 
+    function leaveElection(uint256 current_date)
     public typeElection {
         //Check if the registration is before the required deadline
         require(current_date > currentElection.startDate && current_date <= currentElection.endDate);
@@ -106,12 +106,19 @@ contract Vote{
         candidate storage currentCandidate = candidates[msg.sender];
         currentCandidate.name = "";
         currentCandidate.description = "";
-        currentCandidate.votes = 0;
-        //need to implement remove from array
+        //remove from array
+        delete candidates[msg.sender];
+        for (uint i = 0; i<candidateArray.length; i++){
+            if(msg.sender==candidateArray[i].candidateAddr){
+                candidateArray[i]=candidateArray[candidateArray.length-1];
+                candidateArray.pop();
+                break;
+            }
+        }
     }
-    
+
     //GETTERS
-    
+
     //get election
     function get_election() public view typeElection returns (string memory,uint,uint,string memory,uint) {
         return (currentElection.title, currentElection.startDate, currentElection.endDate, currentElection.description, currentElection.numVotes);
@@ -120,7 +127,7 @@ contract Vote{
     function get_petition() public view typePetition returns (string memory,uint,uint,string memory,uint){
         return (currentPetition.title, currentPetition.startDate, currentPetition.endDate, currentPetition.description, currentPetition.numSigned);
     }
-    
+
     modifier restricted() {
         require(msg.sender == manager);
         _;
