@@ -7,7 +7,6 @@ contract("Vote", accounts => {
   let petitionAddress;
   let election;
   let petition;
-  let candidates
   before(async() => {
     factory = await VoteFactory.deployed();
     await factory.createVote(0, {
@@ -24,15 +23,13 @@ contract("Vote", accounts => {
       await election.editElection("title", 1, 3, "description", [1,2,3]);
       const currentElection = await (election.currentElection());
       const currentCandidate= await (election.enterElection('user', 'party1', 2 ));
-      assert.ok(candidates[accounts[0]]);
+      //const currentCandidate = election.candidates[accounts[0]];
+
+      //assert.ok(election.candidates[accounts[0]]);
     })
     it('Existing candidate can leave', async() => {
-        //await election.editElection("title", 1, 3, "description", [1,2,3]);
-        //const currentElection = await (election.currentElection());
-        //await currentElection.enterElection("user", "party1", 2 )
-        //const currentCandidate = await (election.candidates[accounts[0]])
-        //console.log(election.candidates)
-        console.log('hey');
+      await election.leaveElection(2);
+      assert.equal(election.candidates.length,0);
       })
     })
   });
