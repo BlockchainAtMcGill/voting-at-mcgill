@@ -1,4 +1,5 @@
 import React from 'react';
+import * as m from '@material-ui/core';
 import { Header } from '../components/header';
 
 const NewElection = () => {
@@ -14,10 +15,10 @@ const NewElection = () => {
                 <p>Choose Dates:</p>
                 <p>Choose groups (optional):</p>
                 <p>Add description:</p>
-                <p>
-                    <div>Cancel</div>
-                    <div>Publish Election</div>
-                </p>
+                <div>
+                    <m.Button>Cancel</m.Button>
+                    <m.Button>Publish Election</m.Button>
+                </div>
             </div>
         </>
     )

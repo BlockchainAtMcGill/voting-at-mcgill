@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link'
 import { Header } from '../components/header';
+import * as m from '@material-ui/core';
 
 const AdminHome = () => {
     return (
@@ -12,16 +13,16 @@ const AdminHome = () => {
             <h1>Welcome Admin!</h1>
             <div>
                 <Link href="/newElection" key="/newElection">
-                    <button >Add a new election</button>
+                    <m.Button >Add a new election</m.Button>
                 </Link>
 
                 <Link href="/newPetition" key="/newPetition">
-                    <button >Add a new petition</button>
+                    <m.Button>Add a new petition</m.Button>
                 </Link>
             </div>
             <div>
-                <button>Manage current elections or petitions</button>
-                <button>View current elections or petitions</button>
+                <m.Button>Manage current elections or petitions</m.Button>
+                <m.Button>View current elections or petitions</m.Button>
             </div>
         </>
     )

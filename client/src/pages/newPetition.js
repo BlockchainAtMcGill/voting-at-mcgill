@@ -1,4 +1,5 @@
 import React from 'react';
+import * as m from '@material-ui/core';
 import { Header } from '../components/header';
 
 const NewPetition = () => {
@@ -14,10 +15,10 @@ const NewPetition = () => {
             <p>Choose Dates:</p>
             <p>Choose groups (optional):</p>
             <p>Add description:</p>
-            <p>
-                <div>Cancel</div>
-                <div>Publish Petition</div>
-            </p>
+            <div>
+                <m.Button>Cancel</m.Button>
+                <m.Button>Publish Petition</m.Button>
+            </div>
         </div>
     </>
 )
