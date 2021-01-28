@@ -16,7 +16,7 @@ const headersData = [
     },
     {
       label: "Create Vote",
-      href: "/createVote",
+      href: "/adminHome",
       key:2
     },
     {
