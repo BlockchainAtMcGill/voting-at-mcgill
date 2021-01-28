@@ -28,7 +28,7 @@ contract("VoteFactory", accounts => {
     it('creates an empty petition and returns it',() =>{
       assert.ok(petitionAddress);
     })
-    
+
   });
   describe('Election', async () =>{
     it('marks caller as election manager', async() => {
@@ -51,7 +51,7 @@ contract("VoteFactory", accounts => {
       assert.equal(expectedElection.description, (currentElection['3']));
       assert.equal(expectedElection.numVotes, (currentElection['4'])['words'][0]);
     })
-  
+
   })
 
   describe('Petition', async () =>{
@@ -75,7 +75,6 @@ contract("VoteFactory", accounts => {
       assert.equal(expectedPetition.description, (currentPetition['3']));
       assert.equal(expectedPetition.numVotes, (currentPetition['4'])['words'][0]);
     })
-  
+
   })
 });
-
