@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import VoteFactoryContract from "../contracts/VoteFactory.json";
+import VoteContract from "../contracts/Vote.json";
 import getWeb3 from "../getWeb3";
 import { Header } from '../components/header';
 
@@ -9,8 +10,9 @@ function App() {
   const [web3, setWeb3] = useState('');
   const [accounts, setAccounts] = useState('');
   const [contract, setContract] = useState('');
+  const [voteContract, setVoteContract] = useState('');
   var web3Instance;
-  useEffect(() => {
+  useEffect(() => {// get web3
     async function initWeb3() {
       web3Instance = await getWeb3()
       setWeb3(web3Instance);
@@ -18,7 +20,7 @@ function App() {
     initWeb3();
   },[]);
 
-  useEffect(() => {
+  useEffect(() => {// get Factory contract
     async function setup() {
       if(web3 == '') {
         return;
@@ -47,7 +49,32 @@ function App() {
       setup();
   },[web3]);
 
-  useEffect(()=> {
+  useEffect(() => {//just get Vote contract
+    async function setup() {
+      if(web3 == '') {
+        return;
+      }
+      try {
+        // Get the contract instance.
+        const instance = new web3.eth.Contract(
+          VoteContract.abi,
+          votesAddresses[0],
+        );
+        setVoteContract(instance);
+        console.log(instance);
+        // Set web3, accounts, and contract to the state, and then proceed with an
+      } catch (error) {
+        // Catch any errors for any of the above operations.
+        alert(
+          `Failed to load web3, accounts, or contract. Check console for details.`,
+        );
+        console.error(error);
+      }
+    }
+      setup();
+  },[contract,votesAddresses]);
+
+  useEffect(()=> {//testing code for factory contract
     var createVote = async () => {
       if(contract == ''){
         return;
@@ -64,12 +91,25 @@ function App() {
       }
       const response = await contract.methods.getDeployedVotes().call();
       // Update state with the result.
-      console.log("response is" + response);
+      console.log("first vote is " + response[0]);
       setVotesAddresses(response);
     };
-    createVote();
+    // createVote();
     displayVotes();
   },[contract]);
+
+  // useEffect(()=> {//testing code for vote contract
+  //   var displayVotes = async () => {
+  //     if(votesAddresses == []){
+  //       return;
+  //     }
+  //     const vote = voteContract.at(votesAddresses[0]);
+  //     console.log(vote);
+  //     // Update state with the result.
+  //     console.log('works!')
+  //   };
+  //   displayVotes();
+  // },[votesAddresses, voteContract]);
 
   return( 
     <>
