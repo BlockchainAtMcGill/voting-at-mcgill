@@ -3,6 +3,9 @@ import VoteFactoryContract from "../contracts/VoteFactory.json";
 import VoteContract from "../contracts/Vote.json";
 import getWeb3 from "../getWeb3";
 import { Header } from '../components/header';
+import { Button } from "@material-ui/core";
+// CommonJS
+require("regenerator-runtime/runtime");
 
 
 function App() {
@@ -61,7 +64,6 @@ function App() {
           votesAddresses[0],
         );
         setVoteContract(instance);
-        console.log(instance);
         // Set web3, accounts, and contract to the state, and then proceed with an
       } catch (error) {
         // Catch any errors for any of the above operations.
@@ -94,7 +96,7 @@ function App() {
       console.log("first vote is " + response[0]);
       setVotesAddresses(response);
     };
-    // createVote();
+    createVote();
     displayVotes();
   },[contract]);
 
@@ -111,6 +113,17 @@ function App() {
   //   displayVotes();
   // },[votesAddresses, voteContract]);
 
+    async function handleClick(e) {
+      e.preventDefault();
+      console.log('The link was clicked.');
+      await voteContract.methods.editElection("title", 1, 2, "description", [1,2,3]).send({
+        from: accounts[0]
+      });
+      const summary = await voteContract.methods.currentElection().call();
+      console.log(summary);
+      console.log("method was sent")
+    }
+
   return( 
     <>
       <Header></Header>
@@ -119,7 +132,9 @@ function App() {
       <br></br>
       <br></br>
       <div className="App">
+        <button onClick={handleClick}></button>
         <div>test value: {votesAddresses}</div>
+        
       </div>
     </>
   );
