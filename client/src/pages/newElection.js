@@ -10,8 +10,6 @@ import getWeb3 from "../getWeb3";
 const NewElection = () => {
 
     const [web3, setWeb3] = useState('');
-    const [accounts, setAccounts] = useState('');
-    const [contract, setContract] = useState('');
     const electionTypes = [
         {
             value: 'majority',
@@ -32,6 +30,7 @@ const NewElection = () => {
         initWeb3();
     },[]);
 
+    //please follow the course for a better implementation @Jing
     const [title, setTitle] = useState('');
     const changeTitle = (event) => {
         setTitle(event.target.value);
@@ -53,13 +52,19 @@ const NewElection = () => {
         setDescription(event.target.value);
     };
 
-    useEffect(() => {// get Factory contract
-        async function setup() {
+
+    var onSubmit = async (event) => {
+        event.preventDefault();
+        var manager
+        var factoryContract
+        var voteContract;
+        var addressOfVote
+        var setupVoteFactory = async () => { //initializes voteFactory
             if(web3 == '') {
                 return;
             }
             try {
-                setAccounts(await web3.eth.getAccounts());
+                [manager] = (await web3.eth.getAccounts());
                 // Get the contract instance.
                 const networkId = await web3.eth.net.getId();
                 const deployedNetwork = VoteFactoryContract.networks[networkId];
@@ -67,7 +72,7 @@ const NewElection = () => {
                     VoteFactoryContract.abi,
                     deployedNetwork && deployedNetwork.address,
                 );
-                setContract(instance);
+                factoryContract = instance;
 
                 // Set web3, accounts, and contract to the state, and then proceed with an
             } catch (error) {
@@ -78,28 +83,17 @@ const NewElection = () => {
                 console.error(error);
             }
         }
-        setup();
-    },[web3]);
-
-    var onSubmit = async (event) => {
-        event.preventDefault();
-        var vote;
-        var addressOfVote
-
         var createVote = async () => {//uses voteFactory to create Vote
-            if(contract == ''){
+            if(factoryContract == ''){
                 return;
             }
             // Get the value from the contract to prove it worked.
-            await contract.methods.createVote(0).send({
-                from: accounts[0]
+            await factoryContract.methods.createVote(0).send({
+                from: manager
             });
         };
         var getElectionAddress = async () => {//calls voteFactory method to get new Vote address
-            if(contract == ''){
-                return;
-            }
-            const response = await contract.methods.getDeployedVotes().call();
+            const response = await factoryContract.methods.getDeployedVotes().call();
             addressOfVote = response[response.length - 1];
         };
         var initializeElection = async () => {//initializes vote contract
@@ -109,7 +103,7 @@ const NewElection = () => {
                     VoteContract.abi,
                     addressOfVote,
                 );
-                vote = instance;
+                voteContract = instance;
             } catch (error) {
                 // Catch any errors for any of the above operations.
                 alert(
@@ -119,17 +113,22 @@ const NewElection = () => {
             }
         }
         var setUpElection = async() => {//call to vote contract to edit election
-            if (vote == '') {
+            if (!voteContract) {
                 console.log("voteContract dne");
                 return;
             }
-            await vote.methods.editElection(title, new Date(startDate).getTime(), new Date(endDate).getTime(), description, [0]);
-        };
-        var displayVote = async () => { // testing purposes
-            const summary = await vote.methods.currentElection().call();
-            console.log(summary);
+            await voteContract.methods
+                .editElection(title, new Date(startDate).getTime(), new Date(endDate).getTime(), description, [0])
+                .send({
+                    from: manager
+                })
         };
 
+        var displayVote = async () => { // testing purposes
+            const summary = await voteContract.methods.currentElection().call();
+            console.log(summary);
+        };
+        await setupVoteFactory();
         await createVote();
         await getElectionAddress();
         await initializeElection();
@@ -144,6 +143,7 @@ const NewElection = () => {
             <br></br>
             <br></br>
             <h1>New Election</h1>
+            
             <form onSubmit={onSubmit} noValidate autoComplete="off">
                 <div>
                     <m.TextField required fullWidth label="Election title"

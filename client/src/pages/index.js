@@ -25,6 +25,7 @@ function App() {
   const [accounts, setAccounts] = useState('');
   const [contract, setContract] = useState('');
   const [voteContract, setVoteContract] = useState('');
+  const [renderedAddresses, renderAddresses] = useState([]);
 
   useEffect(() => {// get web3
     async function initWeb3() {
@@ -72,7 +73,7 @@ function App() {
         // Get the contract instance.
         const instance = new web3.eth.Contract(
           VoteContract.abi,
-          votesAddresses[0],
+          votesAddresses[votesAddresses.length-1],
         );
         setVoteContract(instance);
         // Set web3, accounts, and contract to the state, and then proceed with an
@@ -99,24 +100,68 @@ function App() {
     displayVotes();
   },[contract]);
 
+  useEffect(()=> {//render votes
+    var displayInfo = async (address) => { 
+      if(web3 == '') {
+        return;
+      }
+      try {
+        // Get the contract instance.
+        const instance = new web3.eth.Contract(
+          VoteContract.abi,
+          address
+        );
+        return (await instance.methods.currentElection().call());
+        // Set web3, accounts, and contract to the state, and then proceed with an
+      } catch (error) {
+        // Catch any errors for any of the above operations.
+        alert(
+          `Failed to load web3, accounts, or contract. Check console for details.`,
+        );
+        console.error(error);
+      }
+    };
+    var renderVotes = async () => {
+      if (!votesAddresses){
+        return;
+      }
+      var temp = []
+      votesAddresses.forEach(address => {
+          displayInfo(address).then(newAddress =>
+          temp.push(newAddress)
+        )
+      })
+      renderAddresses(temp);
+    }
+    renderVotes();
+  },[votesAddresses]);
+
 
   function displayVoteList() {
-    if(votesAddresses == ""){
+    if(web3 == ""){
       return "waiting for votes to display..."
     }
-    return votesAddresses.map(address => 
-        <Card variant="outlined" key={address} className ={classes.card}> 
-          <CardContent>
+    else if(votesAddresses == ""){
+      return "no votes to display"
+    }
+    // setTimeout(function(){
+    //   //
+    // }, 2000);
+    // setTimeout(1000)
+    // console.log(JSON.stringify(renderedAddresses));
+    return votesAddresses.map((vote, index) => 
+        <Card key={index} variant="outlined" className ={classes.card}>
+          <CardContent >
             <Grid container>
-              <Grid item xs ={10}><span>{address}</span></Grid>
+              <Grid item xs ={10}><span>{vote}</span></Grid>
               <Grid item xs ={2}>
                 <div>            
-                  <Link route ={`/elections/apply/${address}`}> 
+                  <Link route ={`/elections/apply/${vote}`}> 
                     Apply as Candidate
                   </Link>
                 </div>
                 <div>  
-                  <Link route ={`/elections/vote/${address}`}> 
+                  <Link route ={`/elections/vote/${vote}`}> 
                     Vote
                   </Link>
                 </div>
@@ -127,6 +172,7 @@ function App() {
     )
   }
 
+  
   return( 
     <>
       <Header></Header>
