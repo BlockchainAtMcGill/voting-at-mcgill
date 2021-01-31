@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from "react";
+import { makeStyles } from '@material-ui/core/styles';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import VoteContract from "../contracts/Vote.json";
 import getWeb3 from "../getWeb3";
 import { Header } from '../components/header';
-import { Button } from "@material-ui/core";
+import { Link } from '../../routes'
+
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Grid from '@material-ui/core/Grid';
 // CommonJS
 require("regenerator-runtime/runtime");
 
+const useStyles = makeStyles({
+  card: {
+    width:'80%'
+  }
+});
 
 function App() {
+  const classes = useStyles();
   const [votesAddresses, setVotesAddresses] = useState('');
   const [web3, setWeb3] = useState('');
   const [accounts, setAccounts] = useState('');
@@ -96,33 +107,52 @@ function App() {
       console.log("first vote is " + response[0]);
       setVotesAddresses(response);
     };
-    createVote();
+    // createVote();
     displayVotes();
   },[contract]);
 
-  // useEffect(()=> {//testing code for vote contract
-  //   var displayVotes = async () => {
-  //     if(votesAddresses == []){
-  //       return;
-  //     }
-  //     const vote = voteContract.at(votesAddresses[0]);
-  //     console.log(vote);
-  //     // Update state with the result.
-  //     console.log('works!')
-  //   };
-  //   displayVotes();
-  // },[votesAddresses, voteContract]);
+  async function handleClick(e) {
+    e.preventDefault();
+    console.log('The link was clicked.');
+    await voteContract.methods.editElection("title", 1, 2, "description", [1,2,3]).send({
+      from: accounts[0]
+    });
+    const summary = await voteContract.methods.currentElection().call();
+    console.log(summary);
+    console.log("method was sent")
+  }
+  // async function accessVote(e) {
+  //   e.preventDefault();
+  //   console.log("button clicked");
+  //   Router.pushRoute('/home')
+  // }
 
-    async function handleClick(e) {
-      e.preventDefault();
-      console.log('The link was clicked.');
-      await voteContract.methods.editElection("title", 1, 2, "description", [1,2,3]).send({
-        from: accounts[0]
-      });
-      const summary = await voteContract.methods.currentElection().call();
-      console.log(summary);
-      console.log("method was sent")
+  function displayVoteList() {
+    if(votesAddresses == ""){
+      return "waiting for votes to display"
     }
+    return votesAddresses.map(address => 
+        <Card variant="outlined" key={address} className ={classes.card}> 
+          <CardContent>
+            <Grid container>
+              <Grid item xs ={10}><span>{address}</span></Grid>
+              <Grid item xs ={2}>
+              <div>            
+                <Link size="small" route ={`/elections/apply/${address}`}> 
+                  Apply as Candidate
+                </Link>
+              </div>
+              <div>  
+                <Link size="small" route ={`/elections/vote/${address}`}> 
+                  Vote
+                </Link>
+              </div>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+    )
+  }
 
   return( 
     <>
@@ -133,7 +163,7 @@ function App() {
       <br></br>
       <div className="App">
         <button onClick={handleClick}></button>
-        <div>test value: {votesAddresses}</div>
+        <div>{ displayVoteList() }</div>
         
       </div>
     </>

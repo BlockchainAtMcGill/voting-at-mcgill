@@ -151,17 +151,13 @@ const NewElection = () => {
 
         let election;
         var setUpElection = async() => {
-            /*
             if (voteContract == '') {
                 console.log("voteContract dne");
                 return;
             }
-            */
 
-            //await voteContract.methods.editElection("title", 123, 234, "hhh", [1,2,3]);
             await voteContract.methods.editElection(title, new Date(startDate).getTime(), new Date(endDate).getTime(), description, [0]);
             //setVoteContract(voteContract);
-            //console.log(voteContract);
 
         };
 
