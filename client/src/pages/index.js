@@ -5,6 +5,7 @@ import VoteContract from "../contracts/Vote.json";
 import getWeb3 from "../getWeb3";
 import { Header } from '../components/header';
 import { Link } from '../../routes'
+import Button from '@material-ui/core/Button';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -20,28 +21,28 @@ const useStyles = makeStyles({
 
 function App() {
   const classes = useStyles();
-  const [votesAddresses, setVotesAddresses] = useState('');
   const [web3, setWeb3] = useState('');
-  const [accounts, setAccounts] = useState('');
+  const [votesAddresses, setVotesAddresses] = useState('');
   const [contract, setContract] = useState('');
-  const [voteContract, setVoteContract] = useState('');
   const [renderedAddresses, renderAddresses] = useState([]);
+  // var web3 = "";
 
   useEffect(() => {// get web3
     async function initWeb3() {
-      const web3Instance = await getWeb3()
-      setWeb3(web3Instance);
+      console.log('initializing web3');
+      const web3Instance = await getWeb3();
+      setWeb3(web3Instance)
     }
     initWeb3();
   },[]);
 
   useEffect(() => {// get Factory contract
     async function setup() {
-      if(web3 == '') {
+      if(web3 == "") {
+        console.log('unable to get factory')
         return;
       }
       try {
-        setAccounts(await web3.eth.getAccounts());
         // Get the contract instance.
         const networkId = await web3.eth.net.getId();
         const deployedNetwork = VoteFactoryContract.networks[networkId];
@@ -49,7 +50,6 @@ function App() {
           VoteFactoryContract.abi,
           deployedNetwork && deployedNetwork.address,
         );
-        setAccounts(await web3.eth.getAccounts());
         setContract(instance);
     
         // Set web3, accounts, and contract to the state, and then proceed with an
@@ -62,33 +62,10 @@ function App() {
       }
     }
       setup();
+      // console.log('ok')
   },[web3]);
 
-  useEffect(() => {//just get Vote contract
-    async function setup() {
-      if(web3 == '') {
-        return;
-      }
-      try {
-        // Get the contract instance.
-        const instance = new web3.eth.Contract(
-          VoteContract.abi,
-          votesAddresses[votesAddresses.length-1],
-        );
-        setVoteContract(instance);
-        // Set web3, accounts, and contract to the state, and then proceed with an
-      } catch (error) {
-        // Catch any errors for any of the above operations.
-        alert(
-          `Failed to load web3, accounts, or contract. Check console for details.`,
-        );
-        console.error(error);
-      }
-    }
-      setup();
-  },[contract,votesAddresses]);
-
-  useEffect(()=> {//display available votes
+  useEffect(()=> {//display available votes addresses
     var displayVotes = async () => {
       if(contract == ''){
         return;
@@ -102,7 +79,7 @@ function App() {
 
   useEffect(()=> {//render votes
     var displayInfo = async (address) => { 
-      if(web3 == '') {
+      if(votesAddresses == '') {
         return;
       }
       try {
@@ -122,19 +99,19 @@ function App() {
       }
     };
     var renderVotes = async () => {
-      if (!votesAddresses){
-        return;
+        if (!votesAddresses){
+          return;
+        }
+        var temp = []
+        votesAddresses.forEach(address => {
+            displayInfo(address).then(newAddress =>
+            temp.push(newAddress)
+          )
+        })
+        renderAddresses(temp);
       }
-      var temp = []
-      votesAddresses.forEach(address => {
-          displayInfo(address).then(newAddress =>
-          temp.push(newAddress)
-        )
-      })
-      renderAddresses(temp);
-    }
-    renderVotes();
-  },[votesAddresses]);
+      renderVotes();
+    },[votesAddresses]);
 
 
   function displayVoteList() {
@@ -144,35 +121,34 @@ function App() {
     else if(votesAddresses == ""){
       return "no votes to display"
     }
-    // setTimeout(function(){
-    //   //
-    // }, 2000);
-    // setTimeout(1000)
-    // console.log(JSON.stringify(renderedAddresses));
-    return votesAddresses.map((vote, index) => 
+    return votesAddresses ? votesAddresses.map((vote, index) => 
         <Card key={index} variant="outlined" className ={classes.card}>
           <CardContent >
             <Grid container>
-              <Grid item xs ={10}><span>{vote}</span></Grid>
-              <Grid item xs ={2}>
+              <Grid item xs ={9}><span>{vote}</span></Grid>
+              <Grid item xs ={3}>
                 <div>            
-                  <Link route ={`/elections/apply/${vote}`}> 
-                    Apply as Candidate
-                  </Link>
+                  <Button><Link route ={`/elections/apply/${vote}`}> Apply as Candidate</Link> 
+                  </Button>
                 </div>
                 <div>  
-                  <Link route ={`/elections/vote/${vote}`}> 
-                    Vote
-                  </Link>
+                  <Button><Link route ={`/elections/vote/${vote}`}> Vote</Link> 
+                  </Button>
                 </div>
               </Grid>
             </Grid>
           </CardContent>
         </Card>
-    )
+      ) : <></>
+    }
+
+  function displayrenderedVotes() {
+    return renderedAddresses[0] ? <div>{renderedAddresses[0].title}</div> : console.log(renderedAddresses)
   }
 
-  
+  function clicked() {
+    console.log(renderedAddresses)
+  }
   return( 
     <>
       <Header></Header>
@@ -181,6 +157,8 @@ function App() {
       <br></br>
       <br></br>
       <div className="App">
+        <button onClick={clicked}></button>
+        {/* <div>{ displayrenderedVotes() }</div> */}
         <div>{ displayVoteList() }</div>
       </div>
     </>

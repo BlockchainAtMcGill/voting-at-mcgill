@@ -29,10 +29,10 @@
       "static/chunks/webpack.js",
       "static/chunks/pages/_error.js"
     ],
-    "/newElection": [
+    "/elections/apply/apply": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
-      "static/chunks/pages/newElection.js"
+      "static/chunks/pages/elections/apply/apply.js"
     ]
   },
   "ampFirstPages": []
