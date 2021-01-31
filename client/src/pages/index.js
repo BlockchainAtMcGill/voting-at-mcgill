@@ -25,10 +25,10 @@ function App() {
   const [accounts, setAccounts] = useState('');
   const [contract, setContract] = useState('');
   const [voteContract, setVoteContract] = useState('');
-  var web3Instance;
+
   useEffect(() => {// get web3
     async function initWeb3() {
-      web3Instance = await getWeb3()
+      const web3Instance = await getWeb3()
       setWeb3(web3Instance);
     }
     initWeb3();
@@ -87,49 +87,22 @@ function App() {
       setup();
   },[contract,votesAddresses]);
 
-  useEffect(()=> {//testing code for factory contract
-    var createVote = async () => {
-      if(contract == ''){
-        return;
-      }
-      // Get the value from the contract to prove it worked.
-      // uncomment to create votes, note that second await call wont run if first is run.
-      await contract.methods.createVote(0).send({
-        from: accounts[0]
-      });
-    };
+  useEffect(()=> {//display available votes
     var displayVotes = async () => {
       if(contract == ''){
         return;
       }
       const response = await contract.methods.getDeployedVotes().call();
       // Update state with the result.
-      console.log("first vote is " + response[0]);
       setVotesAddresses(response);
     };
-    // createVote();
     displayVotes();
   },[contract]);
 
-  async function handleClick(e) {
-    e.preventDefault();
-    console.log('The link was clicked.');
-    await voteContract.methods.editElection("title", 1, 2, "description", [1,2,3]).send({
-      from: accounts[0]
-    });
-    const summary = await voteContract.methods.currentElection().call();
-    console.log(summary);
-    console.log("method was sent")
-  }
-  // async function accessVote(e) {
-  //   e.preventDefault();
-  //   console.log("button clicked");
-  //   Router.pushRoute('/home')
-  // }
 
   function displayVoteList() {
     if(votesAddresses == ""){
-      return "waiting for votes to display"
+      return "waiting for votes to display..."
     }
     return votesAddresses.map(address => 
         <Card variant="outlined" key={address} className ={classes.card}> 
@@ -137,16 +110,16 @@ function App() {
             <Grid container>
               <Grid item xs ={10}><span>{address}</span></Grid>
               <Grid item xs ={2}>
-              <div>            
-                <Link size="small" route ={`/elections/apply/${address}`}> 
-                  Apply as Candidate
-                </Link>
-              </div>
-              <div>  
-                <Link size="small" route ={`/elections/vote/${address}`}> 
-                  Vote
-                </Link>
-              </div>
+                <div>            
+                  <Link route ={`/elections/apply/${address}`}> 
+                    Apply as Candidate
+                  </Link>
+                </div>
+                <div>  
+                  <Link route ={`/elections/vote/${address}`}> 
+                    Vote
+                  </Link>
+                </div>
               </Grid>
             </Grid>
           </CardContent>
@@ -162,9 +135,7 @@ function App() {
       <br></br>
       <br></br>
       <div className="App">
-        <button onClick={handleClick}></button>
         <div>{ displayVoteList() }</div>
-        
       </div>
     </>
   );
