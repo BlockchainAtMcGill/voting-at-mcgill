@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/header';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import VoteContract from "../contracts/Vote.json";
-import * as m from "@material-ui/core";
+import { Form } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
-
+import 'semantic-ui-css/semantic.min.css';
 
 
 const NewElection = () => {
@@ -12,12 +12,15 @@ const NewElection = () => {
     const [web3, setWeb3] = useState('');
     const electionTypes = [
         {
-            value: 'majority',
-            label: 'simple majority'
+            key: 'sm',
+            text: 'simple majority',
+            value: 'majority'
+
         },
         {
-            value: 'twoThirds',
-            label: 'two thirds'
+            key: 'tt',
+            text: 'two thirds',
+            value: 'twoThirds'
         }
     ];
 
@@ -30,7 +33,7 @@ const NewElection = () => {
         initWeb3();
     },[]);
 
-    //please follow the course for a better implementation @Jing
+
     const [title, setTitle] = useState('');
     const changeTitle = (event) => {
         setTitle(event.target.value);
@@ -55,10 +58,17 @@ const NewElection = () => {
 
     var onSubmit = async (event) => {
         event.preventDefault();
-        var manager
-        var factoryContract
+        var manager;
+        var factoryContract;
         var voteContract;
-        var addressOfVote
+        var addressOfVote;
+        var web3Instance;
+
+        async function initWeb3() {
+            web3Instance = await getWeb3();
+            setWeb3(web3Instance);
+        }
+        initWeb3();
         var setupVoteFactory = async () => { //initializes voteFactory
             if(web3 == '') {
                 return;
@@ -82,7 +92,7 @@ const NewElection = () => {
                 );
                 console.error(error);
             }
-        }
+        };
         var createVote = async () => {//uses voteFactory to create Vote
             if(factoryContract == ''){
                 return;
@@ -111,7 +121,7 @@ const NewElection = () => {
                 );
                 console.error(error);
             }
-        }
+        };
         var setUpElection = async() => {//call to vote contract to edit election
             if (!voteContract) {
                 console.log("voteContract dne");
@@ -144,52 +154,43 @@ const NewElection = () => {
             <br></br>
             <h1>New Election</h1>
             
-            <form onSubmit={onSubmit} noValidate autoComplete="off">
+            <Form onSubmit={onSubmit}>
                 <div>
-                    <m.TextField required fullWidth label="Election title"
-                                 variant="outlined"
+                    <Form.Input required label="Election title"
                                  value={title}
-                                 onChange={changeTitle}
+                                 onChange={event => setTitle(event.target.value)}
                     >
 
-                    </m.TextField>
+                    </Form.Input>
                 </div>
                 <br></br>
                 <div>
-                    <m.TextField label="Start date" type="date"
-                                 variant="outlined"
-                                 InputLabelProps={{
-                                    shrink: true,
-                                    }}
+                    <Form.Input label="Start date" type="date"
+
                                  value={startDate}
-                                 onChange={changeStartDate}
+                                 onChange={event => setStartDate(event.target.value)}
                     >
 
-                    </m.TextField>
+                    </Form.Input>
                 </div>
                 <br></br>
                 <div>
-                    <m.TextField required label="End date" type="date"
-                                 variant="outlined"
-                                 InputLabelProps={{
-                        shrink: true,
-                        }}
+                    <Form.Input required label="End date" type="date"
+
                                  value={endDate}
-                                 onChange={changeEndDate}
+                                 onChange={event => setEndDate(event.target.value)}
                     />
                 </div>
                 <br></br>
                 <div>
-                    <m.TextField required select label="Type of election"
-                                 variant="outlined"
-                                 value={electionType}
-                                 onChange={changeElectionType}>
-                        {electionTypes.map((option) => (
-                            <m.MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </m.MenuItem>
-                        ))}
-                    </m.TextField>
+                    <Form.Select
+                        fluid
+                        label='Type of election'
+                        options={electionTypes}
+                        placeholder='Type of election'
+                        value={electionType}
+                        onChange={event => setElectionType(event.target.value)}
+                    />
                 </div>
                 <br></br>
                 <div>
@@ -197,10 +198,9 @@ const NewElection = () => {
                 </div>
                 <br></br>
                 <div>
-                    <m.TextField required multiline fullWidth
+                    <Form.TextArea required
                                  label="Description"
-                                 rows={4}
-                                 variant="outlined"
+
                                  value={description}
                                  onChange={changeDescription}
                     />
@@ -208,13 +208,13 @@ const NewElection = () => {
 
                 <br></br>
                 <div>
-                    <m.Button>Cancel</m.Button>
-                    <m.Button type="submit" onSubmit={onSubmit}>Publish Election</m.Button>
+                    <Form.Button>Cancel</Form.Button>
+                    <Form.Button type="submit" onSubmit={onSubmit}>Publish Election</Form.Button>
                 </div>
 
 
-            </form>
+            </Form>
         </>
     )
-}
+};
 export default NewElection;
