@@ -62,13 +62,13 @@ const NewElection = () => {
         var factoryContract;
         var voteContract;
         var addressOfVote;
-        var web3Instance;
+        // var web3Instance;
 
-        async function initWeb3() {
-            web3Instance = await getWeb3();
-            setWeb3(web3Instance);
-        }
-        initWeb3();
+        // async function initWeb3() {
+        //     web3Instance = await getWeb3();
+        //     setWeb3(web3Instance);
+        // }
+        // initWeb3();
         var setupVoteFactory = async () => { //initializes voteFactory
             if(web3 == '') {
                 return;
