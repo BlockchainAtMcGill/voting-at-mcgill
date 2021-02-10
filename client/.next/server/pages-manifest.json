@@ -2,6 +2,5 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/elections/apply/apply": "pages/elections/apply/apply.js",
-  "/": "pages/index.js"
+  "/newElection": "pages/newElection.js"
 }
