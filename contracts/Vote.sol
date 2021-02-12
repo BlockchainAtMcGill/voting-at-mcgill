@@ -89,12 +89,15 @@ contract Vote{
     function enterElection(string memory name, string memory description, uint256 current_date)
     public typeElection {
         //Check if the registration is before the required deadline
-        require(current_date > currentElection.startDate && current_date < currentElection.endDate);
+        //require(current_date > currentElection.startDate && current_date < currentElection.endDate);
         //enter candidate
         candidate storage currentCandidate = candidates[msg.sender];
         currentCandidate.name = name;
         currentCandidate.description = description;
+        currentCandidate.candidateAddr= msg.sender;
         candidateArray.push(currentCandidate);
+
+        //candidateAddrs.push(msg.sender);
     }
 
     //leave the election
@@ -106,6 +109,7 @@ contract Vote{
         candidate storage currentCandidate = candidates[msg.sender];
         currentCandidate.name = "";
         currentCandidate.description = "";
+        //currentCandidate.candidateAddr= ;
         //remove from array
         delete candidates[msg.sender];
         for (uint i = 0; i<candidateArray.length; i++){
@@ -127,7 +131,9 @@ contract Vote{
     function get_petition() public view typePetition returns (string memory,uint,uint,string memory,uint){
         return (currentPetition.title, currentPetition.startDate, currentPetition.endDate, currentPetition.description, currentPetition.numSigned);
     }
-
+    function get_candidates(address candaddr) public view typeElection returns (string memory, string memory) {
+        return(candidates[candaddr].name, candidates[candaddr].description);
+    }
     modifier restricted() {
         require(msg.sender == manager);
         _;
