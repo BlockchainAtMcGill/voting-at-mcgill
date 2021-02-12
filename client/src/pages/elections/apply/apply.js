@@ -35,7 +35,6 @@ const Apply = () => {
 
     var onSubmit = async (event) => {
         event.preventDefault();
-        var candidateAddr
         var addressOfVote
         var manager
         var factoryContract
@@ -87,18 +86,17 @@ const Apply = () => {
             }
         }
         var setCandidate = async () => {
-          [candidateAddr]= (await web3.eth.getAccounts());
-          await voteContract.methods
-          .enterElection(candidateName, description ,new Date(currentDate).getTime())
-          .send({
-            from: candidateAddr
-          })
-
+          await voteContract.methods.enterElection(candidateName, description ,new Date(currentDate).getTime()).send({from: manager});
+        };
+        var displayCand = async () => { // testing purposes
+            const summary = await voteContract.methods.get_candidates(manager).call();
+            console.log(summary);
         };
         await setupVoteFactory();
         await getElectionAddress();
         await initializeElection();
         await setCandidate();
+        await displayCand();
     };
     return (
         <>
