@@ -5,11 +5,7 @@ import VoteContract from "../contracts/Vote.json";
 import getWeb3 from "../getWeb3";
 import { Header } from '../components/header';
 import { Link } from '../../routes'
-import Button from '@material-ui/core/Button';
-
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Grid from '@material-ui/core/Grid';
+import 'semantic-ui-css/semantic.min.css';
 // CommonJS
 require("regenerator-runtime/runtime");
 
@@ -122,23 +118,36 @@ function App() {
       return "no votes to display"
     }
     return votesAddresses ? votesAddresses.map((vote, index) => 
-        <Card key={index} variant="outlined" className ={classes.card}>
-          <CardContent >
-            <Grid container>
-              <Grid item xs ={9}><span>{vote}</span></Grid>
-              <Grid item xs ={3}>
-                <div>            
-                  <Button><Link route ={`/elections/apply/${vote}`}> Apply as Candidate</Link> 
-                  </Button>
-                </div>
-                <div>  
-                  <Button><Link route ={`/elections/vote/${vote}`}> Vote</Link> 
-                  </Button>
-                </div>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
+        // <Link className="ui button" route ={`/elections/vote/${vote}`}>
+          // <Card key={index} variant="outlined" className ={classes.card}>
+          //   <CardContent >
+          //     <Grid container>
+          //       <Grid item xs ={9}><span>{vote}</span></Grid>
+          //       <Grid item xs ={3}>
+          //       </Grid>
+          //     </Grid>
+          //   </CardContent>
+          // </Card>
+        // </Link>
+        <Link className="ui button" route ={`/elections/vote/${vote}`} key={index}>
+        <div className="ui link card" style={{width:"80%"}}>
+        <div className="card">
+        <div className="content">
+          <div className="header">Election</div>
+          <div className="meta">
+            <a>{vote}</a>
+          </div>
+          <div className="description">
+            Click to Vote
+          </div>
+        </div>
+        <div className="extra content">
+          <span>
+            <i className="user icon"></i>
+            0 votes
+          </span>
+        </div>
+        </div></div></Link>
       ) : <></>
     }
 
