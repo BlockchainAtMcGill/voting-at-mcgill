@@ -36,7 +36,7 @@ contract("VoteFactory", accounts => {
       assert.equal(accounts[0],manager);
     })
     it('edits existing election and outputs it', async() => {
-      await election.editElection("title", 1, 2, "description", [1,2,3]);
+      await election.editElection("title", 1, 2, "description",'two-thirds');
       const currentElection = await (election.currentElection());
       const expectedElection = {
         title: "title",
@@ -44,12 +44,14 @@ contract("VoteFactory", accounts => {
         endDate: 2,
         description: "description",
         numVotes: 0,
+        typeOfElection: 'two-thirds'
       }
       assert.equal(expectedElection.title, currentElection['0']);
       assert.equal(expectedElection.startDate, (currentElection['1'])['words'][0]);
       assert.equal(expectedElection.endDate, (currentElection['2'])['words'][0]);
       assert.equal(expectedElection.description, (currentElection['3']));
       assert.equal(expectedElection.numVotes, (currentElection['4'])['words'][0]);
+      assert.equal(expectedElection.typeOfElection, (currentElection['5']));
     })
   
   })
@@ -60,7 +62,7 @@ contract("VoteFactory", accounts => {
       assert.equal(accounts[0],manager);
     })
     it('edits existing petition and outputs it', async() => {
-      await petition.editPetition("title", 1, 2, "description", [1,2,3]);
+      await petition.editPetition("title", 1, 2, "description");
       const currentPetition = await (petition.currentPetition());
       const expectedPetition = {
         title: "title",
