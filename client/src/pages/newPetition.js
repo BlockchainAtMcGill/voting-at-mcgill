@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/header';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import VoteContract from "../contracts/Vote.json";
-import * as m from "@material-ui/core";
+import { Form } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
-
+import 'semantic-ui-css/semantic.min.css';
 
 
 const NewPetition = () => {
@@ -22,23 +22,9 @@ const NewPetition = () => {
 
     //please follow the course for a better implementation @Jing
     const [title, setTitle] = useState('');
-    const changeTitle = (event) => {
-        setTitle(event.target.value);
-    };
     const [startDate, setStartDate] = useState(0);
-    const changeStartDate = (event) => {
-        setStartDate(event.target.value);
-    };
     const [endDate, setEndDate] = useState(0);
-    const changeEndDate = (event) => {
-        setEndDate(event.target.value);
-    };
-
     const [description, setDescription] = useState('');
-    const changeDescription = (event) => {
-        setDescription(event.target.value);
-    };
-
 
     var onSubmit = async (event) => {
         event.preventDefault();
@@ -69,7 +55,7 @@ const NewPetition = () => {
                 );
                 console.error(error);
             }
-        }
+        };
         var createVote = async () => {//uses voteFactory to create Vote
             if(factoryContract == ''){
                 return;
@@ -98,7 +84,7 @@ const NewPetition = () => {
                 );
                 console.error(error);
             }
-        }
+        };
         var setUpPetition = async() => {//call to vote contract to edit petition
             if (!voteContract) {
                 console.log("voteContract dne");
@@ -131,65 +117,56 @@ const NewPetition = () => {
             <br></br>
             <h1>New Petition</h1>
 
-            <form onSubmit={onSubmit} noValidate autoComplete="off">
+            <Form onSubmit={onSubmit}>
                 <div>
-                    <m.TextField required fullWidth label="Petition title"
-                                 variant="outlined"
-                                 value={title}
-                                 onChange={changeTitle}
+                    <Form.Input required label="Petition title"
+                                value={title}
+                                onChange={event => setTitle(event.target.value)}
                     >
 
-                    </m.TextField>
+                    </Form.Input>
                 </div>
                 <br></br>
                 <div>
-                    <m.TextField label="Start date" type="date"
-                                 variant="outlined"
-                                 InputLabelProps={{
-                                     shrink: true,
-                                 }}
-                                 value={startDate}
-                                 onChange={changeStartDate}
+                    <Form.Input label="Start date" type="date"
+
+                                value={startDate}
+                                onChange={event => setStartDate(event.target.value)}
                     >
 
-                    </m.TextField>
+                    </Form.Input>
                 </div>
                 <br></br>
                 <div>
-                    <m.TextField label="End date (optional)" type="date"
-                                 variant="outlined"
-                                 InputLabelProps={{
-                                     shrink: true,
-                                 }}
-                                 value={endDate}
-                                 onChange={changeEndDate}
+                    <Form.Input required label="End date" type="date"
+
+                                value={endDate}
+                                onChange={event => setEndDate(event.target.value)}
                     />
                 </div>
                 <br></br>
-
                 <div>
-                    {/*<m.TextField label="Select groups (someone help with the search and select multiple plz)" variant="outlined" /> */}
+
                 </div>
                 <br></br>
                 <div>
-                    <m.TextField required multiline fullWidth
-                                 label="Description"
-                                 rows={4}
-                                 variant="outlined"
-                                 value={description}
-                                 onChange={changeDescription}
+                    <Form.TextArea required
+                                   label="Description"
+
+                                   value={description}
+                                   onChange={event => setDescription(event.target.value)}
                     />
                 </div>
 
                 <br></br>
                 <div>
-                    <m.Button>Cancel</m.Button>
-                    <m.Button type="submit" onSubmit={onSubmit}>Publish Petition</m.Button>
+                    <Form.Button>Cancel</Form.Button>
+                    <Form.Button type="submit" onSubmit={onSubmit}>Publish Petition</Form.Button>
                 </div>
 
 
-            </form>
+            </Form>
         </>
     )
-}
+};
 export default NewPetition;
