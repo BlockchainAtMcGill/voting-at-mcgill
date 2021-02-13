@@ -35,26 +35,10 @@ const NewElection = () => {
 
 
     const [title, setTitle] = useState('');
-    const changeTitle = (event) => {
-        setTitle(event.target.value);
-    };
     const [startDate, setStartDate] = useState(0);
-    const changeStartDate = (event) => {
-        setStartDate(event.target.value);
-    };
     const [endDate, setEndDate] = useState(0);
-    const changeEndDate = (event) => {
-        setEndDate(event.target.value);
-    };
     const [electionType, setElectionType] = useState('majority');
-    const changeElectionType = (event) => {
-        setElectionType(event.target.value);
-    };
     const [description, setDescription] = useState('');
-    const changeDescription = (event) => {
-        setDescription(event.target.value);
-    };
-
 
     var onSubmit = async (event) => {
         event.preventDefault();
@@ -202,7 +186,7 @@ const NewElection = () => {
                                  label="Description"
 
                                  value={description}
-                                 onChange={changeDescription}
+                                 onChange={event => setDescription(event.target.value)}
                     />
                 </div>
 
