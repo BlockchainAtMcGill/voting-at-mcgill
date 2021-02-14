@@ -24,15 +24,15 @@
       "static/chunks/webpack.js",
       "static/chunks/pages/_error.js"
     ],
-    "/elections/apply/apply": [
+    "/adminHome": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
-      "static/chunks/pages/elections/apply/apply.js"
+      "static/chunks/pages/adminHome.js"
     ],
-    "/elections/vote/vote": [
+    "/newElection": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
-      "static/chunks/pages/elections/vote/vote.js"
+      "static/chunks/pages/newElection.js"
     ]
   },
   "ampFirstPages": []

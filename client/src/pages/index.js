@@ -16,7 +16,6 @@ const useStyles = makeStyles({
 });
 
 function App() {
-  const classes = useStyles();
   const [web3, setWeb3] = useState('');
   const [votesAddresses, setVotesAddresses] = useState('');
   const [contract, setContract] = useState('');
@@ -151,9 +150,9 @@ function App() {
       ) : <></>
     }
 
-  function displayrenderedVotes() {
-    return renderedAddresses[0] ? <div>{renderedAddresses[0].title}</div> : console.log(renderedAddresses)
-  }
+  // function displayrenderedVotes() {
+  //   return renderedAddresses[0] ? <div>{renderedAddresses[0].title}</div> : console.log(renderedAddresses)
+  // }
 
   function clicked() {
     console.log(renderedAddresses)

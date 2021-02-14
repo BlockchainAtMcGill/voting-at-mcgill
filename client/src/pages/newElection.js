@@ -112,7 +112,7 @@ const NewElection = () => {
                 return;
             }
             await voteContract.methods
-                .editElection(title, new Date(startDate).getTime(), new Date(endDate).getTime(), description, [0])
+                .editElection(title, new Date(startDate).getTime(), new Date(endDate).getTime(), description, electionType)
                 .send({
                     from: manager
                 })
