@@ -37,6 +37,12 @@ const Vote = () => {
                     voteAddress
                 );
                 setCurrentVote(await instance.methods.currentElection().call());
+                var array = []
+                for (var i = 0; i < 3; i++){
+                    array.push(await instance.methods.candidateArray(i).call())
+                }
+                console.log(array);
+                setCandidates(array);
                 // Set web3, accounts, and contract to the state, and then proceed with an
             } catch (error) {
             // Catch any errors for any of the above operations.
@@ -48,12 +54,33 @@ const Vote = () => {
         }
         setupVote();
     },[web3])
-    useEffect(()=>{console.log(currentVote)},[currentVote])
 
     const long = {
         width: '90%',
         texAlign:'center',
-        margin: 'auto'
+        margin: 'auto',
+        color: '#f00000'
+    }
+    function displayCandidates() {
+        if (candidates == ""){
+            return <div>no candidates yet</div>
+        }
+        return candidates.map((candidate,index) =>
+        <div className="ui card" style={long}>
+            <div className="content">
+                <div className="header">
+                    {candidate.name}
+                </div>
+                <div className="meta">
+                    {candidate.candidateAddr}
+                </div>
+                <div className="description">
+                    {candidate.description}
+                </div>
+            </div>
+        </div>
+
+        )
     }
     function formatVote() {
         if (currentVote){
@@ -69,10 +96,11 @@ const Vote = () => {
                         </div>
                     </div>
                     <div style={{textAlign:'center', margin:'50px', color: '#f00000'}}>
-                    <i className="user icon large"></i>
-                    <i className="user icon large"></i>
-                    <i className="user icon large"></i>
-                    <Link route ={`/elections/apply/${voteAddress}`}><i className="plus icon large"></i></Link>
+                    <span>{displayCandidates()}</span>
+                    <div className="ui card button" style={long}>
+                    <div><Link route ={`/elections/apply/${voteAddress}`}><i className="plus icon large"></i></Link>
+                    </div>
+                    </div>
                     </div>
                     <div>            
                 </div>

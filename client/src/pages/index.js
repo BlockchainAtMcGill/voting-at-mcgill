@@ -16,6 +16,7 @@ const useStyles = makeStyles({
 });
 
 function App() {
+  const classes = useStyles();
   const [web3, setWeb3] = useState('');
   const [votesAddresses, setVotesAddresses] = useState('');
   const [contract, setContract] = useState('');
@@ -129,7 +130,7 @@ function App() {
           // </Card>
         // </Link>
         <Link className="ui button" route ={`/elections/vote/${vote}`} key={index}>
-        <div className="ui link card" style={{width:"80%"}}>
+        <div className="ui link card" style={{width:"80%", color: '#f00000'}}>
         <div className="card">
         <div className="content">
           <div className="header">Election</div>
@@ -150,9 +151,9 @@ function App() {
       ) : <></>
     }
 
-  // function displayrenderedVotes() {
-  //   return renderedAddresses[0] ? <div>{renderedAddresses[0].title}</div> : console.log(renderedAddresses)
-  // }
+  function displayrenderedVotes() {
+    return renderedAddresses[0] ? <div>{renderedAddresses[0].title}</div> : console.log(renderedAddresses)
+  }
 
   function clicked() {
     console.log(renderedAddresses)

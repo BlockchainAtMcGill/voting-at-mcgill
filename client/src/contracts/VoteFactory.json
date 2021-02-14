@@ -18,7 +18,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -44,7 +45,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.7.4+commit.3f05b770\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"typeOf\",\"type\":\"uint256\"}],\"name\":\"createVote\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"deployedVotes\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getDeployedVotes\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/C/Users/foubroker/PROJECT_VOTE/voting-at-mcgill/contracts/VoteFactory.sol\":\"VoteFactory\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/foubroker/PROJECT_VOTE/voting-at-mcgill/contracts/Vote.sol\":{\"keccak256\":\"0xe8aad10b39a30df4b479bd3986ef3ee0885cb8934613b2b4f01413a0586632d9\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c97dd48bfb9014105c3013e4a217e444bfbb861951431ca5c5984593ff3c25b9\",\"dweb:/ipfs/QmShSLmLpKiGAcbHCMFQmhNtvbFDNxJTc9x7KPwu2CNYgG\"]},\"/C/Users/foubroker/PROJECT_VOTE/voting-at-mcgill/contracts/VoteFactory.sol\":{\"keccak256\":\"0xdf24394d828a506241b0020ec64e8d6da9e87319de497033a194d5be397df84b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://d0e47e04d4bf4de24b39dbe20c11e087b54b2b79876ee3527ba8a5c27c47ee05\",\"dweb:/ipfs/QmfCurUxkxt1YYYc29NtKCbcqsD4H3XJj9PrrHEkExZ6AN\"]}},\"version\":1}",
@@ -1089,20 +1091,12 @@
       "events": {},
       "links": {},
       "address": "0x753F3F7BaBbAB74B877581CB522872e8AD800B43",
-<<<<<<< HEAD
       "transactionHash": "0x1f4cd41e80c8a38d1deb35195127926d067fcfec8e9b8415913c6f7d899b261f"
     }
   },
   "schemaVersion": "3.3.3",
-  "updatedAt": "2021-02-14T01:36:31.572Z",
+  "updatedAt": "2021-02-14T02:00:38.881Z",
   "networkType": "ethereum",
-=======
-      "transactionHash": "0x51db9777bfd03b0ecc1b356cca2a1d413e62c5504f4ac823016307fb1b3cd512"
-    }
-  },
-  "schemaVersion": "3.3.3",
-  "updatedAt": "2021-02-13T23:33:20.560Z",
->>>>>>> e32ce7440f233c3165adadff73d89468f363270b
   "devdoc": {
     "kind": "dev",
     "methods": {},
