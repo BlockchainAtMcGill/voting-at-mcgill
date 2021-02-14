@@ -22,13 +22,6 @@ contract Vote{
         string description;
     }
 
-    struct group {
-        string name;
-        string password;
-        address[] members;
-        address[] admins;
-    }
-
     struct election {
         string title;
         uint startDate;
@@ -36,6 +29,7 @@ contract Vote{
         string description;
         //think about mapping?
         uint numVotes;
+        string typeOfElection;
         mapping(address => bool) voters; //see if a voter has voted
     }
     struct petition{
@@ -48,9 +42,7 @@ contract Vote{
     }
     uint typeOfVote; //0 for election and 1 for petition
     // mapping(uint => election) public elections;
-    mapping(uint => group) allGroups; //contains all groups possible
     mapping(address => candidate) public candidates; //number of current votes for each candidate
-    mapping(uint => group) includedGroups;
     candidate[] public candidateArray;
     election public currentElection;
     petition public currentPetition;
@@ -61,28 +53,23 @@ contract Vote{
         typeOfVote = (0 == typeOf) ? 0 : 1;
     }
 
-    function editElection (string memory title, uint256 startDate, uint256 endDate, string memory description, uint[] memory addedGroups)
+    function editElection (string memory title, uint256 startDate, uint256 endDate, string memory description, string memory typeOfElection)
     public restricted typeElection {
         election storage e = currentElection;
         e.title = title;
         e.startDate = startDate;
         e.endDate = endDate;
         e.description = description;
-        for(uint i = 0; i < addedGroups.length; i ++){
-            includedGroups[addedGroups[i]] = allGroups[addedGroups[i]];
-        }
+        e.typeOfElection = typeOfElection;
     }
 
-    function editPetition (string memory title, uint256 startDate, uint256 endDate, string memory description, uint[] memory addedGroups)
+    function editPetition (string memory title, uint256 startDate, uint256 endDate, string memory description)
     public restricted typePetition {
         petition storage p = currentPetition;
         p.title = title;
         p.startDate = startDate;
         p.endDate = endDate;
         p.description = description;
-        for(uint i = 0; i < addedGroups.length; i ++){
-            includedGroups[addedGroups[i]] = allGroups[addedGroups[i]];
-        }
     }
 
     //enter as a candidate
@@ -124,8 +111,8 @@ contract Vote{
     //GETTERS
 
     //get election
-    function get_election() public view typeElection returns (string memory,uint,uint,string memory,uint) {
-        return (currentElection.title, currentElection.startDate, currentElection.endDate, currentElection.description, currentElection.numVotes);
+    function get_election() public view typeElection returns (string memory,uint,uint,string memory,uint, string memory) {
+        return (currentElection.title, currentElection.startDate, currentElection.endDate, currentElection.description, currentElection.numVotes, currentElection.typeOfElection);
     }
     //get petition
     function get_petition() public view typePetition returns (string memory,uint,uint,string memory,uint){
