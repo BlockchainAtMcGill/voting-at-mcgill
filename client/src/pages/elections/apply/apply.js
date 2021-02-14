@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../../../components/header';
 import VoteFactoryContract from "../../../contracts/VoteFactory.json";
 import VoteContract from "../../../contracts/Vote.json";
-import * as m from "@material-ui/core";
+import { Form } from "semantic-ui-react";
 import getWeb3 from "../../../getWeb3";
+import 'semantic-ui-css/semantic.min.css';
+
+
 
 const Apply = () => {
 
@@ -19,32 +22,17 @@ const Apply = () => {
 
     //please follow the course for a better implementation @Jing
     const [candidateName, setName] = useState('');
-    const changeName = (event) => {
-        setName(event.target.value);
-    };
     const [currentDate, setCurrentDate] = useState(0);
-    const changeCurrentDate = (event) => {
-        setCurrentDate(event.target.value);
-    };
-
     const [description, setDescription] = useState('');
-    const changeDescription = (event) => {
-        setDescription(event.target.value);
-    };
-
 
     var onSubmit = async (event) => {
         event.preventDefault();
-        var addressOfVote
+
         var manager
         var factoryContract
         var voteContract;
-        var getElectionAddress = async() =>{
-          const url=window.location.href;
-          const pos=url.indexOf('y')+2;
-          addressOfVote= url.slice(pos);
-          console.log(addressOfVote);
-        };
+        var addressOfVote;
+
         var setupVoteFactory = async () => { //initializes voteFactory
             if(web3 == '') {
                 return;
@@ -68,7 +56,13 @@ const Apply = () => {
                 );
                 console.error(error);
             }
-        }
+        };
+        var getElectionAddress = async() =>{
+            const url=window.location.href;
+            const pos=url.indexOf('y')+2;
+            addressOfVote= url.slice(pos);
+            console.log(addressOfVote);
+        };
         var initializeElection = async () => {//initializes vote contract
             try {
                 // Get the contract instance.
@@ -84,9 +78,9 @@ const Apply = () => {
                 );
                 console.error(error);
             }
-        }
+        };
         var setCandidate = async () => {
-          await voteContract.methods.enterElection(candidateName, description ,new Date(currentDate).getTime()).send({from: manager});
+            await voteContract.methods.enterElection(candidateName, description ,new Date(currentDate).getTime()).send({from: manager});
         };
         var displayCand = async () => { // testing purposes
             const summary = await voteContract.methods.get_candidates(manager).call();
@@ -106,57 +100,51 @@ const Apply = () => {
             <br></br>
             <h1>Run for Election</h1>
             <h3 style={{color: "red"}}> </h3>
-            <form onSubmit={onSubmit} noValidate autoComplete="off">
+            <Form onSubmit={onSubmit}>
                 <div>
-                    <m.TextField required fullWidth label="Name"
-                                 variant="outlined"
+                    <Form.Input required label="Enter Name"
                                  value={candidateName}
-                                 onChange={changeName}
+                                 onChange={event => setName(event.target.value)}
                     >
 
-                    </m.TextField>
+                    </Form.Input>
                 </div>
+
                 <br></br>
+
                 <div>
-                    <m.TextField label="Current date" type="date"
-                                 variant="outlined"
-                                 InputLabelProps={{
-                                    shrink: true,
-                                    }}
+                    <Form.Input label="Current date" type="date"
+
                                  value={currentDate}
-                                 onChange={changeCurrentDate}
+                                 onChange={event => setCurrentDate(event.target.value)}
                     >
 
-                    </m.TextField>
+                    </Form.Input>
                 </div>
 
                 <br></br>
+
                 <div>
-                    {/*<m.TextField label="Select groups (someone help with the search and select multiple plz)" variant="outlined" /> */}
-                </div>
-                <br></br>
-                <div>
-                    <m.TextField required multiline fullWidth
+                    <Form.TextArea required
                                  label="Description"
-                                 rows={4}
-                                 variant="outlined"
+
                                  value={description}
-                                 onChange={changeDescription}
+                                 onChange={event => setDescription(event.target.value)}
                     />
                 </div>
 
                 <br></br>
                 <div>
-                    <m.Button>Cancel</m.Button>
-                    <m.Button type="submit" onSubmit={onSubmit}>Run for Election</m.Button>
+                    <Form.Button>Cancel</Form.Button>
+                    <Form.Button type="submit" onSubmit={onSubmit}>Run for Election</Form.Button>
                 </div>
 
 
-            </form>
-        </>
-    )
-}
+            </Form>
 
+        </>
+      )
+};
 /*Apply.getInitialProps = async (props) => {
     console.log(props.query.address)
     return {VoteContract: props.query.address}

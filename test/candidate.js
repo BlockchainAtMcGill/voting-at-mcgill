@@ -41,13 +41,13 @@ contract("Vote", accounts => {
   });
   describe('candidate', async () =>{
     it('candidate can enter', async() => {
-      await election.editElection("title", 1, 3, "description", [1,2,3]);
+      await election.editElection("title", 1, 3, "description", 'two-thirds');
       const currentElection = await (election.currentElection());
       await election.enterElection('user', 'party1', 2, {from: accounts[0]} );
       const add = await (election.get_candidates(accounts[0]));
       assert.equal(add[0],'user');
       //assert.equal(election.candidateAddrs[0], accounts[0]);
-
+      //console.log(add);
       //assert.ok(election.candidates[accounts[0]]);
     })
     it('Existing candidate can leave', async() => {
