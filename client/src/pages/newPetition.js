@@ -6,6 +6,16 @@ import { Form } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
 import 'semantic-ui-css/semantic.min.css';
 
+const adminTitle = {
+    color: "red",
+    marginBottom: "5%",
+    fontSize: "3em",
+    textAlign: "center"
+};
+
+const adminFields = {
+    margin: "auto 5% auto 5%"
+};
 
 const NewPetition = () => {
 
@@ -91,7 +101,7 @@ const NewPetition = () => {
                 return;
             }
             await voteContract.methods
-                .editPetition(title, new Date(startDate).getTime(), new Date(endDate).getTime(), description, [0])
+                .editPetition(title, new Date(startDate).getTime(), new Date(endDate).getTime(), description)
                 .send({
                     from: manager
                 })
@@ -115,9 +125,9 @@ const NewPetition = () => {
             <br></br>
             <br></br>
             <br></br>
-            <h1>New Petition</h1>
+            <h1 style={adminTitle}>New Petition</h1>
 
-            <Form onSubmit={onSubmit}>
+            <Form onSubmit={onSubmit} style={adminFields}>
                 <div>
                     <Form.Input required label="Petition title"
                                 value={title}

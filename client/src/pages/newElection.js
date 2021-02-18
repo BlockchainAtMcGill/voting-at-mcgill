@@ -6,6 +6,16 @@ import { Form } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
 import 'semantic-ui-css/semantic.min.css';
 
+const adminTitle = {
+    color: "red",
+    marginBottom: "5%",
+    fontSize: "3em",
+    textAlign: "center"
+};
+
+const adminFields = {
+    margin: "auto 5% auto 5%"
+};
 
 const NewElection = () => {
 
@@ -136,9 +146,9 @@ const NewElection = () => {
             <br></br>
             <br></br>
             <br></br>
-            <h1>New Election</h1>
+            <h1 style={adminTitle}>New Election</h1>
             
-            <Form onSubmit={onSubmit}>
+            <Form onSubmit={onSubmit} style={adminFields}>
                 <div>
                     <Form.Input required label="Election title"
                                  value={title}
