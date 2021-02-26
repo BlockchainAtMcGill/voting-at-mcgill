@@ -37,11 +37,11 @@ const Vote = () => {
                     voteAddress
                 );
                 setCurrentVote(await instance.methods.currentElection().call());
+                const candidatesCount = await instance.methods.candidatesCount().call();
                 var array = []
-                for (var i = 0; i < 3; i++){
+                for (var i = 0; i < candidatesCount; i++){
                     array.push(await instance.methods.candidateArray(i).call())
                 }
-                console.log(array);
                 setCandidates(array);
                 // Set web3, accounts, and contract to the state, and then proceed with an
             } catch (error) {
@@ -60,13 +60,16 @@ const Vote = () => {
         texAlign:'center',
         margin: 'auto',
         color: '#f00000'
+        
     }
+
     function displayCandidates() {
         if (candidates == ""){
             return <div>no candidates yet</div>
         }
+
         return candidates.map((candidate,index) =>
-        <div className="ui card" style={long}>
+        <div className="card" style={long} key={index}>
             <div className="content">
                 <div className="header">
                     {candidate.name}
@@ -96,14 +99,16 @@ const Vote = () => {
                         </div>
                     </div>
                     <div style={{textAlign:'center', margin:'50px', color: '#f00000'}}>
-                    <span>{displayCandidates()}</span>
+                    <div className ="ui special cards">{displayCandidates()}</div>
                     <div className="ui card button" style={long}>
-                    <div><Link route ={`/elections/apply/${voteAddress}`}><i className="plus icon large"></i></Link>
-                    </div>
+                    <Link route ={`/elections/apply/${voteAddress}`}><div><i className="plus icon large"></i></div></Link>
                     </div>
                     </div>
                     <div>            
                 </div>
+                    {/* <div className="extra content" style= {{color: '#f00000', textAlign:"center"}}>
+                        <button class="ui inverted red button large">Vote</button>
+                    </div> */}
                     <div className="extra content" style= {{color: '#f00000'}}>
                         <i className="check icon"></i>
                         {currentVote.numVotes} Votes
@@ -112,7 +117,7 @@ const Vote = () => {
             </>
         }
         else{
-            return<div> loading vote ...</div>
+            return <div> loading vote ...</div>
         }
     }
 

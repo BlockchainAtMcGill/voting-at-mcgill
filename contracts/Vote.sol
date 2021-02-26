@@ -4,6 +4,7 @@ pragma solidity ^0.7.4;
 contract Vote{
     //admin address
     address public manager;
+    uint public candidatesCount;
 
     struct user{
         string name;
@@ -83,7 +84,7 @@ contract Vote{
         currentCandidate.description = description;
         currentCandidate.candidateAddr= msg.sender;
         candidateArray.push(currentCandidate);
-
+        candidatesCount++;
         //candidateAddrs.push(msg.sender);
     }
 
@@ -106,6 +107,7 @@ contract Vote{
                 break;
             }
         }
+        candidatesCount--;
     }
 
     //GETTERS

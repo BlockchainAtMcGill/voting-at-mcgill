@@ -16,12 +16,10 @@ const useStyles = makeStyles({
 });
 
 function App() {
-  const classes = useStyles();
   const [web3, setWeb3] = useState('');
   const [votesAddresses, setVotesAddresses] = useState('');
   const [contract, setContract] = useState('');
   const [renderedAddresses, renderAddresses] = useState([]);
-  // var web3 = "";
 
   useEffect(() => {// get web3
     async function initWeb3() {
@@ -156,6 +154,7 @@ function App() {
   }
 
   function clicked() {
+    ethereum.request({ method: 'eth_requestAccounts' });
     console.log(renderedAddresses)
   }
   return( 
@@ -166,8 +165,7 @@ function App() {
       <br></br>
       <br></br>
       <div className="App">
-        <button onClick={clicked}></button>
-        {/* <div>{ displayrenderedVotes() }</div> */}
+        <button onClick={clicked}>view rendered votes</button>
         <div>{ displayVoteList() }</div>
       </div>
     </>
