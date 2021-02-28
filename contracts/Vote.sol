@@ -19,6 +19,8 @@ contract Vote{
 
     struct candidate {
         address candidateAddr;
+        uint numVotes;
+        address[] voters;
         string name;
         string description;
     }
@@ -31,7 +33,7 @@ contract Vote{
         //think about mapping?
         uint numVotes;
         string typeOfElection;
-        mapping(address => bool) voters; //see if a voter has voted
+        mapping(address => bool) voters ; //see if a voter has voted
     }
     struct petition{
         string title;
@@ -43,8 +45,9 @@ contract Vote{
     }
     uint typeOfVote; //0 for election and 1 for petition
     // mapping(uint => election) public elections;
-    mapping(address => candidate) public candidates; //number of current votes for each candidate
+    mapping(address => candidate) public candidates; //maps a candidate's address to the candidate
     candidate[] public candidateArray;
+    address[] public candidatesAddresses;//should replace candidateArray
     election public currentElection;
     petition public currentPetition;
 
@@ -72,7 +75,17 @@ contract Vote{
         p.endDate = endDate;
         p.description = description;
     }
-
+ //vote for a candidate
+    function voteFor(address candidateAddress) public typeElection{
+        if(currentElection.voters[msg.sender] == false){
+            if(candidates[candidateAddress].candidateAddr != address(0)){
+                currentElection.voters[msg.sender]  = true;
+                currentElection.numVotes++; 
+                (candidates[candidateAddress]).numVotes++;
+                (candidates[candidateAddress]).voters.push(msg.sender);
+            }
+        }
+    }
     //enter as a candidate
     function enterElection(string memory name, string memory description, uint256 current_date)
     public typeElection {
@@ -83,6 +96,7 @@ contract Vote{
         currentCandidate.name = name;
         currentCandidate.description = description;
         currentCandidate.candidateAddr= msg.sender;
+        currentCandidate.voters;
         candidateArray.push(currentCandidate);
         candidatesCount++;
         //candidateAddrs.push(msg.sender);
@@ -123,6 +137,12 @@ contract Vote{
     function get_candidates(address candaddr) public view typeElection returns (string memory, string memory) {
         return(candidates[candaddr].name, candidates[candaddr].description);
     }
+    function getCandidateVoters(address candAddr) public view typeElection returns (address[] memory) {
+        return((candidates[candAddr]).voters);
+    }
+    function getElectionVoter(address voterAddr) public view typeElection returns (bool) {
+        return ((currentElection.voters)[voterAddr]);
+    }           
     modifier restricted() {
         require(msg.sender == manager);
         _;

@@ -53,7 +53,36 @@ contract("VoteFactory", accounts => {
       assert.equal(expectedElection.numVotes, (currentElection['4'])['words'][0]);
       assert.equal(expectedElection.typeOfElection, (currentElection['5']));
     })
-  
+    it('users can vote for a certain candidate',async() => {
+      await election.editElection("title", 1, 10, "description",'two-thirds');
+      await election.enterElection('user', 'party1', 2, {from: accounts[0]} );
+      await election.voteFor(accounts[0],{from:accounts[0]})//someone voting for themselves
+      const electionVotes = ((await (election.currentElection()))['4']['words'][0])
+      // console.log(await election.candidateArray(0))//won't work because array isn't linked to mapping
+      const candidateInfo = await election.candidates(accounts[0]);
+      const candidateVoters = await election.getCandidateVoters(accounts[0]);
+      const hasVoted = await election.getElectionVoter(accounts[0]);
+
+      assert.equal(1, electionVotes)
+      assert.equal(1, ((candidateInfo['1'])['words'])[0]);
+      assert.equal(accounts[0], [candidateVoters])
+      assert.equal(true, hasVoted )
+    })
+    it('users cannot vote more than once for a given election',async() => {
+      await election.editElection("title", 1, 10, "description",'two-thirds');
+      await election.enterElection('user', 'party1', 2, {from: accounts[0]} );
+      await election.enterElection('user2', 'party2', 2, {from: accounts[1]} );
+      await election.voteFor(accounts[0],{from:accounts[0]})//someone voting for themselves
+      await election.voteFor(accounts[1],{from:accounts[0]})//someone that already voted voted for someone else
+      const electionVotes = ((await (election.currentElection()))['4']['words'][0])
+      const candidateInfo1 = await election.candidates(accounts[0]);
+      const candidateInfo2 = await election.candidates(accounts[1]);
+      const candidateVoters = await election.getCandidateVoters(accounts[0]);
+      assert.equal(1, electionVotes)
+      assert.equal(1, ((candidateInfo1['1'])['words'])[0]);
+      assert.equal(0, ((candidateInfo2['1'])['words'])[0]);
+      assert.equal(accounts[0], [candidateVoters])
+    })
   })
 
   describe('Petition', async () =>{
@@ -79,5 +108,7 @@ contract("VoteFactory", accounts => {
     })
   
   })
+
+
 });
 
