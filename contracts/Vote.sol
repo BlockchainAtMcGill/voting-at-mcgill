@@ -80,7 +80,7 @@ contract Vote{
         if(currentElection.voters[msg.sender] == false){
             if(candidates[candidateAddress].candidateAddr != address(0)){
                 currentElection.voters[msg.sender]  = true;
-                currentElection.numVotes++; 
+                currentElection.numVotes++;
                 (candidates[candidateAddress]).numVotes++;
                 (candidates[candidateAddress]).voters.push(msg.sender);
             }
@@ -106,7 +106,7 @@ contract Vote{
     function leaveElection(uint256 current_date)
     public typeElection {
         //Check if the registration is before the required deadline
-        require(current_date > currentElection.startDate && current_date <= currentElection.endDate);
+        //require(current_date > currentElection.startDate && current_date <= currentElection.endDate);
         //remove candidate
         candidate storage currentCandidate = candidates[msg.sender];
         currentCandidate.name = "";
@@ -142,7 +142,7 @@ contract Vote{
     }
     function getElectionVoter(address voterAddr) public view typeElection returns (bool) {
         return ((currentElection.voters)[voterAddr]);
-    }           
+    }
     modifier restricted() {
         require(msg.sender == manager);
         _;

@@ -90,20 +90,39 @@ const Vote = () => {
                     header="Vote!"
                     content={"are you sure you want to vote for "+ name+" ?"}
                     actions={[
-                    <button key={1} className="ui inverted green button" onClick={voteFor}>yes</button>, 
+                    <button key={1} className="ui inverted green button" onClick={voteFor}>yes</button>,
                     <button key={2} className="ui inverted red button" >no</button>]}
                 />
             )
         }
         else return (<></>)
     }
-
+    function  leaveElection(){
+          var leavethis = async () => {
+              if(voteInstance){
+                  await voteInstance.methods.leaveElection(0).send({
+                      from: currentUser
+                  })
+                  location.reload()
+              }
+          }
+          return (
+            <Modal
+                trigger={<button className="ui right floated inverted red button">Leave Election</button>}
+                header="Leave Election"
+                content={"are you sure you want to no longer be a candidate"}
+                actions={[
+                <button key={1} className="ui inverted green button"onClick={leavethis}>yes</button>,
+                <button key={2} className="ui inverted red button" >no</button>]}
+            />
+        )
+    }
     function displayCandidates() {
         if (candidates == ""){
             return <div  className="card" style={long}>
                         <div className="content">
                             <div className="header">
-                                no candidates yet 
+                                no candidates yet
                             </div>
                         </div>
                     </div>
@@ -115,13 +134,16 @@ const Vote = () => {
                 <div className="header clearing segment">
                     {candidate.name} {VoteModal(candidate.name, candidate.candidateAddr)}
                 </div>
+                <div className="header clearing segment">
+                    {leaveElection()}
+                </div>
                 <div className="meta">
                     {candidate.candidateAddr}
                 </div>
                 <div className="description">
                     {candidate.description}
                 </div>
-                    
+
             </div>
         </div>
 
@@ -153,12 +175,12 @@ const Vote = () => {
                     <div style={{textAlign:'center', margin:'50px', color: '#f00000'}}>
                     <div className ="ui cards">{displayCandidates()}</div>
                     <br></br>
-                    <Loader 
-                        active={voting} 
-                        inline='centered'   
+                    <Loader
+                        active={voting}
+                        inline='centered'
                     />
                     </div>
-                    <div>            
+                    <div>
                 </div>
 
                     <div className="extra content" style= {{color: '#f00000'}}>
@@ -170,7 +192,7 @@ const Vote = () => {
                             <div><i className="plus icon"></i> Apply as Candidate</div>
                         </button>
                     </Link>
-                    
+
                 </div>
             </>
         }

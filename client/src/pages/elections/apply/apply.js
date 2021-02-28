@@ -7,6 +7,15 @@ import getWeb3 from "../../../getWeb3";
 import 'semantic-ui-css/semantic.min.css';
 
 
+const candFields = {
+    margin: "auto 5% auto 5%"
+};
+const candTitle = {
+    color: "red",
+    marginBottom: "5%",
+    fontSize: "3em",
+    textAlign: "center"
+};
 
 const Apply = () => {
 
@@ -98,9 +107,9 @@ const Apply = () => {
             <br></br>
             <br></br>
             <br></br>
-            <h1>Run for Election</h1>
+            <h1 style= {candTitle}>Run for Election</h1>
             <h3 style={{color: "red"}}> </h3>
-            <Form onSubmit={onSubmit}>
+            <Form onSubmit={onSubmit} style={candFields}>
                 <div>
                     <Form.Input required label="Enter Name"
                                  value={candidateName}
