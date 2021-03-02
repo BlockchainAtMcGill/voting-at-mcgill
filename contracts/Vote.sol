@@ -125,15 +125,6 @@ contract Vote{
     }
 
     //GETTERS
-
-    //get election
-    function get_election() public view typeElection returns (string memory,uint,uint,string memory,uint, string memory) {
-        return (currentElection.title, currentElection.startDate, currentElection.endDate, currentElection.description, currentElection.numVotes, currentElection.typeOfElection);
-    }
-    //get petition
-    function get_petition() public view typePetition returns (string memory,uint,uint,string memory,uint){
-        return (currentPetition.title, currentPetition.startDate, currentPetition.endDate, currentPetition.description, currentPetition.numSigned);
-    }
     function get_candidates(address candaddr) public view typeElection returns (string memory, string memory) {
         return(candidates[candaddr].name, candidates[candaddr].description);
     }
