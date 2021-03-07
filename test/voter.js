@@ -135,27 +135,27 @@ contract("VoteFactory", accounts => {
     /*
     // it('registers to a group', async () => {
     //      // Need to fix the registerUser() method
+    // // });
+    // // */
+
+    // it('marks caller as the admin', async () => {
+    //      const manager = await factory.getGroup(0);
+    //      assert.equal(accounts[0], manager);
+    // });
+
+    // it('marks caller as a user', async () => {
+    //      const user = await factory.getUserGroups();
+    //      assert.equal(accounts[1], user);
+    // });
+
+    // /*
+    // it('delete a group', async () => {
+    //     // Need to implement deleteGroup(unint memory)
+    //      factory.deleteGroup(0);
+    //      factory.deleteGroup(1);
+    //      assert.equal(factory.groupCount, 0);
     // });
     // */
-
-    it('marks caller as the admin', async () => {
-         const manager = await factory.getGroup(0);
-         assert.equal(accounts[0], manager);
-    });
-
-    it('marks caller as a user', async () => {
-         const user = await factory.getUserGroups();
-         assert.equal(accounts[1], user);
-    });
-
-    /*
-    it('delete a group', async () => {
-        // Need to implement deleteGroup(unint memory)
-         factory.deleteGroup(0);
-         factory.deleteGroup(1);
-         assert.equal(factory.groupCount, 0);
-    });
-    */
  });
   describe('User', async () =>{
     it('creates user instance', async() => {
