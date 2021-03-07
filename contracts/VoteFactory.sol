@@ -1,7 +1,7 @@
 pragma solidity ^0.7.4;
 //"SPDX-License-Identifier: UNLICENSED"
 import "./Vote.sol";
-contract Factory{
+contract VoteFactory{
     struct groupStruct{
         string name;
         string description;
