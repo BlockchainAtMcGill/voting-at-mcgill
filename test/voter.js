@@ -3,10 +3,13 @@ const Vote = artifacts.require("./Vote.sol");
 
 contract("VoteFactory", accounts => {
   let factory;
+  let factory1;
   let electionAddress;
   let petitionAddress;
   let election;
   let petition;
+  let groups = [];
+
   before(async() => {
     factory = await VoteFactory.deployed();
     await factory.createVote(0, {
@@ -19,6 +22,9 @@ contract("VoteFactory", accounts => {
     election = await Vote.at(electionAddress);
     petitionAddress = (await factory.getDeployedVotes())[1];
     petition = await Vote.at(petitionAddress);
+
+    await factory.createGroup("Blockchain McGill", "Student Non-Profit about Blockchain Technology");
+    await factory.createGroup("SSMU", "Speak out the interests of McGill students");
 
   });
   describe('Factory tests', async () =>{
@@ -105,9 +111,47 @@ contract("VoteFactory", accounts => {
       assert.equal(expectedPetition.endDate, (currentPetition['2'])['words'][0]);
       assert.equal(expectedPetition.description, (currentPetition['3']));
       assert.equal(expectedPetition.numVotes, (currentPetition['4'])['words'][0]);
-    })
+    });
   
-  })
+  });
+
+  describe('Groups', async () => {
+    it('deploys a group', async () => {
+      let group = await factory.createGroup("MariHacks", "Open to all Levels");
+      assert.ok(group);
+    });
+
+    it('outputs a group', async () => {
+      let group1 = await factory.getGroup(0);
+      let group2 = await factory.getGroup(1);
+      assert.equal(group1[0], "Blockchain McGill");
+      assert.equal(group2[0], "SSMU");
+    });
+    /*
+    // it('registers to a group', async () => {
+    //      // Need to fix the registerUser() method
+    // });
+    // */
+
+    it('marks caller as the admin', async () => {
+         const manager = await factory.getGroup(0);
+         assert.equal(accounts[0], manager);
+    });
+
+    it('marks caller as a user', async () => {
+         const user = await factory.getUserGroups();
+         assert.equal(accounts[1], user);
+    });
+
+    /*
+    it('delete a group', async () => {
+        // Need to implement deleteGroup(unint memory)
+         factory.deleteGroup(0);
+         factory.deleteGroup(1);
+         assert.equal(factory.groupCount, 0);
+    });
+    */
+ });
 
 
 });

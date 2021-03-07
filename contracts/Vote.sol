@@ -101,7 +101,8 @@ contract Vote{
         candidatesCount++;
         //candidateAddrs.push(msg.sender);
     }
-
+    
+    // ? current_date is not being used
     //leave the election
     function leaveElection(uint256 current_date)
     public typeElection {

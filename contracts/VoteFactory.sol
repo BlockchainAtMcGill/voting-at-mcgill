@@ -1,7 +1,7 @@
 pragma solidity ^0.7.4;
 //"SPDX-License-Identifier: UNLICENSED"
 import "./Vote.sol";
-contract Factory{
+contract VoteFactory{
     struct groupStruct{
         string name;
         string description;
@@ -32,7 +32,7 @@ contract Factory{
         g.name = name;
         g.description = description;
     }
-    
+
     function registerUser(string memory name, string memory email, string memory password) public {
         // require (((userInfo[msg.sender]).userAddress) != address(0));
             userStruct storage u = userInfo[msg.sender]; //innitialize
@@ -40,6 +40,7 @@ contract Factory{
             u.email = email;
             u.password = password;
             u.userAddress =  msg.sender;
+            // TO-DO: Associate the user's group (should create an "no group" group)
             u.groups.push(0);// needs to increment groupCount and group members
             u.isAdmin = true;
     }
