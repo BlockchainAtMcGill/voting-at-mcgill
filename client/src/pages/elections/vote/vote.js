@@ -15,6 +15,8 @@ const Vote = () => {
     const [currentUser, setCurrentUser ] = useState('');
     const [voting, setVoting ] = useState(false)
     const [hasVoted, setHasVoted] = useState(false)
+    const [load, setLoad] = useState(true)
+    
     useEffect(() => {
         async function initWeb3() {
             web3Instance = await getWeb3();
@@ -28,7 +30,7 @@ const Vote = () => {
           };
         initWeb3();
         getElectionAddress();
-    },[]);
+    },[load]);
 
     useEffect(() => {
         async function setupVote() {
@@ -80,7 +82,7 @@ const Vote = () => {
                     from: currentUser
                 })
                 setVoting(false)
-                location.reload()
+                setLoad(!load)
             }
         }
         if(!hasVoted){
@@ -100,10 +102,12 @@ const Vote = () => {
     function  leaveElection(){
           var leavethis = async () => {
               if(voteInstance){
-                  await voteInstance.methods.leaveElection(0).send({
-                      from: currentUser
-                  })
-                  location.reload()
+                setVoting(true)
+                await voteInstance.methods.leaveElection(0).send({
+                    from: currentUser
+                })
+                setVoting(false)
+                setLoad(!load)
               }
           }
           return (
@@ -158,6 +162,8 @@ const Vote = () => {
 
     function formatVote() {
         if (currentVote){
+            var startDate = new Date(currentVote.startDate * 1)
+            var endDate = new Date(currentVote.endDate * 1)
             return <>
                 <div className="ui card" style={long}>
                     <div className="content">
@@ -165,7 +171,7 @@ const Vote = () => {
                             {currentVote.title}
                             <span className="floated right">{voted}</span>
                         </div>
-                        <div className="meta">{Date(currentVote.startDate).slice(0,-42)} to {Date(currentVote.endDate).slice(0,-42) }</div>
+                        <div className="meta">{startDate.toUTCString().slice(0,17)} to {endDate.toUTCString().slice(0,17)}</div>
                         <div className="ui card" style= {{width: '100%'}}>
                             <div className="description" >
                             <p>{currentVote.description}</p>
