@@ -16,7 +16,7 @@ const Vote = () => {
     const [voting, setVoting ] = useState(false)
     const [hasVoted, setHasVoted] = useState(false)
     const [load, setLoad] = useState(true)
-    
+
     useEffect(() => {
         async function initWeb3() {
             web3Instance = await getWeb3();
@@ -100,6 +100,8 @@ const Vote = () => {
         else return (<></>)
     }
     function  leaveElection(){
+          var startDate = new Date(currentVote.startDate * 1)
+          var currDate= new Date()
           var leavethis = async () => {
               if(voteInstance){
                 setVoting(true)
@@ -110,16 +112,31 @@ const Vote = () => {
                 setLoad(!load)
               }
           }
-          return (
-            <Modal
-                trigger={<button className="ui right floated inverted red button">Leave Election</button>}
-                header="Leave Election"
-                content={"are you sure you want to no longer be a candidate"}
-                actions={[
-                <button key={1} className="ui inverted green button"onClick={leavethis}>yes</button>,
-                <button key={2} className="ui inverted red button" >no</button>]}
-            />
+          if(currDate<startDate){
+            return (
+              <Modal
+                  trigger={<button className="ui right floated inverted red button">Leave Election</button>}
+                  header="Leave Election"
+                  content={"are you sure you want to no longer be a candidate"}
+                  actions={[
+                  <button key={1} className="ui inverted green button"onClick={leavethis}>yes</button>,
+                  <button key={2} className="ui inverted red button" >no</button>]}
+              />
+            )
+          }
+    }
+    function applyELection(){
+      var startDate = new Date(currentVote.startDate * 1)
+      var currDate= new Date()
+      if(currDate<startDate){
+        return(
+          <Link route ={`/elections/apply/${voteAddress}`}>
+              <button className="extra content ui inverted red button" >
+                  <div><i className="plus icon"></i> Apply as Candidate</div>
+              </button>
+          </Link>
         )
+      }
     }
     function displayCandidates() {
         if (candidates == ""){
@@ -193,11 +210,7 @@ const Vote = () => {
                         <i className="check icon"></i>
                         {currentVote.numVotes} Votes
                     </div>
-                    <Link route ={`/elections/apply/${voteAddress}`}>
-                        <button className="extra content ui inverted red button" >
-                            <div><i className="plus icon"></i> Apply as Candidate</div>
-                        </button>
-                    </Link>
+                    {applyELection()}
 
                 </div>
             </>
@@ -216,5 +229,6 @@ const Vote = () => {
             <h1>{formatVote()}</h1>
         </>
     )
+
 }
 export default Vote;
