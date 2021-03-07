@@ -10,7 +10,7 @@ contract("VoteFactory", accounts => {
   let petition;
   let groups = [];
   let user;
-  
+
   before(async() => {
     factory = await VoteFactory.deployed();
     await factory.createVote(0, {
@@ -39,7 +39,7 @@ contract("VoteFactory", accounts => {
     it('creates an empty petition and returns it',() =>{
       assert.ok(petitionAddress);
     })
-    
+
   });
   describe('Election', async () =>{
     it('marks caller as election manager', async() => {
@@ -66,7 +66,7 @@ contract("VoteFactory", accounts => {
     })
     it('users can vote for a certain candidate',async() => {
       await election.editElection("title", 1, 10, "description",'two-thirds');
-      await election.enterElection('user', 'party1', 2, {from: accounts[0]} );
+      await election.enterElection('user', 'party1', 0, {from: accounts[0]} );
       await election.voteFor(accounts[0],{from:accounts[0]})//someone voting for themselves
       const electionVotes = ((await (election.currentElection()))['4']['words'][0])
       // console.log(await election.candidateArray(0))//won't work because array isn't linked to mapping
@@ -81,8 +81,8 @@ contract("VoteFactory", accounts => {
     })
     it('users cannot vote more than once for a given election',async() => {
       await election.editElection("title", 1, 10, "description",'two-thirds');
-      await election.enterElection('user', 'party1', 2, {from: accounts[0]} );
-      await election.enterElection('user2', 'party2', 2, {from: accounts[1]} );
+      await election.enterElection('user', 'party1', 0, {from: accounts[0]} );
+      await election.enterElection('user2', 'party2', 0, {from: accounts[1]} );
       await election.voteFor(accounts[0],{from:accounts[0]})//someone voting for themselves
       await election.voteFor(accounts[1],{from:accounts[0]})//someone that already voted voted for someone else
       const electionVotes = ((await (election.currentElection()))['4']['words'][0])
@@ -117,7 +117,7 @@ contract("VoteFactory", accounts => {
       assert.equal(expectedPetition.description, (currentPetition['3']));
       assert.equal(expectedPetition.numVotes, (currentPetition['4'])['words'][0]);
     });
-  
+
   });
 
   describe('Groups', async () => {
@@ -168,7 +168,7 @@ contract("VoteFactory", accounts => {
       assert.equal(true,user['3'])
     })
     it("gets groups from user", async() => {
-      let userGroups = await factory.getUserGroups({from:accounts[0]}) 
+      let userGroups = await factory.getUserGroups({from:accounts[0]})
       assert.strictEqual(0,userGroups[0]['words'][0])
     })
     it("able to login once registered", async () => {
@@ -189,4 +189,3 @@ contract("VoteFactory", accounts => {
     })
   })
 });
-

@@ -87,10 +87,10 @@ contract Vote{
         }
     }
     //enter as a candidate
-    function enterElection(string memory name, string memory description, uint256 current_date)
+    function enterElection(string memory name, string memory description,uint256 current_date)
     public typeElection {
         //Check if the registration is before the required deadline
-        require(current_date > currentElection.startDate && current_date < currentElection.endDate);
+        require(current_date < currentElection.startDate);
         //enter candidate
         candidate storage currentCandidate = candidates[msg.sender];
         currentCandidate.name = name;
@@ -101,13 +101,13 @@ contract Vote{
         candidatesCount++;
         //candidateAddrs.push(msg.sender);
     }
-    
+
     // ? current_date is not being used
     //leave the election
-    function leaveElection(uint256 current_date)
+    function leaveElection()//uint256 current_date)
     public typeElection {
         //Check if the registration is before the required deadline
-        //require(current_date > currentElection.startDate && current_date <= currentElection.endDate);
+        //require(current_date < currentElection.startDate);
         //remove candidate
         candidate storage currentCandidate = candidates[msg.sender];
         currentCandidate.name = "";
