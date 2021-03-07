@@ -2,6 +2,11 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
+<<<<<<< HEAD
   "/elections/vote/vote": "pages/elections/vote/vote.js",
   "/elections/apply/apply": "pages/elections/apply/apply.js"
+=======
+  "/elections/apply/apply": "pages/elections/apply/apply.js",
+  "/": "pages/index.js"
+>>>>>>> 5826188c812f97fcc429c5f3f2d2ce52defab077
 }

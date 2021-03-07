@@ -76,19 +76,13 @@ function App() {
       if(votesAddresses == '') {
         return;
       }
-      try {
-        // Get the contract instance.
+      try {// Get the contract instance.
         const instance = new web3.eth.Contract(
           VoteContract.abi,
           address
         );
         return (await instance.methods.currentElection().call());
-        // Set web3, accounts, and contract to the state, and then proceed with an
       } catch (error) {
-        // Catch any errors for any of the above operations.
-        alert(
-          `Failed to load web3, accounts, or contract. Check console for details.`,
-        );
         console.error(error);
       }
     };
@@ -97,15 +91,15 @@ function App() {
           return;
         }
         var temp = []
-        votesAddresses.forEach(address => {
-            displayInfo(address).then(newAddress =>
-            temp.push(newAddress)
-          )
+        await votesAddresses.forEach(address => {
+            displayInfo(address).then(newAddress => {
+              temp.push(newAddress)
+          })
         })
         renderAddresses(temp);
       }
-      renderVotes();
-    },[votesAddresses]);
+    renderVotes();
+  },[votesAddresses]);
 
 
   function displayVoteList() {
@@ -116,17 +110,6 @@ function App() {
       return "no votes to display"
     }
     return votesAddresses ? votesAddresses.map((vote, index) => 
-        // <Link className="ui button" route ={`/elections/vote/${vote}`}>
-          // <Card key={index} variant="outlined" className ={classes.card}>
-          //   <CardContent >
-          //     <Grid container>
-          //       <Grid item xs ={9}><span>{vote}</span></Grid>
-          //       <Grid item xs ={3}>
-          //       </Grid>
-          //     </Grid>
-          //   </CardContent>
-          // </Card>
-        // </Link>
         <Link className="ui button" route ={`/elections/vote/${vote}`} key={index}>
         <div className="ui link card" style={{width:"80%", color: '#f00000'}}>
         <div className="card">
