@@ -117,6 +117,8 @@ contract VoteFactory{
        require(compareStrings(password, u.password)); // NEW implemented the helper method
        return(u.name, u.email, u.groups, u.isAdmin);
     }
+
+    //NEED TO BE FIX (u.groups)
     function getUser() public view returns (string memory, string memory, uint[] memory, bool){
         userStruct storage u = userInfo[msg.sender];
         return(u.name, u.email, u.groups, u.isAdmin);

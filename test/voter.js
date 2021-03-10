@@ -8,9 +8,11 @@ contract("VoteFactory", accounts => {
   let election;
   let petition;
   let user;
+  let member;
 
   before(async() => {
     factory = await VoteFactory.deployed();
+    // Initialize Votes
     await factory.createVote(0, {
       from: accounts[0]
     });
@@ -22,9 +24,38 @@ contract("VoteFactory", accounts => {
     petitionAddress = (await factory.getDeployedVotes())[1];
     petition = await Vote.at(petitionAddress);
 
-    await factory.registerUser("name", "email", "")
+    // Initialize Groups
+    await factory.createGroup("SSMU", "For The Students", 123);
+    await factory.createGroup("BAM", "Blockchain", 133);
 
-    user = await factory.getUser()
+    // Initialize Users
+    await factory.registerUser("name", "email", "password", {
+      from: accounts[0]
+    });
+
+    await factory.registerUser("member1", "email", "password", {
+      from: accounts[1]
+    });
+    await factory.registerUser("member2", "email", "password", {
+      from: accounts[2]
+    });
+
+    user = await factory.getUser({
+      from: accounts[0]
+    });
+
+    member = await factory.getUser({
+      from: accounts[1]
+    });
+
+    await factory.registerGroup(123, {
+      from: accounts[1]
+    });
+
+    await factory.registerGroup(123, {
+      from: accounts[2]
+    });
+
   });
   describe('Factory tests', async () =>{
     it('creates an empty election and returns it',() =>{
@@ -114,76 +145,79 @@ contract("VoteFactory", accounts => {
 
   });
 
-//   describe('Groups', async () => {
-//     it('deploys a group', async () => {
-//       let group = await factory.createGroup("MariHacks", "Open to all Levels");
-//       assert.ok(group);
-//     });
+  describe('Groups', async () => {
+    it('deploys a group', async () => {
+      const group = await factory.createGroup("MariHacks", "Open to all Levels", 101);
+      assert.ok(group);
+    });
 
-//     it('outputs a group', async () => {
-//       let group1 = await factory.getGroup(0);
-//       let group2 = await factory.getGroup(1);
-//       assert.equal(group1[0], "Blockchain McGill");
-//       assert.equal(group2[0], "SSMU");
-//     });
+    it('outputs a group', async () => {
+      const group = await factory.getGroup(123);
+      assert.equal(group[0], "SSMU");
+      assert.equal(group[1], "For The Students");
+      assert.equal(group[3], 2);
+    });
     
-//     it('registers to a group', async () => {
+    it('registers to a group', async () => {
+      await factory.registerGroup(133, {
+        from: accounts[1]
+      });
 
-//     });
-    
+      const group = await factory.getGroup(133);
+      const memberGroups = await factory.getUserAllGroups({
+        from: accounts[1]
+      });
+      assert.equal(memberGroups.length, 3);
+      assert.equal(group[3], 1);
+    });
 
-//     it('marks caller as the admin', async () => {
-//       const manager = await factory.getGroup(0);
-//       assert.equal(accounts[0], manager);
-//     });
+    it('leave a group', async () => {
+      await factory.leaveGroup(1, 0, 123, {
+        from: accounts[1]
+      });
+      const group = await factory.getGroup(123);
+      assert.equal(member[2].length, 1);
+      assert.equal(group[3], 1);
+    });
+ });
 
-//     it('marks caller as a user', async () => {
-//       const user = await factory.getUserGroups();
-//       assert.equal(accounts[1], user);
-//     });
+  describe('User', async () =>{
+    it('creates user instance', async() => {
+      assert.ok(user);
+    });
 
-//     it('delete a group', async () => {
-//       factory.deleteGroup(0);
-//       factory.deleteGroup(1);
-//       assert.equal(factory.groupCount, 0);
-//     });
-//  });
+    it('outputs created user successfully', async() => {
+      assert.equal("name", user['0']);
+      assert.equal("email", user['1']);
+      assert.equal(1, (((user)['2'])[0])['words'][0]);
+      assert.equal(true, user['3']);
+    });
 
+    it("gets groups from user", async() => {
+      let userGroups = await factory.getUserAllGroups(
+        {from:accounts[0]}
+      );
+      assert.strictEqual(1, userGroups[0]['words'][0]);
+    });
 
- // !NEEDS TO BE FIXED BASED ON THE NEW VOTEFACTORY.sol
-  // describe('User', async () =>{
-  //   it('creates user instance', async() => {
-  //     assert.ok(user);
-  //   });
+    it("able to login once registered", async () => {
+      let loggedIn = await factory.loginUser("password",(
+        {from:accounts[0]})
+      );
+      assert.equal("name", loggedIn['0']);
+      assert.equal("email", loggedIn['1']);
+      assert.equal(1, (((loggedIn)['2'])[0])['words'][0]);
+      assert.equal(true, loggedIn['3']);
+    });
 
-  //   it('outputs created user successfully', async() => {
-  //     assert.equal("name",user['0']);
-  //     assert.equal("email",user['1']);
-  //     assert.equal(0,(((user)['2'])[0])['words'][0]);
-  //     assert.equal(true,user['3']);
-  //   });
-
-  //   it("gets groups from user", async() => {
-  //     let userGroups = await factory.getUserGroups({from:accounts[0]});
-  //     assert.strictEqual(0,userGroups[0]['words'][0]);
-  //   });
-
-  //   it("able to login once registered", async () => {
-  //     let loggedIn = await factory.loginUser("password",({from:accounts[0]}));
-  //     assert.equal("name",loggedIn['0']);
-  //     assert.equal("email",loggedIn['1']);
-  //     assert.equal(0,(((loggedIn)['2'])[0])['words'][0]);
-  //     assert.equal(true,loggedIn['3']);
-  //   });
-
-  //   it("throws error with wrong password", async () => {
-  //     try {
-  //       await factory.loginUser("wrongPassword",({from:accounts[0]}));
-  //     } catch (error) {
-  //       assert.ok(error);
-  //       return;
-  //     }
-  //     assert.fail("should have raised an error");
-  //   })
-  // });
+    it("throws error with wrong password", async () => {
+      try {
+        await factory.loginUser("wrongPassword",({from:accounts[0]}));
+      } catch (error) {
+        assert.ok(error);
+        return;
+      }
+      assert.fail("should have raised an error");
+    })
+  });
 });
