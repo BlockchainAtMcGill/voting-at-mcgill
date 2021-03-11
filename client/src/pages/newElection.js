@@ -29,6 +29,19 @@ const NewElection = () => {
         }
         initWeb3();
     },[]);
+    const electionTypes = [
+        {
+            key: 'sm',
+            text: 'simple majority',
+            value: 'majority'
+
+        },
+        {
+            key: 'tt',
+            text: 'two thirds',
+            value: 'twoThirds'
+        }
+    ];
 
 
     const [title, setTitle] = useState('');
