@@ -6,6 +6,7 @@ import 'semantic-ui-css/semantic.min.css';
 import { Link } from '../../../../routes';
 import { Modal, Dimmer, Loader, Image, Segment } from 'semantic-ui-react'
 const Vote = () => {
+    
     var web3Instance;
     const [web3, setWeb3] = useState('');
     const [voteAddress, setVoteAddress] = useState('')

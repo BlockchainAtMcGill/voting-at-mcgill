@@ -20,19 +20,6 @@ const adminFields = {
 const NewElection = () => {
 
     const [web3, setWeb3] = useState('');
-    const electionTypes = [
-        {
-            key: 'sm',
-            text: 'simple majority',
-            value: 'majority'
-
-        },
-        {
-            key: 'tt',
-            text: 'two thirds',
-            value: 'twoThirds'
-        }
-    ];
 
     var web3Instance;
     useEffect(() => {
@@ -56,13 +43,6 @@ const NewElection = () => {
         var factoryContract;
         var voteContract;
         var addressOfVote;
-        // var web3Instance;
-
-        // async function initWeb3() {
-        //     web3Instance = await getWeb3();
-        //     setWeb3(web3Instance);
-        // }
-        // initWeb3();
         var setupVoteFactory = async () => { //initializes voteFactory
             if(web3 == '') {
                 return;
@@ -185,10 +165,6 @@ const NewElection = () => {
                         value={electionType}
                         onChange={event => setElectionType(event.target.value)}
                     />
-                </div>
-                <br></br>
-                <div>
-                    {/*<m.TextField label="Select groups (someone help with the search and select multiple plz)" variant="outlined" /> */}
                 </div>
                 <br></br>
                 <div>

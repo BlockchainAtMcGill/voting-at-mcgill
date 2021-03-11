@@ -14,11 +14,6 @@
     "static/development/_ssgManifest.js"
   ],
   "pages": {
-    "/": [
-      "static/chunks/main.js",
-      "static/chunks/webpack.js",
-      "static/chunks/pages/index.js"
-    ],
     "/_app": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
@@ -29,10 +24,15 @@
       "static/chunks/webpack.js",
       "static/chunks/pages/_error.js"
     ],
-    "/elections/apply/apply": [
+    "/adminHome": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
-      "static/chunks/pages/elections/apply/apply.js"
+      "static/chunks/pages/adminHome.js"
+    ],
+    "/newGroup": [
+      "static/chunks/main.js",
+      "static/chunks/webpack.js",
+      "static/chunks/pages/newGroup.js"
     ]
   },
   "ampFirstPages": []

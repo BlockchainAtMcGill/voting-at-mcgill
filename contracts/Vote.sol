@@ -46,7 +46,7 @@ contract Vote{
     uint typeOfVote; //0 for election and 1 for petition
     // mapping(uint => election) public elections;
     mapping(address => candidate) public candidates; //maps a candidate's address to the candidate
-    candidate[] public candidateArray;// DO ON SUNDAY
+    candidate[] public candidateArray;// redundent but necessary
     address[] public candidatesAddresses;//should replace candidateArray
     election public currentElection;
     petition public currentPetition;
