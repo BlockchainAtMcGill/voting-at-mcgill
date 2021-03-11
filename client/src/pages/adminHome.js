@@ -12,9 +12,10 @@ const adminTitle = {
 };
 
 const adminButton = {
+    boxSizing: "border-box",
     fontSize: "1.5em",
     margin: "auto 15% auto 15%",
-    borderWidth: "10px",
+    borderWidth: "5%",
     color: "red",
     backgroundColor: "white",
     borderColor: "gray",
@@ -25,57 +26,46 @@ const AdminHome = () => {
 
     return (
         <>
-            <Header/>
-            <br></br>
-            <br></br>
-            <br></br>
-            <h1 className="ui title"
-                style={adminTitle}
-            >
-                Welcome Admin!
-            </h1>
-            <Grid columns={2} divided>
-                <Grid.Row>
-                    <Grid.Column>
-                        <Link href="/newElection" key="/newElection">
-                            <Button className="ui"
-                                    style={adminButton}
-                            >
-                                Add a new election
-                            </Button>
-                        </Link>
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Link href="/newPetition" key="/newPetition">
-                            <Button style={adminButton}>Add a new petition</Button>
-                        </Link>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        <Button style={adminButton}>
-                            Manage current elections or petitions
+        <Header/>
+        <br></br>
+        <br></br>
+        <br></br>
+        <h1 className="ui title" style={adminTitle}>
+            Welcome Admin!
+        </h1>
+        <Grid columns={2} divided>
+            <Grid.Row>
+                <Grid.Column>
+                    <Link href="/newElection" key="/newElection">
+                        <Button className="ui container"
+                            style={adminButton}
+                        >
+                            Add a new election
                         </Button>
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Button style={adminButton}>
-                            View current elections or petitions
+                    </Link>
+                </Grid.Column>
+                <Grid.Column>
+                    <Link href="/newPetition" key="/newPetition">
+                        <Button className="ui container"
+                            style={adminButton}>Add a new petition
                         </Button>
-                    </Grid.Column>
-                </Grid.Row>
-                
-                <Grid.Row>
-                    <Grid.Column>
-                        <Link href="/newGroup" key="/newGroup">
-                            <Button style={adminButton}>
-                                Create a group for your club
-                            </Button>
-                        </Link>
-                    </Grid.Column>
-                </Grid.Row>
-                
-            </Grid>
-        </>
+                    </Link>
+                </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+                <Grid.Column>
+                    <Button className="ui container" style={adminButton}>
+                        Manage current elections or petitions
+                    </Button>
+                </Grid.Column>
+                <Grid.Column>
+                    <Button className="ui container" style={adminButton}>
+                        View current elections or petitions
+                    </Button>
+                </Grid.Column>
+            </Grid.Row>
+        </Grid>
+    </>
     )
 
 };
