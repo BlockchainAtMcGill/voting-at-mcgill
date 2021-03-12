@@ -5,6 +5,7 @@ import VoteContract from "../contracts/Vote.json";
 import { Form } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
 import 'semantic-ui-css/semantic.min.css';
+import Router from 'next/router';
 
 const adminTitle = {
     color: "red",
@@ -131,6 +132,7 @@ const NewElection = () => {
         await initializeElection();
         await setUpElection();
         await displayVote();
+        Router.push("/");
     };
 
     return (
