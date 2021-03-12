@@ -29,10 +29,18 @@ contract VoteFactory{
     uint groupCount;
     address[] public deployedVotes;
     mapping(address => userStruct) userInfo;
+    uint defaultGroupID = 1; // Use the getGroup(uint id) to access the default group
     
     // Creates an instance of group and Updates the groupInfo mapping
     // It also takes groupID as an input since the groupStruct(VALUE) is identified with a groupId(KEY)
     function createGroup(string memory name, string memory description, uint groupID) public {
+        // IF statement to create a default group
+        if (!isGroup(1)) {
+            groupStruct storage studentGroup = groupInfo[1];
+            studentGroup.name = "Student";
+            studentGroup.description = "Default Group";
+            groupCount++;
+        }
         groupStruct storage g = groupInfo[groupID];
         g.name = name;
         g.description = description;
@@ -46,7 +54,7 @@ contract VoteFactory{
         
         require(groupID != 0);
         require(!compareStrings(g.name, "")); // Validates the group's existence
-        // TODO add requirement to prevent the user to enter twice
+        require(!isUserGroup(groupID));
         
         //Update User
         u.groups.push(groupID);
@@ -72,6 +80,23 @@ contract VoteFactory{
         g.members[indexMember] = g.members[g.members.length - 1];
         delete g.members[g.members.length - 1];
         g.members.pop();
+    }
+
+    // Verify if the user is part of the group
+    function isUserGroup(uint groupID) public view returns (bool) {
+        bool isStatus = false;
+        userStruct storage u = userInfo[msg.sender];
+        for (uint i = 0; i < u.groups.length; i++) {
+            isStatus = (u.groups[i] == groupID);
+        }
+        return isStatus;
+    }
+    
+    // Verify that the group exists in the mapping
+    function isGroup(uint groupID) public view returns (bool) {
+        groupStruct storage g = groupInfo[groupID];
+        bool isExist = !(compareStrings(g.name, ""));
+        return isExist;
     }
     
     // Returns a specific group of the user
@@ -105,7 +130,9 @@ contract VoteFactory{
         u.password = password;
         u.userAddress =  msg.sender;
         u.isAdmin = true;
-        u.groups.push(1); // TODO  Adds a default group (INSTANTIATE THE GROUP IN LATER COMMIT)
+        if (isGroup(1)) {
+            registerGroup(1);
+        }
     }
 
     function createVote(uint typeOf) public{
