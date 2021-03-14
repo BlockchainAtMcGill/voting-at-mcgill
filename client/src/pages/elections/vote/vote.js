@@ -5,8 +5,20 @@ import VoteContract from "../../../contracts/Vote.json";
 import 'semantic-ui-css/semantic.min.css';
 import { Link } from '../../../../routes';
 import { Modal, Dimmer, Loader, Image, Segment } from 'semantic-ui-react'
+import {
+  PieChart,
+  Pie,
+  Tooltip,
+  BarChart,
+  XAxis,
+  YAxis,
+  Legend,
+  CartesianGrid,
+  Bar,
+} from "recharts";
+
 const Vote = () => {
-    
+
     var web3Instance;
     const [web3, setWeb3] = useState('');
     const [voteAddress, setVoteAddress] = useState('')
@@ -106,7 +118,7 @@ const Vote = () => {
           var leavethis = async () => {
               if(voteInstance){
                 setVoting(true)
-                await voteInstance.methods.leaveElection(0).send({
+                await voteInstance.methods.leaveElection().send({
                     from: currentUser
                 })
                 setVoting(false)
@@ -139,6 +151,64 @@ const Vote = () => {
         )
       }
     }
+    const data=[];
+    /*
+    <div className="content ui container">
+        <div className="header clearing segment">
+
+          {candidate.name} {VoteModal(candidate.name, candidate.candidateAddr)}:        {candidate.numVotes/currentVote.numVotes*100}%
+
+        </div>
+    </div>
+    */
+    function displayPer() {
+          var newrow={};
+          if (candidates == ""){
+              return <div  className="card" style={long}>
+                          <div className="content">
+                              <div className="header">
+                                  no candidates yet
+                              </div>
+                          </div>
+                      </div>
+
+          }
+
+          return candidates.map((candidate,index) =>
+
+          <div className="card"  style={long} key={index}>
+
+              <div style= {{color: '#FFFFFF'}}>
+              {
+              newrow={},
+              newrow[candidate.name]=candidate.numVotes,
+              data.push(newrow)}
+              </div>
+          </div>
+
+        )
+    }
+    console.log(data);
+    function chart(){
+      return(
+        <div style={{textAlign:"center"}}>
+            <PieChart width={400} height={400}>
+                     <Pie
+                       dataKey="users"
+                       isAnimationActive={false}
+                       data={data}
+                       cx={200}
+                       cy={200}
+                       outerRadius={80}
+                       fill="#8884d8"
+                       label
+                     />
+                     <Tooltip />
+            </PieChart>
+        </div>
+      )
+    }
+
     function displayCandidates() {
         if (candidates == ""){
             return <div  className="card" style={long}>
@@ -212,7 +282,11 @@ const Vote = () => {
                         {currentVote.numVotes} Votes
                     </div>
                     {applyELection()}
-
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    {displayPer()}
+                    {chart()}
                 </div>
             </>
         }
@@ -228,6 +302,10 @@ const Vote = () => {
             <br></br>
             <br></br>
             <h1>{formatVote()}</h1>
+            <br></br>
+            <br></br>
+
+
         </>
     )
 
