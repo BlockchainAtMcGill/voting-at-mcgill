@@ -5,7 +5,7 @@ import VoteContract from "../../../contracts/Vote.json";
 import { Form } from "semantic-ui-react";
 import getWeb3 from "../../../getWeb3";
 import 'semantic-ui-css/semantic.min.css';
-
+import Router from 'next/router';
 
 const candFields = {
     margin: "auto 5% auto 5%"
@@ -100,6 +100,8 @@ const Apply = () => {
         await initializeElection();
         await setCandidate();
         await displayCand();
+        const votePage= "/elections/vote/"+ addressOfVote;
+        Router.push(votePage);
     };
     return (
         <>
