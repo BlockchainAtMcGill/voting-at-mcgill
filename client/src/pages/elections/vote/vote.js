@@ -29,6 +29,7 @@ const Vote = () => {
     const [voting, setVoting ] = useState(false)
     const [hasVoted, setHasVoted] = useState(false)
     const [load, setLoad] = useState(true)
+    const [cAddresses, setCAddresses] = useState([])
 
     useEffect(() => {
         async function initWeb3() {
@@ -39,7 +40,6 @@ const Vote = () => {
             const url=window.location.href;
             const pos=url.indexOf('vote')+5;
             setVoteAddress(url.slice(pos));
-            console.log(voteAddress);
           };
         initWeb3();
         getElectionAddress();
@@ -62,12 +62,19 @@ const Vote = () => {
                 [current] = await web3.eth.getAccounts()
                 setCurrentUser(current)
                 setHasVoted(await instance.methods.getElectionVoter(current).call())
+
+                const candidatesAddresses = await instance.methods.getCandidatesAddresses().call();
+                setCAddresses(candidatesAddresses);
                 const candidatesCount = await instance.methods.candidatesCount().call();
                 var array = []
+
+                
                 for (var i = 0; i < candidatesCount; i++){
-                    array.push(await instance.methods.candidateArray(i).call())
+                    console.log(candidatesAddresses[i]);
+                    array.push(await instance.methods.get_candidate(candidatesAddresses[i]).call());
                 }
                 setCandidates(array);
+                console.log(candidates)
                 // Set web3, accounts, and contract to the state, and then proceed with an
             } catch (error) {
             // Catch any errors for any of the above operations.
@@ -141,7 +148,7 @@ const Vote = () => {
     function applyELection(){
       var startDate = new Date(currentVote.startDate * 1)
       var currDate= new Date()
-      if(currDate<startDate){
+    //   if(currDate<startDate){
         return(
           <Link route ={`/elections/apply/${voteAddress}`}>
               <button className="extra content ui inverted red button" >
@@ -149,7 +156,7 @@ const Vote = () => {
               </button>
           </Link>
         )
-      }
+    //   }
     }
     const data=[];
     /*
@@ -188,7 +195,6 @@ const Vote = () => {
 
         )
     }
-    console.log(data);
     function chart(){
       return(
         <div style={{textAlign:"center"}}>
@@ -224,16 +230,16 @@ const Vote = () => {
         <div className="card"  style={long} key={index}>
             <div className="content ui container">
                 <div className="header clearing segment">
-                    {candidate.name} {VoteModal(candidate.name, candidate.candidateAddr)}
+                    {candidate[0]} {VoteModal(candidate[0], cAddresses[index])} // 0 is name and 1 is address
                 </div>
                 <div className="header clearing segment">
                     {leaveElection()}
                 </div>
                 <div className="meta">
-                    {candidate.candidateAddr}
+                    {cAddresses[index]}
                 </div>
                 <div className="description">
-                    {candidate.description}
+                    {candidate[1]}
                 </div>
 
             </div>

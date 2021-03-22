@@ -46,7 +46,7 @@ contract Vote{
     uint typeOfVote; //0 for election and 1 for petition
     // mapping(uint => election) public elections;
     mapping(address => candidate) public candidates; //maps a candidate's address to the candidate
-    candidate[] public candidateArray;// redundent but necessary
+    // candidate[] public candidateArray;// redundent but necessary
     address[] public candidatesAddresses;//should replace candidateArray
     election public currentElection;
     petition public currentPetition;
@@ -77,6 +77,7 @@ contract Vote{
     }
  //vote for a candidate
     function voteFor(address candidateAddress) public typeElection{
+        //needs to be between start end end
         if(currentElection.voters[msg.sender] == false){
             if(candidates[candidateAddress].candidateAddr != address(0)){
                 currentElection.voters[msg.sender]  = true;
@@ -90,16 +91,16 @@ contract Vote{
     function enterElection(string memory name, string memory description,uint256 current_date)
     public typeElection {
         //Check if the registration is before the required deadline
-        require(current_date < currentElection.startDate);
+        // require(current_date < currentElection.startDate);
         //enter candidate
         candidate storage currentCandidate = candidates[msg.sender];
         currentCandidate.name = name;
         currentCandidate.description = description;
         currentCandidate.candidateAddr= msg.sender;
         currentCandidate.voters;
-        candidateArray.push(currentCandidate);
+        // candidateArray.push(currentCandidate);
         candidatesCount++;
-        //candidateAddrs.push(msg.sender);
+        candidatesAddresses.push(msg.sender);
     }
 
     // ? current_date is not being used
@@ -109,16 +110,12 @@ contract Vote{
         //Check if the registration is before the required deadline
         //require(current_date < currentElection.startDate);
         //remove candidate
-        candidate storage currentCandidate = candidates[msg.sender];
-        currentCandidate.name = "";
-        currentCandidate.description = "";
-        //currentCandidate.candidateAddr= ;
         //remove from array
         delete candidates[msg.sender];
-        for (uint i = 0; i<candidateArray.length; i++){
-            if(msg.sender==candidateArray[i].candidateAddr){
-                candidateArray[i]=candidateArray[candidateArray.length-1];
-                candidateArray.pop();
+        for (uint i = 0; i<candidatesAddresses.length; i++){
+            if(msg.sender==candidatesAddresses[i]){
+                candidatesAddresses[i]=candidatesAddresses[candidatesAddresses.length-1];
+                candidatesAddresses.pop();
                 break;
             }
         }
@@ -126,7 +123,10 @@ contract Vote{
     }
 
     //GETTERS
-    function get_candidates(address candaddr) public view typeElection returns (string memory, string memory) {
+    function getCandidatesAddresses() public view typeElection returns (address[] memory) {
+        return candidatesAddresses;
+    }
+    function get_candidate(address candaddr) public view typeElection returns (string memory, string memory) {
         return(candidates[candaddr].name, candidates[candaddr].description);
     }
     function getCandidateVoters(address candAddr) public view typeElection returns (address[] memory) {

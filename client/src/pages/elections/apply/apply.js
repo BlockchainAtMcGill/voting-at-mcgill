@@ -92,7 +92,7 @@ const Apply = () => {
             await voteContract.methods.enterElection(candidateName, description ,new Date(currentDate).getTime()).send({from: manager});
         };
         var displayCand = async () => { // testing purposes
-            const summary = await voteContract.methods.get_candidates(manager).call();
+            const summary = await voteContract.methods.get_candidate(manager).call();
             console.log(summary);
         };
         await setupVoteFactory();

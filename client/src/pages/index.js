@@ -71,35 +71,39 @@ function App() {
     displayVotes();
   },[contract]);
 
+  var displayInfo = async (address) => { 
+    if(votesAddresses == '') {
+      return;
+    }
+    try {// Get the contract instance.
+      const instance = new web3.eth.Contract(
+        VoteContract.abi,
+        address
+      );
+      return (await instance.methods.currentElection().call());
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(()=> {//render votes
-    var displayInfo = async (address) => { 
-      if(votesAddresses == '') {
-        return;
-      }
-      try {// Get the contract instance.
-        const instance = new web3.eth.Contract(
-          VoteContract.abi,
-          address
-        );
-        return (await instance.methods.currentElection().call());
-      } catch (error) {
-        console.error(error);
-      }
-    };
     var renderVotes = async () => {
         if (!votesAddresses){
           return;
         }
-        var temp = []
         await votesAddresses.forEach(address => {
             displayInfo(address).then(newAddress => {
-              temp.push(newAddress)
+              renderAddresses([...renderedAddresses, newAddress])
           })
         })
-        renderAddresses(temp);
       }
     renderVotes();
   },[votesAddresses]);
+
+  useEffect(()=> {
+    if(renderedAddresses != []) {
+      console.log(renderedAddresses)
+    }
+  },[renderedAddresses])
 
 
   function displayVoteList() {
@@ -132,14 +136,11 @@ function App() {
       ) : <></>
     }
 
-  function displayrenderedVotes() {
-    return renderedAddresses[0] ? <div>{renderedAddresses[0].title}</div> : console.log(renderedAddresses)
+  function clicked() {
+    console.log(renderedAddresses)
+    console.log(renderedAddresses[0].title)
   }
 
-  function clicked() {
-    ethereum.request({ method: 'eth_requestAccounts' });
-    console.log(renderedAddresses)
-  }
   return( 
     <>
       <Header></Header>
@@ -150,6 +151,7 @@ function App() {
       <div className="App">
         <button onClick={clicked}>view rendered votes</button>
         <div>{ displayVoteList() }</div>
+        <div>{renderedAddresses.length != 0 ? renderedAddresses[0].title : "not found" }</div>
       </div>
     </>
   );
