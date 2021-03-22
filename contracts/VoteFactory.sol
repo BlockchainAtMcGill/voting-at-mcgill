@@ -30,6 +30,7 @@ contract VoteFactory{
     address[] public deployedVotes;
     mapping(address => userStruct) userInfo;
     uint defaultGroupID = 1; // Use the getGroup(uint id) to access the default group
+    uint[] existingGroups; // NEW: Access all groups in the UI
     
     // Creates an instance of group and Updates the groupInfo mapping
     // It also takes groupID as an input since the groupStruct(VALUE) is identified with a groupId(KEY)
@@ -40,11 +41,13 @@ contract VoteFactory{
             studentGroup.name = "Student";
             studentGroup.description = "Default Group";
             groupCount++;
+            existingGroups.push(defaultGroupID);
         }
         groupStruct storage g = groupInfo[groupID];
         g.name = name;
         g.description = description;
         groupCount++;
+        existingGroups.push(groupID);
     }
 
     // Adds the groupID to the user's array of groups and Adds the user's address to the group's array of members
@@ -123,6 +126,10 @@ contract VoteFactory{
         return (g.name, g.description, g.members, g.members.length);
     }
     
+    function getExistingGroups() public view returns(uint[] memory) {
+        return existingGroups;
+    }
+    
     function registerUser(string memory name, string memory email, string memory password) public {
         userStruct storage u = userInfo[msg.sender]; //innitialize
         u.name = name;
@@ -159,8 +166,5 @@ contract VoteFactory{
     // Based on https://ethereum.stackexchange.com/questions/30912/how-to-compare-strings-in-solidity/82739
     function compareStrings(string memory a, string memory b) public pure returns (bool) {
         return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
-    }
-    
-    
+    }   
 }
-

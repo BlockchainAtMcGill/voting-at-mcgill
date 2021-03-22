@@ -179,6 +179,83 @@ contract("VoteFactory", accounts => {
       assert.equal(member[2].length, 1);
       assert.equal(group[3], 1);
     });
+
+    it('register to a group with invalid parameters', async () => {
+      try {
+        await factory.registerGroup("hello", {
+          from: accounts[1]
+        });
+      } catch (error) {
+        assert.ok(error);
+        return;
+      }
+    });
+
+    it('register to an invalid group', async () => {
+      try {
+        await factory.registerGroup(2, {
+          from: accounts[1]
+        });
+      } catch (error) {
+        assert.ok(error);
+        return;
+      }
+    });
+
+    it('register to a concurrent group', async () => {
+      try {
+        await factory.registerGroup(123, {
+          from: accounts[1]
+        });
+      } catch (error) {
+        assert.ok(error);
+        return;
+      }
+    });
+
+    it('leave to a non-registered group', async () => {
+      try {
+        await factory.leaveGroup(2, 0, 133, {
+          from: accounts[1]
+        });
+      } catch (error) {
+        assert.ok(error);
+        return;
+      }
+    });
+
+    it('leave to a group with invalid group ID', async () => {
+      try {
+        await factory.leaveGroup(1, 0, "do not leave", {
+          from: accounts[1]
+        });
+      } catch (error) {
+        assert.ok(error);
+        return;
+      }
+    });
+
+    it('leave to a non-existent group', async () => {
+      try {
+        await factory.leaveGroup(3, 0, 2, {
+          from: accounts[1]
+        });
+      } catch (error) {
+        assert.ok(error);
+        return;
+      }
+    });
+
+    it('leave to the default group', async () => {
+      try {
+        await factory.leaveGroup(0, 1, 1, {
+          from: accounts[1]
+        });
+      } catch (error) {
+        assert.ok(error);
+        return;
+      }
+    });
  });
 
   describe('User', async () =>{
