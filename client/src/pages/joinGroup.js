@@ -3,8 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import VoteContract from "../contracts/Vote.json";
 import getWeb3 from "../getWeb3";
-import { Header } from '../components/header';
-import { Link } from '../../routes'
 import 'semantic-ui-css/semantic.min.css';
 
 require("regenerator-runtime/runtime");
@@ -16,124 +14,129 @@ const useStyles = makeStyles({
 });
 
 const JoinGroup = () => {
-    var web3Instance;
-    var factoryContract;
-
     const [web3, setWeb3] = useState('');
-    const [Load, setLoad] = useState(true);
-    const [contract, setContract] = useState('');
-    const [groupID, setGroupID] = useState('');
-    const [groupList, setGroups] = useState([]);
-    const [members, getMembers] = useState([]);
+  const [groupsID, setGroupsID] = useState('');
+  const [contract, setContract] = useState('');
+  const [renderedGroups, renderGroups] = useState([]);
 
-    // Initialize Web3
-    useEffect(() => {
+  useEffect(() => {// get web3
+    async function initWeb3() {
+      console.log('initializing web3');
+      const web3Instance = await getWeb3();
+      setWeb3(web3Instance)
+    }
+    initWeb3();
+  },[]);
 
-        async function initWeb3() {
-            web3Instance = await getWeb3();
-            setWeb3(web3Instance);
+  useEffect(() => {// get Factory contract
+    async function setup() {
+      if(web3 == "") {
+        console.log('unable to get factory')
+        return;
+      }
+      try {
+        // Get the contract instance.
+        const networkId = await web3.eth.net.getId();
+        const deployedNetwork = VoteFactoryContract.networks[networkId];
+        const instance = new web3.eth.Contract(
+          VoteFactoryContract.abi,
+          deployedNetwork && deployedNetwork.address,
+        );
+        setContract(instance);
+    
+        // Set web3, accounts, and contract to the state, and then proceed with an
+      } catch (error) {
+        // Catch any errors for any of the above operations.
+        alert(
+          `Failed to load web3, accounts, or contract. Check console for details.`,
+        );
+        console.error(error);
+      }
+    }
+      setup();
+      // console.log('ok')
+  },[web3]);
+
+  var convertStrArrayToIntArray = function(str, sep) {
+	sep = typeof sep !== 'undefined' ? sep : " ";
+	return str.split(sep).map(function(val) {
+		return parseInt(val, 10);
+	});
+}
+
+  useEffect(()=> {//display available votes addresses
+    var displayVotes = async () => {
+      if(contract == ''){
+        return;
+      }
+      const response = await contract.methods.getExistingGroups().call();
+      // Update state with the result.
+      const temp = [];
+      for (var i = 0; i < response.length; i++) {
+        temp[i] = parseInt(response[i]);
+      }
+      console.log(temp);
+      setGroupsID(temp);
+    };
+    displayVotes();
+  },[contract]);
+  
+
+  var displayInfo = async (identification) => { 
+    if(groupsID == '') {
+      return;
+    }
+    try {
+      return await contract.methods.getGroup(identification).call();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(()=> {//render votes
+    var renderVotes = async () => {
+        if (!groupsID) {
+          return;
         }
-        initWeb3();
-    });
+        await groupsID.forEach(identification => {
+            displayInfo(identification).then(newGroup => {
+              renderGroups([...renderedGroups, newGroup]);
+          });
+        });
+      }
+    renderVotes();
+  },[groupsID]);
 
-    // Initialize VoteFactory Contract
-    useEffect(() => {
-        async function setupVoteFactory() {
-            if (web3 == '') {
-                console.log('unable to get factory');
-                return;
-            }
-
-            try {
-                const networkId = await web3.eth.net.getId();
-                const deployedNetwork = VoteFactoryContract.networks[networkId];
-                const instance = new web3.eth.Contract(
-                    VoteFactoryContract.abi,
-                    deployedNetwork && deployedNetwork.address
-                );
-                factoryContract = instance;
-            } catch (error) {
-                alert(`Failed to load web3, accounts, or contract. Check console for details.`)
-                console.error(error);
-            }
-        }
-
-        setupVoteFactory();
-    }, [web3]);
-
-    // Display all Groups
-    useEffect(() => {
-        var displayGroups = async () => {
-            if (contract == '') {
-                return;
-            }
-            const response = await contract.methods.getExistingGroups().call();
-            setGroups(response);
-        };
-
-        displayGroups();
-    }, [contract]);
-
-    // Display the information of a Group
-    useEffect(() => {
-        var displayInfo = async (groupID) => {
-            if (groupList == '') {
-                return;
-            }
-
-            try {
-                const instance = new web3.eth.Contract(
-                    VoteFactoryContract.abi, 
-                    groupID
-                );
-
-                return (await instance.methods.getGroup(groupID).call());
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        var renderGroups = async () => {
-            if (groupList == '') {
-                return;
-            }
-
-            var temp = [];
-            await groupList.forEach(groupID => {
-                displayInfo(groupID).then(newGroup => {
-                    temp.push(newGroup);
-                });
-            });
-
-            setGroups(temp);
-        }
-
-        renderGroups();
-    }, [groupList]);
-
-    return <a>Hello World</a>;
-//     return groupList ? groupList.map((group) => 
-//         //<Link className="ui button" route ={`/elections/vote/${vote}`} key={index}>
-//         <div className="ui link card" style={{width:"80%", color: '#f00000'}}>
-//         <div className="card">
-//         <div className="content">
-//             <div className="header">Group</div>
-//             <div className="meta">
-//                 <a>{group.groupName}</a>
-//             </div>
-//             <div className="description">
-//                 {group.description}
-//             </div>
-//         </div>
-//             <div className="extra content">
-//                 <span>
-//                     <i className="user icon"></i>
-//                     {group.getMembers.size()}
-//                 </span>
-//             </div>
-//         </div>
-//         </div>
-//   ) : <></>
+  useEffect(()=> {
+    if(renderedGroups != []) {
+      console.log(renderedGroups);
+    }
+  },[renderedGroups]);
+  
+    return <></>;
+ /*
+    //return <a>Hello World</a>;
+    return groupList ? groupList.map((group) => 
+        //<Link className="ui button" route ={`/elections/vote/${vote}`} key={index}>
+        <div className="ui link card" style={{width:"80%", color: '#f00000'}}>
+        <div className="card">
+        <div className="content">
+            <div className="header">Group</div>
+            <div className="meta">
+                <a>{group.groupName}</a>
+            </div>
+            <div className="description">
+                {group.description}
+            </div>
+        </div>
+            <div className="extra content">
+                <span>
+                    <i className="user icon"></i>
+                    {group.getMembers.size()}
+                </span>
+            </div>
+        </div>
+        </div>
+  ) : <></> */
 };
 
 export default JoinGroup;

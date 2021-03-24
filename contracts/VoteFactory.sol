@@ -21,20 +21,20 @@ contract VoteFactory{
         // address[] running;
         // address[] createdElection;
         // address[] createdPetition;
-        uint[] groups; // NEW Assumption that users rarely quit
+        uint32[] groups; // NEW Assumption that users rarely quit
         bool isAdmin;
     }
     
-    mapping(uint => groupStruct) groupInfo; // KEY: groupID Value: group
-    uint groupCount;
+    mapping(uint => groupStruct) public groupInfo; // KEY: groupID Value: group
+    uint32 groupCount;
     address[] public deployedVotes;
     mapping(address => userStruct) userInfo;
-    uint defaultGroupID = 1; // Use the getGroup(uint id) to access the default group
-    uint[] existingGroups; // NEW: Access all groups in the UI
+    uint32 defaultGroupID = 1; // Use the getGroup(uint id) to access the default group
+    uint32[] public existingGroups; // NEW: Access all groups in the UI
     
     // Creates an instance of group and Updates the groupInfo mapping
     // It also takes groupID as an input since the groupStruct(VALUE) is identified with a groupId(KEY)
-    function createGroup(string memory name, string memory description, uint groupID) public {
+    function createGroup(string memory name, string memory description, uint32 groupID) public {
         // IF statement to create a default group
         if (!isGroup(1)) {
             groupStruct storage studentGroup = groupInfo[1];
@@ -51,7 +51,7 @@ contract VoteFactory{
     }
 
     // Adds the groupID to the user's array of groups and Adds the user's address to the group's array of members
-    function registerGroup(uint groupID) public {
+    function registerGroup(uint32 groupID) public {
         userStruct storage u = userInfo[msg.sender];
         groupStruct storage g = groupInfo[groupID];
         
@@ -70,7 +70,7 @@ contract VoteFactory{
     // using the Swap & Delete method (swaps the last element)
     // Resources https://stackoverflow.com/questions/49051856/is-there-a-pop-functionality-for-solidity-arrays
     // The inputs are very specific to prevent large computations (TO CHANGE DEPENDING ON PROJECT MANAGER'S CHOICE)
-    function leaveGroup(uint indexGroup, uint indexMember, uint groupID) public {
+    function leaveGroup(uint32 indexGroup, uint32 indexMember, uint32 groupID) public {
         userStruct storage u = userInfo[msg.sender];
         groupStruct storage g = groupInfo[groupID];
         
@@ -86,7 +86,7 @@ contract VoteFactory{
     }
 
     // Verify if the user is part of the group
-    function isUserGroup(uint groupID) public view returns (bool) {
+    function isUserGroup(uint32 groupID) public view returns (bool) {
         bool isStatus = false;
         userStruct storage u = userInfo[msg.sender];
         for (uint i = 0; i < u.groups.length; i++) {
@@ -96,37 +96,37 @@ contract VoteFactory{
     }
     
     // Verify that the group exists in the mapping
-    function isGroup(uint groupID) public view returns (bool) {
+    function isGroup(uint32 groupID) public view returns (bool) {
         groupStruct storage g = groupInfo[groupID];
         bool isExist = !(compareStrings(g.name, ""));
         return isExist;
     }
     
     // Returns a specific group of the user
-    function getUserGroup(uint index) public view returns (uint) {
+    function getUserGroup(uint32 index) public view returns (uint32) {
         userStruct storage u = userInfo[msg.sender];
         return u.groups[index];
     }
     
     // Returns the user's array of groups
-    function getUserAllGroups() public view returns (uint[] memory) {
+    function getUserAllGroups() public view returns (uint32[] memory) {
         userStruct storage u = userInfo[msg.sender];
         return u.groups;
     }
     
     // Returns all members of the group
-    function getAllMembers(uint groupID) public view returns (address[] memory) {
+    function getAllMembers(uint32 groupID) public view returns (address[] memory) {
         groupStruct storage g = groupInfo[groupID];
         return g.members;
     }
     
     // Returns a specific group of the website
-    function getGroup(uint id) public view returns(string memory, string memory, address[] memory, uint) {
+    function getGroup(uint8 id) public view returns(string memory, string memory, address[] memory, uint) {
         groupStruct storage g = groupInfo[id];
         return (g.name, g.description, g.members, g.members.length);
     }
     
-    function getExistingGroups() public view returns(uint[] memory) {
+    function getExistingGroups() public view returns(uint32[] memory) {
         return existingGroups;
     }
     
@@ -146,14 +146,14 @@ contract VoteFactory{
         address newVote = address(new Vote(msg.sender, typeOf));
         deployedVotes.push(newVote);
     }
-    function loginUser(string memory password) public view returns (string memory, string memory, uint[] memory, bool) {
+    function loginUser(string memory password) public view returns (string memory, string memory, uint32[] memory, bool) {
        userStruct storage u = userInfo[msg.sender];
        require(compareStrings(password, u.password)); // NEW implemented the helper method
        return(u.name, u.email, u.groups, u.isAdmin);
     }
 
     //NEED TO BE FIX (u.groups)
-    function getUser() public view returns (string memory, string memory, uint[] memory, bool){
+    function getUser() public view returns (string memory, string memory, uint32[] memory, bool){
         userStruct storage u = userInfo[msg.sender];
         return(u.name, u.email, u.groups, u.isAdmin);
     }

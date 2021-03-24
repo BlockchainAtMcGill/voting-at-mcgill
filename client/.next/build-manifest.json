@@ -24,15 +24,15 @@
       "static/chunks/webpack.js",
       "static/chunks/pages/_error.js"
     ],
-    "/adminHome": [
-      "static/chunks/main.js",
-      "static/chunks/webpack.js",
-      "static/chunks/pages/adminHome.js"
-    ],
     "/joinGroup": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
       "static/chunks/pages/joinGroup.js"
+    ],
+    "/newGroup": [
+      "static/chunks/main.js",
+      "static/chunks/webpack.js",
+      "static/chunks/pages/newGroup.js"
     ]
   },
   "ampFirstPages": []
