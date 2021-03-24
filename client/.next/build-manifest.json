@@ -29,15 +29,22 @@
       "static/chunks/webpack.js",
       "static/chunks/pages/_error.js"
     ],
+<<<<<<< HEAD
     "/adminHome": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
       "static/chunks/pages/adminHome.js"
-    ],
-    "/elections/vote/vote": [
+=======
+    "/joinGroup": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
-      "static/chunks/pages/elections/vote/vote.js"
+      "static/chunks/pages/joinGroup.js"
+>>>>>>> 1f24b7bda3c02e58bb4c59522a894f75fc6ced91
+    ],
+    "/newGroup": [
+      "static/chunks/main.js",
+      "static/chunks/webpack.js",
+      "static/chunks/pages/newGroup.js"
     ]
   },
   "ampFirstPages": []

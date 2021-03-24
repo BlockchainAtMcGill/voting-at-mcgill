@@ -67,8 +67,15 @@ const AdminHome = () => {
             <Grid.Row>
                     <Grid.Column>
                         <Link href="/newGroup" key="/newGroup">
-                            <Button style={adminButton}>
+                            <Button className="ui container" style={adminButton}>
                                 Create a group for your club
+                            </Button>
+                        </Link>
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Link href="/joinGroup" key="/joinGroup">
+                            <Button className="ui container" style={adminButton}>
+                                Join a group
                             </Button>
                         </Link>
                     </Grid.Column>
