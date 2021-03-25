@@ -131,19 +131,21 @@ function App() {
   },[renderedAddresses])
 
   function renderDate(aStartDate, aEndDate) {
-    var startDate = new Date(startDate * 1);
-    var endDate = new Date(endDate * 1);
-    var currentDate= new Date();
-    if(currentDate < startDate) {
-      return "starts on " + startDate.toUTCString().slice(0,17);
+    if(startDate){
+      console.log("start date is " + startDate)
+      var startDate = new Date(startDate * 1);
+      var endDate = new Date(endDate * 1);
+      var currentDate= new Date();
+      if(currentDate < startDate) {
+        return "starts on " + startDate.toUTCString().slice(0,17);
+        }
+      else if(currentDate >= startDate && currentDate < endDate){
+        return "ends on " + endDate.toUTCString().slice(0,17);
       }
-    else if(currentDate > startDate && currentDate < endDate){
-      return "ends on " + endDate.toUTCString().slice(0,17);
+      else{
+        return "archived: " + endDate.toUTCString().slice(0,17);
+      }
     }
-    else{
-      return "archived: " + endDate.toUTCString().slice(0,17);
-    }
-
   }
   function displayVoteList() {
     if(web3 == ""){
@@ -165,7 +167,12 @@ function App() {
 
                 <div className="content">
                   <div className="header" style={styles.title}>
-                      {vote.title} - {renderDate(vote.startDate, vote.endDate)}
+                      {vote.title} - 
+                      { new Date() < new Date(vote.startDate * 1) ? "starts on " + new Date(vote.startDate * 1).toUTCString().slice(0,17) : 
+                      (new Date() >= new Date(vote.startDate * 1) && new Date() <= new Date(vote.endDate * 1) ? "ends on " + new Date(vote.endDate * 1).toUTCString().slice(0,17):
+                       "archived: " + new Date(vote.endDate * 1).toUTCString().slice(0,17)
+                      )
+                      }
                   </div>
                 </div>
                 <div className="content">
