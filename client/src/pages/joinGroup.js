@@ -111,32 +111,22 @@ const JoinGroup = () => {
       console.log(renderedGroups);
     }
   },[renderedGroups]);
-  
-    return <></>;
- /*
+
     //return <a>Hello World</a>;
-    return groupList ? groupList.map((group) => 
+    return renderedGroups ? renderedGroups.map((group, index) => 
         //<Link className="ui button" route ={`/elections/vote/${vote}`} key={index}>
-        <div className="ui link card" style={{width:"80%", color: '#f00000'}}>
-        <div className="card">
-        <div className="content">
-            <div className="header">Group</div>
-            <div className="meta">
-                <a>{group.groupName}</a>
-            </div>
-            <div className="description">
-                {group.description}
-            </div>
-        </div>
-            <div className="extra content">
-                <span>
-                    <i className="user icon"></i>
-                    {group.getMembers.size()}
-                </span>
-            </div>
-        </div>
-        </div>
-  ) : <></> */
+        <li key={index}>
+          {group[1]}
+        </li>
+        // <div className="ui link card" style={{width:"80%", color: '#f00000'}}>
+        // <div className="card">
+        // <div className="content">
+        //     <div className="header">{group[0][0]}</div>
+        //     <div className="description">hello</div>
+        // </div>
+        // </div>
+        // </div>
+  ) : <></>
 };
 
 export default JoinGroup;

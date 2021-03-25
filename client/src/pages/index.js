@@ -101,7 +101,7 @@ function App() {
 
   useEffect(()=> {
     if(renderedAddresses != []) {
-      console.log(renderedAddresses)
+      console.log(renderedAddresses);
     }
   },[renderedAddresses])
 
