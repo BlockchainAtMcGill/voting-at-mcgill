@@ -14,11 +14,6 @@
     "static/development/_ssgManifest.js"
   ],
   "pages": {
-    "/": [
-      "static/chunks/main.js",
-      "static/chunks/webpack.js",
-      "static/chunks/pages/index.js"
-    ],
     "/_app": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
@@ -29,29 +24,15 @@
       "static/chunks/webpack.js",
       "static/chunks/pages/_error.js"
     ],
-<<<<<<< HEAD
-    "/adminHome": [
-      "static/chunks/main.js",
-      "static/chunks/webpack.js",
-      "static/chunks/pages/adminHome.js"
-=======
-<<<<<<< HEAD
-    "/adminHome": [
-      "static/chunks/main.js",
-      "static/chunks/webpack.js",
-      "static/chunks/pages/adminHome.js"
-=======
     "/joinGroup": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
       "static/chunks/pages/joinGroup.js"
->>>>>>> 1f24b7bda3c02e58bb4c59522a894f75fc6ced91
->>>>>>> 77b7eccc3f85c3c7f44aa6d58afc614c619b3a10
     ],
-    "/joinGroup": [
+    "/newGroup": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
-      "static/chunks/pages/joinGroup.js"
+      "static/chunks/pages/newGroup.js"
     ]
   },
   "ampFirstPages": []

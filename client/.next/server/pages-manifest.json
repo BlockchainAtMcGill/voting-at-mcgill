@@ -2,17 +2,6 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-<<<<<<< HEAD
   "/joinGroup": "pages/joinGroup.js",
-  "/adminHome": "pages/adminHome.js"
-=======
-<<<<<<< HEAD
-  "/adminHome": "pages/adminHome.js",
-  "/elections/vote/vote": "pages/elections/vote/vote.js",
-  "/": "pages/index.js"
-=======
-  "/newGroup": "pages/newGroup.js",
-  "/joinGroup": "pages/joinGroup.js"
->>>>>>> 1f24b7bda3c02e58bb4c59522a894f75fc6ced91
->>>>>>> 77b7eccc3f85c3c7f44aa6d58afc614c619b3a10
+  "/newGroup": "pages/newGroup.js"
 }
