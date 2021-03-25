@@ -15802,12 +15802,30 @@
     "5777": {
       "events": {},
       "links": {},
+<<<<<<< HEAD
       "address": "0x98505B6CC802ABeEeD4df69A6590F628F12242FD",
       "transactionHash": "0x50fc75821de78ba77ca0361fbce7bb2358ad0be0a26235b43887325e0cd43568"
     }
   },
   "schemaVersion": "3.3.4",
   "updatedAt": "2021-03-25T02:50:24.919Z",
+=======
+<<<<<<< HEAD
+      "address": "0x95Ef20454499E15CFa9c5FD076f0883d7304994E",
+      "transactionHash": "0x40756802c396dd16f4ad8b1bd314b2bf1f956157e514844ffb6ae2a377422edd"
+    }
+  },
+  "schemaVersion": "3.3.3",
+  "updatedAt": "2021-03-24T00:54:09.363Z",
+=======
+      "address": "0xcC95CBaB28F0E8bD50e59766fFDAfd10a4FeD15f",
+      "transactionHash": "0x64a57fb1dc4676118ebcdd843befa9bf0434ce7f6f80267a09a7b4e196c53eaa"
+    }
+  },
+  "schemaVersion": "3.3.4",
+  "updatedAt": "2021-03-24T03:25:35.790Z",
+>>>>>>> 1f24b7bda3c02e58bb4c59522a894f75fc6ced91
+>>>>>>> 77b7eccc3f85c3c7f44aa6d58afc614c619b3a10
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

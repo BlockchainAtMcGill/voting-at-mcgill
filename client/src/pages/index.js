@@ -9,17 +9,36 @@ import 'semantic-ui-css/semantic.min.css';
 // CommonJS
 require("regenerator-runtime/runtime");
 
-const useStyles = makeStyles({
+
+const styles = {
   card: {
-    width:'80%'
+    width: '90%',
+    margin: 'auto',
+    color: '#f00000',
+    maxHeight: 200,
+    minHeight: 200,
+    cursor: "pointer",
+  },
+  title : {
+    fontSize: 36,
+    color: '#ED1B2F',
+    marginLeft: 10,
+    marginTop: 15,
+    marginBottom:15
+  },
+  access:{
+    position:"relative",
+    height:36,
+    fontSize: 16,
   }
-});
+};
 
 function App() {
   const [web3, setWeb3] = useState('');
   const [votesAddresses, setVotesAddresses] = useState('');
   const [contract, setContract] = useState('');
   const [renderedAddresses, renderAddresses] = useState([]);
+  const [allVotes, getAllVotes] = useState([]);
 
   useEffect(() => {// get web3
     async function initWeb3() {
@@ -90,22 +109,42 @@ function App() {
         if (!votesAddresses){
           return;
         }
+        var temp  = []
         await votesAddresses.forEach(address => {
             displayInfo(address).then(newAddress => {
-              renderAddresses([...renderedAddresses, newAddress])
+              temp.push(newAddress);
+              // renderAddresses([...renderedAddresses, newAddress])
           })
         })
+        setTimeout(function(){
+            renderAddresses(temp)
+          }, 100);
+
       }
     renderVotes();
   },[votesAddresses]);
 
   useEffect(()=> {
-    if(renderedAddresses != []) {
-      console.log(renderedAddresses);
+    if(renderedAddresses) {
+      console.log(renderedAddresses)
     }
   },[renderedAddresses])
 
+  function renderDate(aStartDate, aEndDate) {
+    var startDate = new Date(startDate * 1);
+    var endDate = new Date(endDate * 1);
+    var currentDate= new Date();
+    if(currentDate < startDate) {
+      return "starts on " + startDate.toUTCString().slice(0,17);
+      }
+    else if(currentDate > startDate && currentDate < endDate){
+      return "ends on " + endDate.toUTCString().slice(0,17);
+    }
+    else{
+      return "archived: " + endDate.toUTCString().slice(0,17);
+    }
 
+  }
   function displayVoteList() {
     if(web3 == ""){
       return "waiting for votes to display..."
@@ -113,33 +152,41 @@ function App() {
     else if(votesAddresses == ""){
       return "no votes to display"
     }
-    return votesAddresses ? votesAddresses.map((vote, index) => 
-        <Link className="ui button" route ={`/elections/vote/${vote}`} key={index}>
-        <div className="ui link card" style={{width:"80%", color: '#f00000'}}>
-        <div className="card">
-        <div className="content">
-          <div className="header">Election</div>
-          <div className="meta">
-            <a>{vote}</a>
-          </div>
-          <div className="description">
-            Click to Vote
-          </div>
-        </div>
-        <div className="extra content">
-          <span>
-            <i className="user icon"></i>
-            0 votes
-          </span>
-        </div>
-        </div></div></Link>
-      ) : <></>
-    }
 
-  function clicked() {
-    console.log(renderedAddresses)
-    console.log(renderedAddresses[0].title)
-  }
+    return renderedAddresses ? renderedAddresses.map((vote, index) => 
+          <Link className="ui button" route ={`/elections/vote/${votesAddresses[index]}`} key={index}>
+            <div className="ui card" style={styles.card}>
+              <div className="card">
+                <span className="right floated">
+                  {vote.numVotes}
+                  <i className="user icon" style={{margin: 3}}></i>
+                  <i className="circle outline icon" style={{margin: 3}}></i>
+                </span>
+
+                <div className="content">
+                  <div className="header" style={styles.title}>
+                      {vote.title} - {renderDate(vote.startDate, vote.endDate)}
+                  </div>
+                </div>
+                <div className="content">
+
+                  <span className="right floated">
+                    <span style={styles.access} >access vote</span>
+                    <i className="angle right icon huge"></i>
+                  </span>
+
+                  <div className="ui sub header" style={{marginLeft:10}}>
+                    <i className="checkmark icon small"></i>  
+                    election 
+                  </div>
+                  <div className="ui feed" style={{marginLeft:10}}>{ vote.description }</div>
+                </div>
+
+              </div>
+            </div>
+          </Link>
+      ) : <div> no votes found </div>
+    }
 
   return( 
     <>
@@ -149,9 +196,7 @@ function App() {
       <br></br>
       <br></br>
       <div className="App">
-        <button onClick={clicked}>view rendered votes</button>
         <div>{ displayVoteList() }</div>
-        <div>{renderedAddresses.length != 0 ? renderedAddresses[0].title : "not found" }</div>
       </div>
     </>
   );
