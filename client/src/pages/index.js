@@ -38,7 +38,7 @@ function App() {
   const [votesAddresses, setVotesAddresses] = useState('');
   const [contract, setContract] = useState('');
   const [renderedAddresses, renderAddresses] = useState([]);
-  const [allVotes, getAllVotes] = useState([]);
+  const [Voted, setVoted] = useState([]);
 
   useEffect(() => {// get web3
     async function initWeb3() {
@@ -104,6 +104,7 @@ function App() {
       console.error(error);
     }
   };
+
   useEffect(()=> {//render votes
     var renderVotes = async () => {
         if (!votesAddresses){
@@ -118,7 +119,7 @@ function App() {
         })
         setTimeout(function(){
             renderAddresses(temp)
-          }, 100);
+          }, 1000);
 
       }
     renderVotes();
@@ -129,24 +130,6 @@ function App() {
       console.log(renderedAddresses)
     }
   },[renderedAddresses])
-
-  function renderDate(aStartDate, aEndDate) {
-    if(startDate){
-      console.log("start date is " + startDate)
-      var startDate = new Date(startDate * 1);
-      var endDate = new Date(endDate * 1);
-      var currentDate= new Date();
-      if(currentDate < startDate) {
-        return "starts on " + startDate.toUTCString().slice(0,17);
-        }
-      else if(currentDate >= startDate && currentDate < endDate){
-        return "ends on " + endDate.toUTCString().slice(0,17);
-      }
-      else{
-        return "archived: " + endDate.toUTCString().slice(0,17);
-      }
-    }
-  }
   function displayVoteList() {
     if(web3 == ""){
       return "waiting for votes to display..."
