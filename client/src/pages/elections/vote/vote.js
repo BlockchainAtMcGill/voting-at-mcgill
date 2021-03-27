@@ -74,7 +74,7 @@ const Vote = () => {
                     array.push(await instance.methods.get_candidate(candidatesAddresses[i]).call());
                 }
                 setCandidates(array);
-                console.log(candidates)
+                console.log(array)
                 // Set web3, accounts, and contract to the state, and then proceed with an
             } catch (error) {
             // Catch any errors for any of the above operations.
@@ -230,7 +230,7 @@ const Vote = () => {
         <div className="card"  style={long} key={index}>
             <div className="content ui container">
                 <div className="header clearing segment">
-                    {candidate[0]} {VoteModal(candidate[0], cAddresses[index])} // 0 is name and 1 is address
+                    {candidate[0]} {VoteModal(candidate[0], cAddresses[index])} 
                 </div>
                 <div className="header clearing segment">
                     {leaveElection()}

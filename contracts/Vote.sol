@@ -5,6 +5,8 @@ contract Vote{
     //admin address
     address public manager;
     uint public candidatesCount;
+    uint public typeOfVote; //0 for election and 1 for petition
+    mapping(address=>bool) voted; //see if a user has signed
 
     struct user{
         string name;
@@ -33,7 +35,6 @@ contract Vote{
         //think about mapping?
         uint numVotes;
         string typeOfElection;
-        mapping(address => bool) voters ; //see if a voter has voted
     }
     struct petition{
         string title;
@@ -41,9 +42,7 @@ contract Vote{
         uint endDate;
         string description;
         uint numSigned;
-        mapping(address=>bool) signed; //see if a user has signed
     }
-    uint typeOfVote; //0 for election and 1 for petition
     // mapping(uint => election) public elections;
     mapping(address => candidate) public candidates; //maps a candidate's address to the candidate
     // candidate[] public candidateArray;// redundent but necessary
@@ -54,7 +53,7 @@ contract Vote{
     constructor (address managerOfVote, uint typeOf){   //how does one become an admin?
         // constructor
         manager = managerOfVote;
-        typeOfVote = (0 == typeOf) ? 0 : 1;
+        typeOfVote = typeOf;
     }
 
     function editElection (string memory title, uint256 startDate, uint256 endDate, string memory description, string memory typeOfElection)
@@ -78,9 +77,9 @@ contract Vote{
  //vote for a candidate
     function voteFor(address candidateAddress) public typeElection{
         //needs to be between start end end
-        if(currentElection.voters[msg.sender] == false){
+        if(voted[msg.sender] == false){
             if(candidates[candidateAddress].candidateAddr != address(0)){
-                currentElection.voters[msg.sender]  = true;
+                voted[msg.sender]  = true;
                 currentElection.numVotes++;
                 (candidates[candidateAddress]).numVotes++;
                 (candidates[candidateAddress]).voters.push(msg.sender);
@@ -132,8 +131,8 @@ contract Vote{
     function getCandidateVoters(address candAddr) public view typeElection returns (address[] memory) {
         return((candidates[candAddr]).voters);
     }
-    function getElectionVoter(address voterAddr) public view typeElection returns (bool) {
-        return ((currentElection.voters)[voterAddr]);
+    function getVoted(address voterAddr) public view returns (bool) {
+        return voted[voterAddr];
     }
     modifier restricted() {
         require(msg.sender == manager);
