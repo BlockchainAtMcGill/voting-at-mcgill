@@ -37,8 +37,9 @@ function App() {
   const [web3, setWeb3] = useState('');
   const [votesAddresses, setVotesAddresses] = useState('');
   const [contract, setContract] = useState('');
-  const [renderedAddresses, renderAddresses] = useState([]);
-  const [allVotes, getAllVotes] = useState([]);
+  const [votes, setVotes] = useState([]);
+  const [currentUser, setCurrentUser] = useState('');
+  const [youVoted, setYouVoted] = useState([]);
 
   useEffect(() => {// get web3
     async function initWeb3() {
@@ -64,6 +65,8 @@ function App() {
           deployedNetwork && deployedNetwork.address,
         );
         setContract(instance);
+        const [user] = await web3.eth.getAccounts();
+        setCurrentUser(user);
     
         // Set web3, accounts, and contract to the state, and then proceed with an
       } catch (error) {
@@ -91,78 +94,68 @@ function App() {
   },[contract]);
 
   var displayInfo = async (address) => { 
-    if(votesAddresses == '') {
-      return;
-    }
     try {// Get the contract instance.
       const instance = new web3.eth.Contract(
         VoteContract.abi,
         address
       );
-      return (await instance.methods.currentElection().call());
+      console.log(await instance.methods.typeOfVote().call())
+      if((await instance.methods.typeOfVote().call()) == 0) {
+        return [await instance.methods.currentElection().call(), await instance.methods.getVoted(currentUser).call()];
+      }
+      else{
+        return [await instance.methods.currentPetition().call(), await instance.methods.getVoted(currentUser).call()]
+      }
     } catch (error) {
       console.error(error);
     }
   };
+
   useEffect(()=> {//render votes
     var renderVotes = async () => {
-        if (!votesAddresses){
+        if (!votesAddresses || !currentUser){
           return;
         }
-        var temp  = []
+        var tempVotes  = [];
+        var tempVoted = [];
         await votesAddresses.forEach(address => {
-            displayInfo(address).then(newAddress => {
-              temp.push(newAddress);
-              // renderAddresses([...renderedAddresses, newAddress])
+            displayInfo(address).then(voteInfo => {
+              tempVotes.push(voteInfo[0]);
+              tempVoted.push(voteInfo[1]);
           })
         })
         setTimeout(function(){
-            renderAddresses(temp)
-          }, 100);
+            setVotes(tempVotes);
+            setYouVoted(tempVoted);
+          }, 1000);
 
       }
     renderVotes();
   },[votesAddresses]);
 
   useEffect(()=> {
-    if(renderedAddresses) {
-      console.log(renderedAddresses)
+    if(votes) {
+      console.log(votes)
+      console.log(youVoted);
     }
-  },[renderedAddresses])
+  },[votes])
 
-  function renderDate(aStartDate, aEndDate) {
-    if(startDate){
-      console.log("start date is " + startDate)
-      var startDate = new Date(startDate * 1);
-      var endDate = new Date(endDate * 1);
-      var currentDate= new Date();
-      if(currentDate < startDate) {
-        return "starts on " + startDate.toUTCString().slice(0,17);
-        }
-      else if(currentDate >= startDate && currentDate < endDate){
-        return "ends on " + endDate.toUTCString().slice(0,17);
-      }
-      else{
-        return "archived: " + endDate.toUTCString().slice(0,17);
-      }
-    }
-  }
-  function displayVoteList() {
+  function displayElectionsList() {
     if(web3 == ""){
       return "waiting for votes to display..."
     }
     else if(votesAddresses == ""){
       return "no votes to display"
     }
-
-    return renderedAddresses ? renderedAddresses.map((vote, index) => 
-          <Link className="ui button" route ={`/elections/vote/${votesAddresses[index]}`} key={index}>
+    return votes ? votes.map((vote, index) => 
+          <Link className="ui button" route ={`/${vote.typeOfElection ? "elections" : "petitions" }/vote/${votesAddresses[index]}`} key={index}>
             <div className="ui card" style={styles.card}>
               <div className="card">
                 <span className="right floated">
                   {vote.numVotes}
                   <i className="user icon" style={{margin: 3}}></i>
-                  <i className="circle outline icon" style={{margin: 3}}></i>
+                  {youVoted[index] ? <i className="check circle icon" style={{margin: 3}}></i>  : <i className="circle outline icon" style={{margin: 3}}></i>}
+                  
                 </span>
 
                 <div className="content">
@@ -184,7 +177,7 @@ function App() {
 
                   <div className="ui sub header" style={{marginLeft:10}}>
                     <i className="checkmark icon small"></i>  
-                    election 
+                    {vote.typeOfElection ?  "Election" : "Petition" }
                   </div>
                   <div className="ui feed" style={{marginLeft:10}}>{ vote.description }</div>
                 </div>
@@ -203,7 +196,7 @@ function App() {
       <br></br>
       <br></br>
       <div className="App">
-        <div>{ displayVoteList() }</div>
+        <div>{ displayElectionsList() }</div>
       </div>
     </>
   );
