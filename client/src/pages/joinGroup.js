@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from '@material-ui/core/styles';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import getWeb3 from "../getWeb3";
-import { Form, Loader  } from "semantic-ui-react";
+import { Form} from "semantic-ui-react";
 import { Header } from '../components/header';
-import { Link } from '../../routes'
 import 'semantic-ui-css/semantic.min.css';
 
 require("regenerator-runtime/runtime");
 
+// Card UI details
 const styles = {
   card: {
     width: '90%',
@@ -32,6 +31,7 @@ const styles = {
   }
 };
 
+// Initialize Join Group page
 const JoinGroup = () => {
   const [web3, setWeb3] = useState('');
   const [groupsID, setGroupsID] = useState('');
@@ -41,7 +41,8 @@ const JoinGroup = () => {
 
   var user;
 
-  useEffect(() => {// get web3
+  // Setup Web3 on the current page
+  useEffect(() => {
     async function initWeb3() {
       console.log('initializing web3');
       const web3Instance = await getWeb3();
@@ -50,7 +51,8 @@ const JoinGroup = () => {
     initWeb3();
   },[]);
 
-  useEffect(() => {// get Factory contract
+  // Initializeing VoteFactory contract
+  useEffect(() => {
     async function setup() {
       if(web3 == "") {
         console.log('unable to get factory')
@@ -58,7 +60,6 @@ const JoinGroup = () => {
       }
       try {
         [user] = await web3.eth.getAccounts();
-        // Get the contract instance.
         const networkId = await web3.eth.net.getId();
         const deployedNetwork = VoteFactoryContract.networks[networkId];
         const instance = new web3.eth.Contract(
@@ -67,9 +68,7 @@ const JoinGroup = () => {
         );
         setContract(instance);
     
-        // Set web3, accounts, and contract to the state, and then proceed with an
       } catch (error) {
-        // Catch any errors for any of the above operations.
         alert(
           `Failed to load web3, accounts, or contract. Check console for details.`,
         );
@@ -77,16 +76,15 @@ const JoinGroup = () => {
       }
     }
       setup();
-      // console.log('ok')
   },[web3]);
 
-  useEffect(()=> {//display available votes addresses
+  // Return all group IDs as an array
+  useEffect(()=> {
     var displayVotes = async () => {
       if(contract == '') {
         return;
       }
       const response = await contract.methods.getExistingGroups().call();
-      // Update state with the result.
       const temp = [];
       for (var i = 0; i < response.length; i++) {
         temp[i] = parseInt(response[i]);
@@ -97,6 +95,7 @@ const JoinGroup = () => {
     displayVotes();
   },[contract]);
   
+
 
   var displayInfo = async (identification) => { 
     if(groupsID == '') {
@@ -116,12 +115,13 @@ const JoinGroup = () => {
         var temp = [];
         await groupsID.forEach(identification => {
             displayInfo(identification).then(newGroup => {
+              // Check if user has joined the group
               temp.push(newGroup);
           });
         });
         setTimeout(function(){
           renderGroups(temp);
-        }, 100);
+        }, 1000);
       }
     renderVotes();
   },[groupsID]);
@@ -158,19 +158,27 @@ const JoinGroup = () => {
     await joinGroup();
     await displayJoin();
   };
-    
-    //route ={`/elections/vote/${votesAddresses[index]}`} key={index}>
+  
+  function displayGroupList() {
+    if (web3 == "") {
+      return "waiting for votes to display...";
+    }
+
+    else if (groupsID == "") {
+      return "no groups to display";
+    }
+
     return renderedGroups ? renderedGroups.map((group, index) =>
     <div className="ui card" style={styles.card}>
       <div className="card">
-        <span className="right floated">
-          {group[2]}
+        <span className="right floated" key={index}>
+          {group[3]}
           <i className="user icon" style={{margin: 3}}></i>
           <i className="circle outline icon" style={{margin: 3}}></i>
         </span>
 
         <div className="content">
-          <div className="header" style={styles.title}>
+          <div className="header" style={styles.title} key={index}>
               {group[0]}
           </div>
         </div>
@@ -184,11 +192,25 @@ const JoinGroup = () => {
             <i className="checkmark icon small"></i>  
             group 
           </div>
-          <div className="ui feed" style={{marginLeft:10}}>{ group[1] }</div>
+          <div className="ui feed" style={{marginLeft:10}} key={index}>{ group[1] }</div>
         </div>
       </div>
     </div>
-) : <div> no groups found </div>
+    ) : <div> no groups found </div>
+  }
+
+  return( 
+    <>
+      <Header></Header>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <div className="App">
+        <div>{ displayGroupList() }</div>
+      </div>
+    </>
+  ); 
 };
 
 export default JoinGroup;

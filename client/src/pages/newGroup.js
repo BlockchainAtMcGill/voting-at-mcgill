@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from '../components/header';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
-import VoteContract from "../contracts/Vote.json";
 import { Form, Loader  } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
 import 'semantic-ui-css/semantic.min.css';

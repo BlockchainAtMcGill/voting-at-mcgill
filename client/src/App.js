@@ -76,6 +76,9 @@ class App extends Component {
                   <li>
                     <Link to="/logout">logout</Link>
                   </li>
+                  <li>
+                    <Link to="/registerUser">register</Link>
+                  </li>
                 </ul>
                 <hr />
                 <Switch>
@@ -93,6 +96,9 @@ class App extends Component {
                   </Route>
                   <Route path="/logout">
                     {/* <Home /> */}
+                  </Route>
+                  <Route path="/registerUser">
+                    {}
                   </Route>
                 </Switch>
               </div>

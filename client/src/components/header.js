@@ -27,7 +27,12 @@ const headersData = [
       label: "Log Out",
       href: "/logout",
       key:4
-    },
+    }, 
+    {
+      label: "Register",
+      href: "/registerUser",
+      key:5
+    }
   ];
 
 const useStyles = makeStyles(() => ({
