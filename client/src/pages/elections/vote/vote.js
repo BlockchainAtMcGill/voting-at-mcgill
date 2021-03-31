@@ -181,22 +181,23 @@ const Vote = () => {
 
           }
 
-          candidates.map((candidate) =>{data.push({ name: candidate[0], value: candidate[2] });}
+          candidates.map((candidate) =>{data.push({ name: candidate[0], value:parseInt(candidate[2]) });}
 
         )
     }
 
     console.log(data);
+
     function chart(){
       return(
-        <ResponsiveContainer width="100%" height={250}>
-            <PieChart height={250}>
+        <ResponsiveContainer width="100%" height={300}>
+            <PieChart height={300}>
               <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                fill="#f00000"
+                fill="#FF0000"
                 dataKey="value"
                 label={({
                   cx,
@@ -220,7 +221,7 @@ const Vote = () => {
                     <text
                       x={x}
                       y={y}
-                      fill="#f00000"
+                      fill="FF0000"
                       textAnchor={x > cx ? "start" : "end"}
                       dominantBaseline="central"
                     >
@@ -311,9 +312,11 @@ const Vote = () => {
                     <br></br>
                     {displayPer()}
                     <br></br>
-                    <br></br>
+                    <h2 style={long}>Results</h2>
                     <br></br>
                     {chart()}
+                    <br></br>
+                    <br></br>
                 </div>
             </>
         }
@@ -328,7 +331,7 @@ const Vote = () => {
             <br></br>
             <br></br>
             <br></br>
-            <h1>{formatVote()}</h1>
+            <h1 >{formatVote()}</h1>
             <br></br>
             <br></br>
 
