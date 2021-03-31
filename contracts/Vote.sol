@@ -126,7 +126,7 @@ contract Vote{
         return candidatesAddresses;
     }
     function get_candidate(address candaddr) public view typeElection returns (string memory, string memory) {
-        return(candidates[candaddr].name, candidates[candaddr].description);
+        return(candidates[candaddr].name, candidates[candaddr].description, candidates[candaddr].numVotes);
     }
     function getCandidateVoters(address candAddr) public view typeElection returns (address[] memory) {
         return((candidates[candAddr]).voters);

@@ -14,7 +14,7 @@ import {
   YAxis,
   Legend,
   CartesianGrid,
-  Bar,
+  Bar, ResponsiveContainer
 } from "recharts";
 
 const Vote = () => {
@@ -61,14 +61,13 @@ const Vote = () => {
                 var current
                 [current] = await web3.eth.getAccounts()
                 setCurrentUser(current)
-                setHasVoted(await instance.methods.getElectionVoter(current).call())
+                setHasVoted(await instance.methods.getVoted(current).call())
 
                 const candidatesAddresses = await instance.methods.getCandidatesAddresses().call();
                 setCAddresses(candidatesAddresses);
                 const candidatesCount = await instance.methods.candidatesCount().call();
                 var array = []
 
-                
                 for (var i = 0; i < candidatesCount; i++){
                     console.log(candidatesAddresses[i]);
                     array.push(await instance.methods.get_candidate(candidatesAddresses[i]).call());
@@ -170,6 +169,7 @@ const Vote = () => {
     */
     function displayPer() {
           var newrow={};
+          var fewrow={};
           if (candidates == ""){
               return <div  className="card" style={long}>
                           <div className="content">
@@ -181,40 +181,58 @@ const Vote = () => {
 
           }
 
-          return candidates.map((candidate,index) =>
-
-          <div className="card"  style={long} key={index}>
-
-              <div style= {{color: '#FFFFFF'}}>
-              {
-              newrow={},
-              newrow[candidate.name]=candidate.numVotes,
-              data.push(newrow)}
-              </div>
-          </div>
+          candidates.map((candidate) =>{data.push({ name: candidate[0], value: candidate[2] });}
 
         )
     }
+
+    console.log(data);
     function chart(){
       return(
-        <div style={{textAlign:"center"}}>
-            <PieChart width={400} height={400}>
-                     <Pie
-                       dataKey="users"
-                       isAnimationActive={false}
-                       data={data}
-                       cx={200}
-                       cy={200}
-                       outerRadius={80}
-                       fill="#8884d8"
-                       label
-                     />
-                     <Tooltip />
+        <ResponsiveContainer width="100%" height={250}>
+            <PieChart height={250}>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                fill="#f00000"
+                dataKey="value"
+                label={({
+                  cx,
+                  cy,
+                  midAngle,
+                  innerRadius,
+                  outerRadius,
+                  value,
+                  index
+                }) => {
+                  console.log("handling label?");
+                  const RADIAN = Math.PI / 180;
+                  // eslint-disable-next-line
+                  const radius = 25 + innerRadius + (outerRadius - innerRadius);
+                  // eslint-disable-next-line
+                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                  // eslint-disable-next-line
+                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      fill="#f00000"
+                      textAnchor={x > cx ? "start" : "end"}
+                      dominantBaseline="central"
+                    >
+                      {data[index].name} ({value})
+                    </text>
+                  );
+                }}
+              />
             </PieChart>
-        </div>
+        </ResponsiveContainer>
       )
     }
-
     function displayCandidates() {
         if (candidates == ""){
             return <div  className="card" style={long}>
@@ -230,7 +248,7 @@ const Vote = () => {
         <div className="card"  style={long} key={index}>
             <div className="content ui container">
                 <div className="header clearing segment">
-                    {candidate[0]} {VoteModal(candidate[0], cAddresses[index])} 
+                    {candidate[0]} {VoteModal(candidate[0], cAddresses[index])}
                 </div>
                 <div className="header clearing segment">
                     {leaveElection()}
@@ -292,6 +310,9 @@ const Vote = () => {
                     <br></br>
                     <br></br>
                     {displayPer()}
+                    <br></br>
+                    <br></br>
+                    <br></br>
                     {chart()}
                 </div>
             </>
