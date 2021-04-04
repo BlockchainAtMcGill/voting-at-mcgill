@@ -3,22 +3,31 @@ pragma solidity ^0.7.4;
 
 contract Vote{
     //admin address
+    
     address public manager;
-    uint public candidatesCount;
-    uint public typeOfVote; //0 for election and 1 for petition
+    
+    enum typeOfVote {
+        election,
+        petition
+    }
+    typeOfVote voteType;  //0 for election and 1 for petition
+    
     mapping(address=>bool) voted; //see if a user has signed
-
-    struct user{
-        string name;
-        string email;
-        string password;
-        address userAddress;
-        address[] running;
-        address[] createdElection;
-        address[] createdPetition;
-        string userType;
+    string title;
+    uint startDate;
+    uint endDate;
+    string description;
+    uint numVotes = 0;
+        
+    enum state {
+        PreVote,
+        ongGoing,
+        Archived
     }
 
+    //election only
+    uint public candidatesCount = 0;
+    string typeOfElection;
     struct candidate {
         address candidateAddr;
         uint numVotes;
@@ -27,82 +36,59 @@ contract Vote{
         string description;
     }
 
-    struct election {
-        string title;
-        uint startDate;
-        uint endDate;
-        string description;
-        //think about mapping?
-        uint numVotes;
-        string typeOfElection;
-    }
-    struct petition{
-        string title;
-        uint startDate;
-        uint endDate;
-        string description;
-        uint numSigned;
-    }
-    // mapping(uint => election) public elections;
+    
     mapping(address => candidate) public candidates; //maps a candidate's address to the candidate
-    // candidate[] public candidateArray;// redundent but necessary
     address[] public candidatesAddresses;//should replace candidateArray
-    election public currentElection;
-    petition public currentPetition;
+    //election public currentElection;
+    //petition public currentPetition;
 
     constructor (address managerOfVote, uint typeOf){   //how does one become an admin?
-        // constructor
         manager = managerOfVote;
-        typeOfVote = typeOf;
+        voteType = typeOfVote(typeOf);
+    }
+    
+    function editVote (string memory aTitle, uint256 aStartDate, uint256 aEndDate, string memory aDescription, string memory aTypeOfElection)
+    public {
+        title = aTitle;
+        startDate = aStartDate;
+        endDate = aEndDate;
+        description = aDescription;
+        if(voteType == typeOfVote.election) {
+            typeOfElection = aTypeOfElection;
+        }
     }
 
-    function editElection (string memory title, uint256 startDate, uint256 endDate, string memory description, string memory typeOfElection)
-    public restricted typeElection {
-        election storage e = currentElection;
-        e.title = title;
-        e.startDate = startDate;
-        e.endDate = endDate;
-        e.description = description;
-        e.typeOfElection = typeOfElection;
-    }
-
-    function editPetition (string memory title, uint256 startDate, uint256 endDate, string memory description)
-    public restricted typePetition {
-        petition storage p = currentPetition;
-        p.title = title;
-        p.startDate = startDate;
-        p.endDate = endDate;
-        p.description = description;
-    }
- //vote for a candidate
-    function voteFor(address candidateAddress) public typeElection{
+    //vote for a candidate
+    function voteFor(address aCandidateAddress) public typeElection{
         //needs to be between start end end
         if(voted[msg.sender] == false){
-            if(candidates[candidateAddress].candidateAddr != address(0)){
+            if(candidates[aCandidateAddress].candidateAddr != address(0)){
                 voted[msg.sender]  = true;
-                currentElection.numVotes++;
-                (candidates[candidateAddress]).numVotes++;
-                (candidates[candidateAddress]).voters.push(msg.sender);
+                numVotes++;
+                (candidates[aCandidateAddress]).numVotes++;
+                (candidates[aCandidateAddress]).voters.push(msg.sender);
             }
         }
     }
+    
     //enter as a candidate
-    function enterElection(string memory name, string memory description,uint256 current_date)
+    function enterElection(string memory aName, string memory aDescription,uint256 aCurrentDate)
     public typeElection {
+        
         //Check if the registration is before the required deadline
-        // require(current_date < currentElection.startDate);
+        
+        // require(aCurrentDate < currentElection.startDate);
+        
         //enter candidate
         candidate storage currentCandidate = candidates[msg.sender];
-        currentCandidate.name = name;
-        currentCandidate.description = description;
+        currentCandidate.name = aName;
+        currentCandidate.description = aDescription;
         currentCandidate.candidateAddr= msg.sender;
         currentCandidate.voters;
-        // candidateArray.push(currentCandidate);
         candidatesCount++;
         candidatesAddresses.push(msg.sender);
     }
 
-    // ? current_date is not being used
     //leave the election
     function leaveElection()//uint256 current_date)
     public typeElection {
@@ -122,6 +108,35 @@ contract Vote{
     }
 
     //GETTERS
+    
+    function getElection() public view typeElection returns(address, uint, string memory, uint, uint, string memory, uint, address, uint, string memory) {
+        return(
+            manager,
+            uint(voteType),
+            title,
+            startDate,
+            endDate,
+            description,
+            numVotes,
+            address(this),
+            candidatesCount,
+            typeOfElection
+        );
+    }
+    function getPetition() public view typePetition returns(address, uint, string memory, uint, uint, string memory, uint, address) {
+        return(
+            manager,
+            uint(voteType),
+            title,
+            startDate,
+            endDate,
+            description,
+            numVotes,
+            address(this)
+        );
+    }
+    
+    
     function getCandidatesAddresses() public view typeElection returns (address[] memory) {
         return candidatesAddresses;
     }
@@ -138,12 +153,13 @@ contract Vote{
         require(msg.sender == manager);
         _;
     }
+    
     modifier typeElection() {
-        require(typeOfVote == 0);
+        require(voteType == typeOfVote.election);
         _;
     }
     modifier typePetition() {
-        require(typeOfVote == 1);
+        require(voteType == typeOfVote.petition);
         _;
     }
 
