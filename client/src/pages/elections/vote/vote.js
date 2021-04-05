@@ -61,7 +61,7 @@ const Vote = () => {
                 var current
                 [current] = await web3.eth.getAccounts()
                 setCurrentUser(current)
-                setHasVoted(await instance.methods.getElectionVoter(current).call())
+                setHasVoted(await instance.methods.getVoted(current).call())
 
                 const candidatesAddresses = await instance.methods.getCandidatesAddresses().call();
                 setCAddresses(candidatesAddresses);

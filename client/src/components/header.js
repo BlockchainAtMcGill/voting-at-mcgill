@@ -24,14 +24,19 @@ const headersData = [
       key:3
     },
     {
+      label: "Log In",
+      href: "/loginUser",
+      key:4
+    },
+    {
       label: "Log Out",
       href: "/logout",
-      key:4
+      key:5
     }, 
     {
       label: "Register",
       href: "/registerUser",
-      key:5
+      key:6
     }
   ];
 

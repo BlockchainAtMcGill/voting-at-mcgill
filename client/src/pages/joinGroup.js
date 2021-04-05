@@ -85,9 +85,14 @@ const JoinGroup = () => {
         return;
       }
       const response = await contract.methods.getExistingGroups().call();
+      const joinedGroups = await contract.methods.getUserAllGroups().call();
       const temp = [];
       for (var i = 0; i < response.length; i++) {
-        temp[i] = parseInt(response[i]);
+        for (var j = 0; j < joinedGroups.length; j++) {
+          if (response[i] == joinedGroups[j]) {
+            // GROUPS TO NOT ADD
+          }
+        }
       }
       console.log(temp);
       setGroupsID(temp);
@@ -153,8 +158,7 @@ const JoinGroup = () => {
     var displayJoin = async () => {
       const summary = await contract.methods.getUserGroup(groupID).call();
       console.log(summary);
-  };
-    await setupVoteFactory();
+    };
     await joinGroup();
     await displayJoin();
   };

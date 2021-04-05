@@ -26,6 +26,7 @@ const RegisterUser = () => {
     // Call the contract
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
+    const [major, setMajor] = useState('');
     const [password, setPassword] = useState('');
 
     useEffect(() => {
@@ -73,7 +74,7 @@ const RegisterUser = () => {
                 return;
             }
             // Calls the method createGroup from VoteFactory.sol
-            await factoryContract.methods.registerUser(username, email, password).send({
+            await factoryContract.methods.registerUser(username, email, major, password).send({
                 from: user
             });
             setRegisteringUser(false);
@@ -110,11 +111,19 @@ const RegisterUser = () => {
                 </div>
                 <br></br>
                 <div>
-                    <Form.TextArea required
-                                 label="Email"
+                    <Form.Input required label="Email"
                                  value={email}
                                  onChange={event => setEmail(event.target.value)}
                     />
+                </div>
+                <br></br>
+                <div>
+                    <Form.Input required label="Major"
+                                 value={major}
+                                 onChange={event => setMajor(event.target.value)}
+                    >
+
+                    </Form.Input>
                 </div>
                 <br></br>
                 <div>

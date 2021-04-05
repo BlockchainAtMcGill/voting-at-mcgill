@@ -9,7 +9,7 @@ contract VoteFactory{
     struct groupStruct {
         string name;
         string description;
-        address[] members; // NEW Assumption that members rarely quit      
+        address[] members;     
     }
     
     // Representation of an instance of User
@@ -21,36 +21,30 @@ contract VoteFactory{
         // address[] running;
         // address[] createdElection;
         // address[] createdPetition;
-        uint32[] groups; // NEW Assumption that users rarely quit
+        uint32[] groups;
         bool isAdmin;
+        bool isLogin; // NEW Check if the user is logged in
     }
     
     mapping(uint => groupStruct) public groupInfo; // KEY: groupID Value: group
     uint32 groupCount;
     address[] public deployedVotes;
     mapping(address => userStruct) userInfo;
-    uint32 defaultGroupID = 1; // Use the getGroup(uint id) to access the default group
-    uint32[] public existingGroups; // NEW: Access all groups in the UI
-    
-    // Creates an instance of group and Updates the groupInfo mapping
-    // It also takes groupID as an input since the groupStruct(VALUE) is identified with a groupId(KEY)
-    function createGroup(string memory name, string memory description, uint32 groupID) public {
-        // IF statement to create a default group
-        if (!isGroup(1)) {
-            groupStruct storage studentGroup = groupInfo[1];
-            studentGroup.name = "Student";
-            studentGroup.description = "Default Group";
-            groupCount++;
-            existingGroups.push(defaultGroupID);
-        }
-        groupStruct storage g = groupInfo[groupID];
+    uint32 defaultGroupID = 0; // Use the getGroup(uint id) to access the default group
+    uint32[] public existingGroups; // Access all groups in the UI
+
+// GROUP
+    // UPDATED Creates an instance of group and Updates the groupInfo mapping
+    // The Group ID is based on the number of existing groups (generated)
+    function createGroup(string memory name, string memory description) public {
+        groupStruct storage g = groupInfo[groupCount];
+        require(!compareStrings(groupInfo[0].name, ""));
         g.name = name;
         g.description = description;
-        groupCount++;
-        existingGroups.push(groupID);
+        existingGroups.push(groupCount);
     }
 
-    // Adds the groupID to the user's array of groups and Adds the user's address to the group's array of members
+    // UPDATED Adds the groupID to the user's array of groups and Adds the user's address to the group's array of members
     function registerGroup(uint32 groupID) public {
         userStruct storage u = userInfo[msg.sender];
         groupStruct storage g = groupInfo[groupID];
@@ -85,6 +79,55 @@ contract VoteFactory{
         g.members.pop();
     }
 
+// USER   
+    // UPDATED Registers the user and add the user to the default group
+    function registerUser(string memory name, string memory email, string memory major, string memory password) public {
+        userStruct storage u = userInfo[msg.sender]; //innitialize
+        if (!isGroup(groupCount)) {
+            groupStruct storage studentGroup = groupInfo[defaultGroupID];
+            studentGroup.name = "Student";
+            studentGroup.description = "Default Group";
+            existingGroups.push(groupCount++);
+        }
+        require(!compareStrings(groupInfo[0].name, ""));
+        u.name = name;
+        u.email = email;
+        u.password = password;
+        u.major = major;
+        u.userAddress =  msg.sender;
+        u.isAdmin = true;
+        u.isLogin = false;
+    }
+    
+    // UPDATED Logins the user
+    function loginUser(string memory password) public returns (string memory, string memory, uint32[] memory, bool) { // add username
+       userStruct storage u = userInfo[msg.sender];
+       require(compareStrings(password, u.password)); // NEW implemented the helper method
+       u.isLogin = true;
+       return(u.name, u.email, u.groups, u.isAdmin);
+    }
+    
+    // NEW logout the user from the system
+    function logoutUser() public {
+        userStruct storage u = userInfo[msg.sender];
+        require(u.isLogin);
+        u.isLogin = false;
+    }
+    
+    // Creates a new Vote
+    function createVote(uint typeOf) public{
+        address newVote = address(new Vote(msg.sender, typeOf));
+        deployedVotes.push(newVote);
+    }
+    
+    /**
+     * OTHER METHODS
+     */
+    // Verify that the user is logged in 
+    function isUserLoggedIn() public view returns (bool) {
+        userStruct storage u = userInfo[msg.sender];
+        return u.isLogin;
+    }
     // Verify if the user is part of the group
     function isUserGroup(uint32 groupID) public view returns (bool) {
         bool isStatus = false;
@@ -129,27 +172,9 @@ contract VoteFactory{
     function getExistingGroups() public view returns(uint32[] memory) {
         return existingGroups;
     }
-    
-    function registerUser(string memory name, string memory email, string memory password) public {
-        userStruct storage u = userInfo[msg.sender]; //innitialize
-        u.name = name;
-        u.email = email;
-        u.password = password;
-        u.userAddress =  msg.sender;
-        u.isAdmin = true;
-        if (isGroup(1)) {
-            registerGroup(1);
-        }
-    }
 
-    function createVote(uint typeOf) public{
-        address newVote = address(new Vote(msg.sender, typeOf));
-        deployedVotes.push(newVote);
-    }
-    function loginUser(string memory password) public view returns (string memory, string memory, uint32[] memory, bool) {
-       userStruct storage u = userInfo[msg.sender];
-       require(compareStrings(password, u.password)); // NEW implemented the helper method
-       return(u.name, u.email, u.groups, u.isAdmin);
+    function getNumOfGroups() public view returns(uint256) {
+        return existingGroups.length;
     }
 
     //NEED TO BE FIX (u.groups)

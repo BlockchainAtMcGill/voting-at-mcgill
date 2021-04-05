@@ -16,17 +16,17 @@ const adminFields = {
     margin: "auto 5% auto 5%"
 };
 
-const NewGroup = () => {
+const LoginUser = () => {
     // Basic
     var web3Instance;
     const [web3, setWeb3] = useState('');
     const [Load, setLoad] = useState(true);
-    const [creatingGroup, setCreatingGroup] = useState(false);
+    const [userLogin, setUserLogin] = useState(false);
 
     // Call the contract
-    const [groupName, setGroupName] = useState('');
-    const [description, setDescription] = useState('');
-    const [groupID, setGroupID] = useState('');
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     useEffect(() => {
         async function initWeb3() {
@@ -38,7 +38,7 @@ const NewGroup = () => {
 
     var onSubmit = async (event) => {
         event.preventDefault();
-        var manager;
+        var user;
         var factoryContract;
         
         // Initializes VoteFactory Contract
@@ -47,7 +47,7 @@ const NewGroup = () => {
                 return;
             }
             try {
-                [manager] = (await web3.eth.getAccounts());
+                [user] = (await web3.eth.getAccounts());
                 // Get the contract instance.
                 const networkId = await web3.eth.net.getId();
                 const deployedNetwork = VoteFactoryContract.networks[networkId];
@@ -67,29 +67,31 @@ const NewGroup = () => {
             }
         };
         // Calls VoteFactory Contract to create a new instance of Group
-        var createGroup = async () => {
-            setCreatingGroup(true);
+        var logInUser = async () => {
+            var isLogin = await factoryContract.methods.isLoggedIn().call();
+            setUserLogin(isLogin);
             if(factoryContract == ''){
                 return;
             }
-            // Calls the method createGroup from VoteFactory.sol
-            await factoryContract.methods.createGroup(groupName, description).send({
-                from: manager
-            });
-            setCreatingGroup(false);
+
+            if (!userLogin) {
+                // Calls the method createGroup from VoteFactory.sol
+                await factoryContract.methods.loginUser(password).send({
+                    from: user
+                });
+            }
             setLoad(!Load);
         };
 
         // Verify the values of the newly created instance of Group
-        var displayGroup = async () => {
-            var groupID = await factoryContract.methods.getNumOfGroups();
-            const summary = await factoryContract.methods.getGroup(groupID - 1).call();
+        var displayUser = async () => {
+            const summary = await factoryContract.methods.getUser().call();
             console.log(summary);
         };
 
         await setupVoteFactory();
-        await createGroup();
-        await displayGroup();
+        await logInUser();
+        await displayUser();
     };
 
     return (
@@ -98,38 +100,38 @@ const NewGroup = () => {
             <br></br>
             <br></br>
             <br></br>
-            <h1 style={adminTitle}>New Group</h1>
+            <h1 style={adminTitle}>Log In</h1>
             
             <Form onSubmit={onSubmit} style={adminFields}>
                 <div>
-                    <Form.Input required label="Group name"
-                                 value={groupName}
-                                 onChange={event => setGroupName(event.target.value)}
+                    <Form.Input required label="Username"
+                                 value={username}
+                                 onChange={event => setUsername(event.target.value)}
                     >
 
                     </Form.Input>
                 </div>
                 <br></br>
                 <div>
-                    <Form.TextArea required
-                                 label="Description"
-                                 value={description}
-                                 onChange={event => setDescription(event.target.value)}
-                    />
+                    <Form.Input required label="Password"
+                                 value={password}
+                                 onChange={event => setPassword(event.target.value)}
+                    >
+
+                    </Form.Input>
                 </div>
                 <br></br>
-                <br></br>
                 <Loader
-                        active={creatingGroup}
+                        active={userLogin}
                         inline='centered'
                 />                     
                 <br></br>
                 <div>
                     <Form.Button>Cancel</Form.Button>
-                    <Form.Button type="submit" onSubmit={onSubmit}>Create Group</Form.Button>
+                    <Form.Button type="submit" onSubmit={onSubmit}>Login</Form.Button>
                 </div>
             </Form>
         </>
     )
 };
-export default NewGroup;
+export default LoginUser;

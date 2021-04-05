@@ -51,6 +51,9 @@ class App extends Component {
     //   from: accounts[0]
     // });
     const response = await contract.methods.getDeployedVotes().call();
+
+    // Creates the default value
+    await contract.methods.defaultInit().call();
     // Update state with the result.
     this.setState({ testValue: response });
   };
@@ -74,6 +77,9 @@ class App extends Component {
                     <Link to="/aboutus">About Us</Link>
                   </li>
                   <li>
+                    <Link to="/login">login</Link>
+                  </li>
+                  <li>
                     <Link to="/logout">logout</Link>
                   </li>
                   <li>
@@ -93,6 +99,9 @@ class App extends Component {
                   </Route>
                   <Route path="/aboutus">
                     <AboutUs></AboutUs>
+                  </Route>
+                  <Route path="/loginUser">
+                    {}
                   </Route>
                   <Route path="/logout">
                     {/* <Home /> */}
