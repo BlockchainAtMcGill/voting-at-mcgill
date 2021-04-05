@@ -6,6 +6,7 @@ contract Vote{
     address public manager;
     uint public candidatesCount;
     uint public typeOfVote; //0 for election and 1 for petition
+    string public state; // pre, during, and post
     mapping(address=>bool) voted; //see if a user has signed
 
     struct user{
@@ -74,7 +75,8 @@ contract Vote{
         p.endDate = endDate;
         p.description = description;
     }
- //vote for a candidate
+
+    //vote for a candidate
     function voteFor(address candidateAddress) public typeElection{
         //needs to be between start end end
         if(voted[msg.sender] == false){
