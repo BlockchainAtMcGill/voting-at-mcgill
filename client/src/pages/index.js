@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from '@material-ui/core/styles';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import VoteContract from "../contracts/Vote.json";
 import getWeb3 from "../getWeb3";
@@ -99,18 +98,18 @@ function App() {
         VoteContract.abi,
         address
       );
-      console.log(await instance.methods.typeOfVote().call())
-      if((await instance.methods.typeOfVote().call()) == 0) {
-        return [await instance.methods.currentElection().call(), await instance.methods.getVoted(currentUser).call()];
+      await instance.methods.updateVoteStatus(new Date().getTime());
+      if((await instance.methods.voteType().call()) == 0) {
+        return [await instance.methods.getElection().call(), await instance.methods.getVoted(currentUser).call()];
       }
       else{
-        return [await instance.methods.currentPetition().call(), await instance.methods.getVoted(currentUser).call()]
+        return [await instance.methods.getPetition().call(), await instance.methods.getVoted(currentUser).call()]
       }
     } catch (error) {
       console.error(error);
     }
   };
-
+  
   useEffect(()=> {//render votes
     var renderVotes = async () => {
         if (!votesAddresses || !currentUser){
@@ -135,8 +134,6 @@ function App() {
 
   useEffect(()=> {
     if(votes) {
-      console.log(votes)
-      console.log(youVoted);
     }
   },[votes])
 
@@ -148,11 +145,11 @@ function App() {
       return "no votes to display"
     }
     return votes ? votes.map((vote, index) => 
-          <Link className="ui button" route ={`/${vote.typeOfElection ? "elections" : "petitions" }/vote/${votesAddresses[index]}`} key={index}>
+          <Link className="ui button" route ={`/${vote.aTypeOfElection ? "elections" : "petitions" }/vote/${vote.aVoteAddress}`} key={index}>
             <div className="ui card" style={styles.card}>
               <div className="card">
                 <span className="right floated">
-                  {vote.numVotes}
+                  {vote.aNumVotes}
                   <i className="user icon" style={{margin: 3}}></i>
                   {youVoted[index] ? <i className="check circle icon" style={{margin: 3}}></i>  : <i className="circle outline icon" style={{margin: 3}}></i>}
                   
@@ -160,10 +157,10 @@ function App() {
 
                 <div className="content">
                   <div className="header" style={styles.title}>
-                      {vote.title} - 
-                      { new Date() < new Date(vote.startDate * 1) ? "starts on " + new Date(vote.startDate * 1).toUTCString().slice(0,17) : 
-                      (new Date() >= new Date(vote.startDate * 1) && new Date() <= new Date(vote.endDate * 1) ? "ends on " + new Date(vote.endDate * 1).toUTCString().slice(0,17):
-                       "archived: " + new Date(vote.endDate * 1).toUTCString().slice(0,17)
+                      {vote.aTitle} - 
+                      { vote.aVoteStatus == 0 ? " starts on " + new Date(vote.aStartDate * 1).toUTCString().slice(0,17) : 
+                      ( vote.aVoteStatus == 1 ? " ends on " + new Date(vote.aEndDate * 1).toUTCString().slice(0,17):
+                       "archived: " + new Date(vote.aEndDate * 1).toUTCString().slice(0,17)
                       )
                       }
                   </div>
@@ -177,9 +174,9 @@ function App() {
 
                   <div className="ui sub header" style={{marginLeft:10}}>
                     <i className="checkmark icon small"></i>  
-                    {vote.typeOfElection ?  "Election" : "Petition" }
+                    {vote.aTypeOfElection ?  "Election" : "Petition" }
                   </div>
-                  <div className="ui feed" style={{marginLeft:10}}>{ vote.description }</div>
+                  <div className="ui feed" style={{marginLeft:10}}>{ vote.aDescription }</div>
                 </div>
 
               </div>
