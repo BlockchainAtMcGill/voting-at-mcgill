@@ -165,15 +165,16 @@ const NewElection = () => {
                 console.log("voteContract dne");
                 return;
             }
+            //string memory aTitle, uint256 aStartDate, uint256 aEndDate, string memory aDescription, string memory aTypeOfElection
             await voteContract.methods
-                .editElection(title, new Date(startDate).getTime(), new Date(endDate).getTime(), description, electionType)
+                .editVote(title, new Date(startDate).getTime(), new Date(endDate).getTime(), description, electionType)
                 .send({
                     from: manager
                 })
         };
 
         var displayVote = async () => { // testing purposes
-            const summary = await voteContract.methods.currentElection().call();
+            const summary = await voteContract.methods.getElection().call();
             console.log(summary);
         };
         await setupVoteFactory();

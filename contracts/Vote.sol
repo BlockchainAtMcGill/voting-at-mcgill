@@ -10,7 +10,7 @@ contract Vote{
         election,
         petition
     }
-    typeOfVote voteType;  //0 for election and 1 for petition
+    typeOfVote public voteType;  //0 for election and 1 for petition
     
     mapping(address=>bool) voted; //see if a user has signed
     string title;
@@ -109,7 +109,7 @@ contract Vote{
 
     //GETTERS
     
-    function getElection() public view typeElection returns(address, uint, string memory, uint, uint, string memory, uint, address, uint, string memory) {
+    function getElection() public view typeElection returns(address aManager, uint aVoteType, string memory aTitle, uint aStartDate, uint aEndDate, string memory aDescription, uint aNumVotes, address aVoteAddress, uint aCandidateCount, string memory aTypeOfElection) {
         return(
             manager,
             uint(voteType),
@@ -123,7 +123,7 @@ contract Vote{
             typeOfElection
         );
     }
-    function getPetition() public view typePetition returns(address, uint, string memory, uint, uint, string memory, uint, address) {
+    function getPetition() public view typePetition returns(address aManager, uint aVoteType, string memory aTitle, uint aStartDate, uint aEndDate, string memory aDescription, uint aNumVotes, address aVoteAddress) {
         return(
             manager,
             uint(voteType),
@@ -140,7 +140,7 @@ contract Vote{
     function getCandidatesAddresses() public view typeElection returns (address[] memory) {
         return candidatesAddresses;
     }
-    function get_candidate(address candaddr) public view typeElection returns (string memory, string memory, uint ) {
+    function get_candidate(address candaddr) public view typeElection returns (string memory aName, string memory aDescription, uint aNumVotes) {
         return(candidates[candaddr].name, candidates[candaddr].description, candidates[candaddr].numVotes);
     }
     function getCandidateVoters(address candAddr) public view typeElection returns (address[] memory) {
