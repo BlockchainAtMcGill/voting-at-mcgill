@@ -37,11 +37,16 @@ contract VoteFactory{
     // UPDATED Creates an instance of group and Updates the groupInfo mapping
     // The Group ID is based on the number of existing groups (generated)
     function createGroup(string memory name, string memory description) public {
+        userStruct storage u = userInfo[msg.sender];
         groupStruct storage g = groupInfo[groupCount];
         require(!compareStrings(groupInfo[0].name, ""));
         g.name = name;
         g.description = description;
         existingGroups.push(groupCount);
+        // Add Current User to the Group
+        u.groups.push(groupCount++);
+        g.members.push(u.userAddress);
+        
     }
 
     // UPDATED Adds the groupID to the user's array of groups and Adds the user's address to the group's array of members
@@ -53,7 +58,7 @@ contract VoteFactory{
         require(!compareStrings(g.name, "")); // Validates the group's existence
         require(!isUserGroup(groupID));
         
-        //Update User
+        // Update User
         u.groups.push(groupID);
         
         // Update Group
@@ -81,10 +86,10 @@ contract VoteFactory{
 
 // USER   
     // UPDATED Registers the user and add the user to the default group
-    function registerUser(string memory name, string memory email, string memory major, string memory password) public {
+    function registerUser(string memory name, string memory email, string memory password) public {
         userStruct storage u = userInfo[msg.sender]; //innitialize
-        if (!isGroup(groupCount)) {
-            groupStruct storage studentGroup = groupInfo[defaultGroupID];
+        groupStruct storage studentGroup = groupInfo[defaultGroupID];
+        if (!isGroup(0)) {
             studentGroup.name = "Student";
             studentGroup.description = "Default Group";
             existingGroups.push(groupCount++);
@@ -93,10 +98,14 @@ contract VoteFactory{
         u.name = name;
         u.email = email;
         u.password = password;
-        u.major = major;
         u.userAddress =  msg.sender;
         u.isAdmin = true;
         u.isLogin = false;
+        
+        // Join the default group
+        u.groups.push(defaultGroupID);
+        studentGroup.members.push(u.userAddress);
+        
     }
     
     // UPDATED Logins the user

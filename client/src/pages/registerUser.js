@@ -26,7 +26,6 @@ const RegisterUser = () => {
     // Call the contract
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [major, setMajor] = useState('');
     const [password, setPassword] = useState('');
 
     useEffect(() => {
@@ -74,9 +73,13 @@ const RegisterUser = () => {
                 return;
             }
             // Calls the method createGroup from VoteFactory.sol
-            await factoryContract.methods.registerUser(username, email, major, password).send({
-                from: user
-            });
+            // TO FIX Verify that is a valid email
+            // var temp = email.split("@");
+            // if (temp.length != 0 && (temp[1] == "mail.mcgill.ca" || temp[1] == "mail.mcgill.ca")) {
+                await factoryContract.methods.registerUser(username, email, password).send({
+                    from: user
+                });
+            // }
             setRegisteringUser(false);
             setLoad(!Load);
         };
@@ -87,9 +90,21 @@ const RegisterUser = () => {
             console.log(summary);
         };
 
+        var displayDefaultGroup = async () => {
+            const summary = await factoryContract.methods.getGroup(0).call();
+            console.log(summary);
+        };
+
+        var  displayGroups = async () => {
+            const summary = await factoryContract.methods.getExistingGroups().call();
+            console.log(summary);
+        };
+
         await setupVoteFactory();
         await registerUser();
         await displayUser();
+        await displayDefaultGroup();
+        await displayGroups();
     };
 
     return (
@@ -115,15 +130,6 @@ const RegisterUser = () => {
                                  value={email}
                                  onChange={event => setEmail(event.target.value)}
                     />
-                </div>
-                <br></br>
-                <div>
-                    <Form.Input required label="Major"
-                                 value={major}
-                                 onChange={event => setMajor(event.target.value)}
-                    >
-
-                    </Form.Input>
                 </div>
                 <br></br>
                 <div>
