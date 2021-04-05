@@ -98,7 +98,7 @@ function App() {
         VoteContract.abi,
         address
       );
-      console.log(await instance.methods.voteType().call())
+      await instance.methods.updateVoteStatus(new Date().getTime());
       if((await instance.methods.voteType().call()) == 0) {
         return [await instance.methods.getElection().call(), await instance.methods.getVoted(currentUser).call()];
       }
@@ -109,7 +109,7 @@ function App() {
       console.error(error);
     }
   };
-
+  
   useEffect(()=> {//render votes
     var renderVotes = async () => {
         if (!votesAddresses || !currentUser){
@@ -134,8 +134,6 @@ function App() {
 
   useEffect(()=> {
     if(votes) {
-      console.log(votes)
-      console.log(youVoted);
     }
   },[votes])
 
@@ -160,8 +158,8 @@ function App() {
                 <div className="content">
                   <div className="header" style={styles.title}>
                       {vote.aTitle} - 
-                      { new Date() < new Date(vote.aStartDate * 1) ? " starts on " + new Date(vote.aStartDate * 1).toUTCString().slice(0,17) : 
-                      (new Date() >= new Date(vote.aStartDate * 1) && new Date() <= new Date(vote.aEndDate * 1) ? " ends on " + new Date(vote.aEndDate * 1).toUTCString().slice(0,17):
+                      { vote.aVoteStatus == 0 ? " starts on " + new Date(vote.aStartDate * 1).toUTCString().slice(0,17) : 
+                      ( vote.aVoteStatus == 1 ? " ends on " + new Date(vote.aEndDate * 1).toUTCString().slice(0,17):
                        "archived: " + new Date(vote.aEndDate * 1).toUTCString().slice(0,17)
                       )
                       }

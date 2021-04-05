@@ -167,7 +167,7 @@ const NewElection = () => {
             }
             //string memory aTitle, uint256 aStartDate, uint256 aEndDate, string memory aDescription, string memory aTypeOfElection
             await voteContract.methods
-                .editVote(title, new Date(startDate).getTime(), new Date(endDate).getTime(), description, electionType)
+                .editVote(title, new Date(startDate).getTime(), new Date().getTime(),new Date(endDate).getTime(), description, electionType)
                 .send({
                     from: manager
                 })

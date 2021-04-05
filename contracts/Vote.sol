@@ -11,6 +11,13 @@ contract Vote{
         petition
     }
     typeOfVote public voteType;  //0 for election and 1 for petition
+
+    enum voteStatus {
+        before,
+        onGoing,
+        archived
+    }
+    voteStatus public voteState;
     
     mapping(address=>bool) voted; //see if a user has signed
     string title;
@@ -19,11 +26,7 @@ contract Vote{
     string description;
     uint numVotes = 0;
         
-    enum state {
-        PreVote,
-        ongGoing,
-        Archived
-    }
+
 
     //election only
     uint public candidatesCount = 0;
@@ -39,20 +42,21 @@ contract Vote{
     
     mapping(address => candidate) public candidates; //maps a candidate's address to the candidate
     address[] public candidatesAddresses;//should replace candidateArray
-    //election public currentElection;
-    //petition public currentPetition;
+
 
     constructor (address managerOfVote, uint typeOf){   //how does one become an admin?
         manager = managerOfVote;
         voteType = typeOfVote(typeOf);
     }
     
-    function editVote (string memory aTitle, uint256 aStartDate, uint256 aEndDate, string memory aDescription, string memory aTypeOfElection)
+    //Setters
+    function editVote (string memory aTitle, uint256 aStartDate, uint256 aCurrentDate, uint256 aEndDate, string memory aDescription, string memory aTypeOfElection)
     public {
         title = aTitle;
         startDate = aStartDate;
         endDate = aEndDate;
         description = aDescription;
+        voteState  = aCurrentDate < aStartDate ? voteStatus.before :  (aCurrentDate < aEndDate ? voteStatus.onGoing : voteStatus.archived);
         if(voteType == typeOfVote.election) {
             typeOfElection = aTypeOfElection;
         }
@@ -107,12 +111,14 @@ contract Vote{
         candidatesCount--;
     }
 
+
     //GETTERS
     
-    function getElection() public view typeElection returns(address aManager, uint aVoteType, string memory aTitle, uint aStartDate, uint aEndDate, string memory aDescription, uint aNumVotes, address aVoteAddress, uint aCandidateCount, string memory aTypeOfElection) {
+    function getElection() public view typeElection returns(address aManager, uint aVoteType, uint aVoteStatus, string memory aTitle, uint aStartDate, uint aEndDate, string memory aDescription, uint aNumVotes, address aVoteAddress, uint aCandidateCount, string memory aTypeOfElection) {
         return(
             manager,
             uint(voteType),
+            uint(voteState),
             title,
             startDate,
             endDate,
@@ -123,10 +129,11 @@ contract Vote{
             typeOfElection
         );
     }
-    function getPetition() public view typePetition returns(address aManager, uint aVoteType, string memory aTitle, uint aStartDate, uint aEndDate, string memory aDescription, uint aNumVotes, address aVoteAddress) {
+    function getPetition() public view typePetition returns(address aManager, uint aVoteType, uint aVoteStatus, string memory aTitle, uint aStartDate, uint aEndDate, string memory aDescription, uint aNumVotes, address aVoteAddress) {
         return(
             manager,
             uint(voteType),
+            uint(voteState),
             title,
             startDate,
             endDate,
@@ -135,8 +142,7 @@ contract Vote{
             address(this)
         );
     }
-    
-    
+
     function getCandidatesAddresses() public view typeElection returns (address[] memory) {
         return candidatesAddresses;
     }
@@ -149,11 +155,16 @@ contract Vote{
     function getVoted(address voterAddr) public view returns (bool) {
         return voted[voterAddr];
     }
+        
+    //MISC.
+    function updateVoteStatus(uint256 aCurrentDate) public {
+        voteState  = aCurrentDate < startDate ? voteStatus.before :  (aCurrentDate < endDate ? voteStatus.onGoing : voteStatus.archived);
+    }
+    //modifiers
     modifier restricted() {
         require(msg.sender == manager);
         _;
     }
-    
     modifier typeElection() {
         require(voteType == typeOfVote.election);
         _;
@@ -162,5 +173,12 @@ contract Vote{
         require(voteType == typeOfVote.petition);
         _;
     }
-
+    modifier beforeElection() {
+        require(voteState == voteStatus.before);
+        _;
+    }
+    modifier duringElection() {
+        require(voteState == voteStatus.onGoing);
+        _;
+    }
 }
