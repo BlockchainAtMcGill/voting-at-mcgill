@@ -57,7 +57,6 @@ const Vote = () => {
                     voteAddress
                 );
                 setVoteInstance(instance);
-                setCurrentVote(await instance.methods.currentElection().call());
                 var current
                 [current] = await web3.eth.getAccounts()
                 setCurrentUser(current)
@@ -74,6 +73,8 @@ const Vote = () => {
                 }
                 setCandidates(array);
                 console.log(array)
+                setCurrentVote(await instance.methods.getElection().call())
+                console.log(currentVote)
                 // Set web3, accounts, and contract to the state, and then proceed with an
             } catch (error) {
             // Catch any errors for any of the above operations.
@@ -119,7 +120,7 @@ const Vote = () => {
         else return (<></>)
     }
     function  leaveElection(){
-          var startDate = new Date(currentVote.startDate * 1)
+          var startDate = new Date(parseInt(currentVote[4]) * 1)
           var currDate= new Date()
           var leavethis = async () => {
               if(voteInstance){
@@ -145,7 +146,7 @@ const Vote = () => {
           }
     }
     function applyELection(){
-      var startDate = new Date(currentVote.startDate * 1)
+      var startDate = new Date(parseInt(currentVote[4])* 1)
       var currDate= new Date()
     //   if(currDate<startDate){
         return(
@@ -274,20 +275,20 @@ const Vote = () => {
     }
 
     function formatVote() {
-        if (currentVote){
-            var startDate = new Date(currentVote.startDate * 1)
-            var endDate = new Date(currentVote.endDate * 1)
+        if (currentVote[3]==currentVote[3]){
+            var startDate = new Date(parseInt(currentVote[4]) * 1)
+            var endDate = new Date(parseInt(currentVote[5]) * 1)
             return <>
                 <div className="ui card" style={long}>
                     <div className="content">
                         <div className="header container" style= {{color: '#f00000'}}>
-                            {currentVote.title}
+                            {currentVote[3]}
                             <span className="floated right">{voted}</span>
                         </div>
                         <div className="meta">{startDate.toUTCString().slice(0,17)} to {endDate.toUTCString().slice(0,17)}</div>
                         <div className="ui card" style= {{width: '100%'}}>
                             <div className="description" >
-                            <p>{currentVote.description}</p>
+                            <p>{currentVote[6]}</p>
                             </div>
                         </div>
                     </div>
@@ -304,7 +305,7 @@ const Vote = () => {
 
                     <div className="extra content" style= {{color: '#f00000'}}>
                         <i className="check icon"></i>
-                        {currentVote.numVotes} Votes
+                        {parseInt(currentVote[7])} Votes
                     </div>
                     {applyELection()}
                     <br></br>
