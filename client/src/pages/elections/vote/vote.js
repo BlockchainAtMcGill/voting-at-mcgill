@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, Component} from 'react';
 import { Header } from '../../../components/header'
 import getWeb3 from "../../../getWeb3";
 import VoteContract from "../../../contracts/Vote.json";
@@ -14,7 +14,7 @@ import {
   YAxis,
   Legend,
   CartesianGrid,
-  Bar, ResponsiveContainer
+  Bar, ResponsiveContainer,Cell,AnswerRef
 } from "recharts";
 
 const Vote = () => {
@@ -30,7 +30,8 @@ const Vote = () => {
     const [hasVoted, setHasVoted] = useState(false)
     const [load, setLoad] = useState(true)
     const [cAddresses, setCAddresses] = useState([])
-
+    const [data, setData] = useState([])
+    const [state, setState] = useState(false)
     useEffect(() => {
         async function initWeb3() {
             web3Instance = await getWeb3();
@@ -66,11 +67,16 @@ const Vote = () => {
                 setCAddresses(candidatesAddresses);
                 const candidatesCount = await instance.methods.candidatesCount().call();
                 var array = []
-
+                var data =[]
                 for (var i = 0; i < candidatesCount; i++){
                     console.log(candidatesAddresses[i]);
+                    var currcand=await instance.methods.get_candidate(candidatesAddresses[i]).call();
+                    data.push({ name: currcand[0], value:parseInt(currcand[2]) });
+
                     array.push(await instance.methods.get_candidate(candidatesAddresses[i]).call());
+
                 }
+                setData(data);
                 setCandidates(array);
                 console.log(array)
                 setCurrentVote(await instance.methods.getElection().call())
@@ -158,7 +164,7 @@ const Vote = () => {
         )
     //   }
     }
-    const data=[];
+
     /*
     <div className="content ui container">
         <div className="header clearing segment">
@@ -175,21 +181,46 @@ const Vote = () => {
               return <div  className="card" style={long}>
                           <div className="content">
                               <div className="header">
-                                  no candidates yet
+                                  No Results to Display
                               </div>
                           </div>
                       </div>
 
           }
+          else{
+                return <div  className="card" style={long}>
+                            <div className="content">
+                                <div className="header">
+                                    Results
+                                </div>
+                            </div>
+                        </div>
+          }
+    }
+    console.log('here');
+    console.log(data);
+    function checkyboi(){
+      var onChange = e =>{setState({view:e.target.checked})}
+      const {view}= state
+      return(
 
-          candidates.map((candidate) =>{data.push({ name: candidate[0], value:parseInt(candidate[2]) });}
+        <div class="ui  floated compact segment">
+        <h1>Change your view to a {view ?  "Pie Chart": "Bar Chart"} </h1>
 
-        )
+          <label>
+            <input type="checkbox"
+                  checked={view}
+                  onChange={onChange}
+                  />
+          </label>
+          </div>
+
+      )
     }
 
-    console.log(data);
-
     function chart(){
+      if (state==false){
+
       return(
         <ResponsiveContainer width="100%" height={300}>
             <PieChart height={300}>
@@ -234,7 +265,87 @@ const Vote = () => {
             </PieChart>
         </ResponsiveContainer>
       )
+
     }
+
+      if(state==true){
+      return(
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart width ={600} height={400} data={data}>
+            <XAxis datakey="name"/>
+            <YAxis />
+            <Tooltip/>
+            <Bar dataKey="value" fill="#FF0000"/>
+          </BarChart>
+        </ResponsiveContainer>
+      )
+    }
+  }
+
+    function SimpleBarChart(){
+              const fata = [
+            {
+              "AnswerRef": "one",
+              "Text": "5 out of 50 throws",
+              "Score": 0,
+              "RespondentPercentage": 12,
+              "Rank": 1
+            },
+            {
+              "AnswerRef": "two",
+              "Text": "25 out of 50 throws",
+              "Score": 0,
+              "RespondentPercentage": 32,
+              "Rank": 2
+            },
+            {
+              "AnswerRef": "three",
+              "Text": "30 out of 50 throws",
+              "Score": 1,
+              "RespondentPercentage": 41,
+              "Rank": 3
+            },
+            {
+              "AnswerRef": "four",
+              "Text": "None of the above",
+              "Score": 0,
+              "RespondentPercentage": 16,
+              "Rank": 4
+            }
+        ]
+      return(
+              	<BarChart
+                      width="100%"
+                      height={260}
+                      data={fata}
+                      margin={{top: 0, right: 0, left: 0, bottom: 25}}>
+                 <XAxis
+                     dataKey="Text"
+                     fontFamily="sans-serif"
+                     tickSize
+                     dy='25'
+                 />
+                 <YAxis hide/>
+                 <CartesianGrid
+                     vertical={false}
+                     stroke="#ebf3f0"
+                 />
+                 <Bar
+                     dataKey="RespondentPercentage"
+                     barSize ={170}
+                     fontFamily="sans-serif"
+                     >
+                      {
+                          fata.map((entry, index) => (
+                              <Cell fill={fata[index].AnswerRef === "three" ? '#61bf93' : '#ededed'} />
+                          ))
+                      }
+                  </Bar>
+                </BarChart>
+
+            )
+          }
+
     function displayCandidates() {
         if (candidates == ""){
             return <div  className="card" style={long}>
@@ -311,14 +422,16 @@ const Vote = () => {
                     <br></br>
                     <br></br>
                     <br></br>
+
                     {displayPer()}
                     <br></br>
-                    <h2 style={long}>Results</h2>
                     <br></br>
+                    {checkyboi()}
                     {chart()}
                     <br></br>
                     <br></br>
-                </div>
+                    </div>
+
             </>
         }
         else{
@@ -332,7 +445,9 @@ const Vote = () => {
             <br></br>
             <br></br>
             <br></br>
+
             <h1 >{formatVote()}</h1>
+
             <br></br>
             <br></br>
 
