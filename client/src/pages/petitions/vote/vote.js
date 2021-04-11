@@ -85,11 +85,11 @@ const Vote = () => {
         color: '#f00000',
     }
 
-    function VoteModal(name,address) {
+    function VoteModal() {
         var voteFor = async () => {
             if(voteInstance){
                 setVoting(true)
-                await voteInstance.methods.voteFor(address).send({
+                await voteInstance.methods.signThis().send({
                     from: currentUser
                 })
                 setVoting(false)
@@ -99,9 +99,11 @@ const Vote = () => {
         if(!hasVoted){
             return (
                 <Modal
-                    trigger={<button className="ui right floated inverted red button">Vote</button>}
-                    header="Vote!"
-                    content={"are you sure you want to vote for "+ name+" ?"}
+                    trigger={<button className="extra content ui inverted red button" >
+                        <div><i className="plus icon"></i> Sign This Petition</div>
+                    </button>}
+                    header="Sign!"
+                    content={"are you sure you want to sign this petition"}
                     actions={[
                     <button key={1} className="ui inverted green button" onClick={voteFor}>yes</button>,
                     <button key={2} className="ui inverted red button" >no</button>]}
@@ -111,19 +113,6 @@ const Vote = () => {
         else return (<></>)
     }
 
-    function applyELection(){
-      var startDate = new Date(parseInt(currentVote[4])* 1)
-      var currDate= new Date()
-    //   if(currDate<startDate){
-        return(
-          <Link route ={`/elections/apply/${voteAddress}`}>
-              <button className="extra content ui inverted red button" >
-                  <div><i className="plus icon"></i> Sign This Petition</div>
-              </button>
-          </Link>
-        )
-    //   }
-    }
     const data=[];
 
 
@@ -133,7 +122,12 @@ const Vote = () => {
     } else {
         voted = <></>
     }
-
+    var voted;
+    if(hasVoted) {
+        voted = <span><i className="floated check icon right"></i> Thank you for signing!</span>;
+    } else {
+        voted = <></>
+    }
     function formatVote() {
         if (currentVote[3]==currentVote[3]){
             var startDate = new Date(parseInt(currentVote[4]) * 1)
@@ -165,33 +159,15 @@ const Vote = () => {
 
                     <div className="extra content" style= {{color: '#f00000'}}>
                         <i className="check icon"></i>
-                        {parseInt(currentVote[7])} Votes
+                        {parseInt(currentVote[7])} People Signed This Petition
                     </div>
                     <br></br>
                     <br></br>
                     <br></br>
-                    <Form onSubmit={applyELection}>
-                        <div>
-                            <Form.Input required label="Your Name"
-                                        value={signerName}
-                                        onChange={event => setName(event.target.value)}
-                            >
-
-                            </Form.Input>
-                        </div>
-                        <br></br>
-
-
-                        <br></br>
-
-
-
-                    </Form>
-                    <div>
-                      {applyELection()}
-                    </div>
+                      {VoteModal()}
+                    <span className="floated right">{voted}</span>
                     <br></br>
-                    <h2 style={long}>Results</h2>
+                    <h2 style={long}></h2>
                     <br></br>
 
                     <br></br>

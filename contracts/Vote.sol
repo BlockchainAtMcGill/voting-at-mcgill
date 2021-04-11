@@ -3,14 +3,14 @@ pragma solidity ^0.7.4;
 
 contract Vote{
     //admin address
-    
+
     address public manager;
-    
+
     enum typeOfVote {
         election,
         petition
     }
-    
+
     typeOfVote public voteType;  //0 for election and 1 for petition
 
     enum voteStatus {
@@ -20,14 +20,14 @@ contract Vote{
         inconclusive
     }
     voteStatus public voteState;
-    
+
     mapping(address=>bool) voted; //see if a user has signed
     string title;
     uint startDate;
     uint endDate;
     string description;
     uint numVotes = 0;
-        
+
 
 
     //election only
@@ -46,7 +46,7 @@ contract Vote{
         string description;
     }
 
-    
+
     mapping(address => candidate) public candidates; //maps a candidate's address to the candidate
     address[] public candidatesAddresses;//should replace candidateArray
 
@@ -55,7 +55,7 @@ contract Vote{
         manager = managerOfVote;
         voteType = typeOfVote(typeOf);
     }
-    
+
     //Setters
     function editVote (string memory aTitle, uint256 aStartDate, uint256 aCurrentDate, uint256 aEndDate, string memory aDescription, uint aTypeOfElection)
     public {
@@ -83,15 +83,24 @@ contract Vote{
         }
         revert();
     }
+
+    function signThis() public typePetition{
+        //needs to be between start end end
+        if(voted[msg.sender] == false){
+                voted[msg.sender]  = true;
+                numVotes++;
+                return;}
+        revert();}
     
+
     //enter as a candidate
     function enterElection(string memory aName, string memory aDescription,uint256 aCurrentDate)// should check if user with current address already exists
     public typeElection {
-        
+
         //Check if the registration is before the required deadline
-        
+
         // require(aCurrentDate < currentElection.startDate);
-        
+
         //enter candidate
         candidate storage currentCandidate = candidates[msg.sender];
         currentCandidate.name = aName;
@@ -122,7 +131,7 @@ contract Vote{
 
 
     //GETTERS
-    
+
     function getElection() public view typeElection returns(address aManager, uint aVoteType, uint aVoteStatus, string memory aTitle, uint aStartDate, uint aEndDate, string memory aDescription, uint aNumVotes, address aVoteAddress, uint aCandidateCount, uint256 aTypeOfElection) {
         return(
             manager,
@@ -167,7 +176,7 @@ contract Vote{
     function getVoted(address voterAddr) public view returns (bool) {
         return voted[voterAddr];
     }
-    
+
     //ElectionWinner
     function setElectionWinner() typeElection public {
         if(typeOfElection == electionType.twoThirds) {
@@ -180,7 +189,7 @@ contract Vote{
             voteState = voteStatus.inconclusive;
         }
     }
-    
+
     function setTwoThirdsWinner() public typeElection twoThirds {//see if a user has more than 2/3 of total votes
         require(numVotes != 0);
         for( uint i = 0; i < candidatesAddresses.length; i++) {
@@ -192,7 +201,7 @@ contract Vote{
         }
         voteState = voteStatus.inconclusive;
     }
-    
+
     function setMajorityWinner() public typeElection majority {//find user with most votes
         uint maxVoters = 0;
         candidate memory currentWinner;
@@ -215,9 +224,9 @@ contract Vote{
             voteState = voteStatus.archived;
         }
     }
-        
-    
-        
+
+
+
     //MISC.
     function updateVoteStatus(uint256 aCurrentDate) public {
         if (aCurrentDate < startDate && voteState != voteStatus.before) {
