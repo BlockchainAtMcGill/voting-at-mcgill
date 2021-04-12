@@ -32,6 +32,7 @@ const Vote = () => {
     const [cAddresses, setCAddresses] = useState([])
     const [data, setData] = useState([])
     const [state, setState] = useState(false)
+    const [winner, setWinner] = useState("")
     useEffect(() => {
         async function initWeb3() {
             web3Instance = await getWeb3();
@@ -60,19 +61,18 @@ const Vote = () => {
                 setVoteInstance(instance);
                 var current
                 [current] = await web3.eth.getAccounts()
-                setCurrentUser(current)
-                setHasVoted(await instance.methods.getVoted(current).call())
+                setCurrentUser(current);
+                setHasVoted(await instance.methods.getVoted(current).call());
 
                 const candidatesAddresses = await instance.methods.getCandidatesAddresses().call();
                 setCAddresses(candidatesAddresses);
                 const candidatesCount = await instance.methods.candidatesCount().call();
                 var array = []
-                var data =[]
+
                 for (var i = 0; i < candidatesCount; i++){
                     console.log(candidatesAddresses[i]);
                     var currcand=await instance.methods.get_candidate(candidatesAddresses[i]).call();
                     data.push({ name: currcand[0], value:parseInt(currcand[2]) });
-
                     array.push(await instance.methods.get_candidate(candidatesAddresses[i]).call());
 
                 }
@@ -80,6 +80,7 @@ const Vote = () => {
                 setCandidates(array);
                 console.log(array)
                 setCurrentVote(await instance.methods.getElection().call())
+                setWinner(await instance.methods.get_Winner().call());
                 console.log(currentVote)
                 // Set web3, accounts, and contract to the state, and then proceed with an
             } catch (error) {
@@ -145,7 +146,7 @@ const Vote = () => {
                   header="Leave Election"
                   content={"are you sure you want to no longer be a candidate"}
                   actions={[
-                  <button key={1} className="ui inverted green button"onClick={leavethis}>yes</button>,
+                  <button key={1} className="ui inverted green button" onClick={leavethis}>yes</button>,
                   <button key={2} className="ui inverted red button" >no</button>]}
               />
             )
@@ -164,6 +165,16 @@ const Vote = () => {
         )
     //   }
     }
+    var endVote = async () => { 
+        await voteInstance.methods.updateVoteStatus(2).send({
+            from: currentUser
+        });
+        setWinner(await voteInstance.methods.get_Winner().call());
+    }
+
+    function getWinner(){
+        return currentVote && winner ? <div>{"winner of vote: " +winner.aName}</div>  : <div>no winner yet</div>
+    }
 
     /*
     <div className="content ui container">
@@ -174,6 +185,7 @@ const Vote = () => {
         </div>
     </div>
     */
+
     function displayPer() {
           var newrow={};
           var fewrow={};
@@ -197,26 +209,28 @@ const Vote = () => {
                         </div>
           }
     }
-    console.log('here');
-    console.log(data);
+    // console.log('here');
+    // console.log(data);
+
+
+
     function checkyboi(){
-      var onChange = e =>{setState({view:e.target.checked})}
-      const {view}= state
+      var onChange = e =>{setState(e.target.checked)}
       return(
-
-        <div class="ui  floated compact segment">
-        <h1>Change your view to a {view ?  "Pie Chart": "Bar Chart"} </h1>
-
+        <div class="ui left floated compact segment">
+        <h1>Change your view to a {state ?  "Pie Chart": "Bar Chart"} </h1>
+            <div class="ui fitted toggle checkbox">
           <label>
             <input type="checkbox"
-                  checked={view}
+                  checked={state}
                   onChange={onChange}
                   />
           </label>
           </div>
-
+        </div>
       )
     }
+
 
     function chart(){
       if (state==false){
@@ -386,17 +400,18 @@ const Vote = () => {
     }
 
     function formatVote() {
-        if (currentVote[3]==currentVote[3]){
+        if (currentVote[3]==currentVote[3]) {
             var startDate = new Date(parseInt(currentVote[4]) * 1)
             var endDate = new Date(parseInt(currentVote[5]) * 1)
             return <>
                 <div className="ui card" style={long}>
                     <div className="content">
                         <div className="header container" style= {{color: '#f00000'}}>
-                            {currentVote[3]}
+                            {currentVote.aTitle} type of election : {currentVote.aVoteType == "0" ? "Majority" : "Two-Thirds"}
                             <span className="floated right">{voted}</span>
                         </div>
                         <div className="meta">{startDate.toUTCString().slice(0,17)} to {endDate.toUTCString().slice(0,17)}</div>
+                        <div>{getWinner()}</div>
                         <div className="ui card" style= {{width: '100%'}}>
                             <div className="description" >
                             <p>{currentVote[6]}</p>
@@ -421,6 +436,8 @@ const Vote = () => {
                     {applyELection()}
                     <br></br>
                     <br></br>
+                    <br></br>
+                    <button className="ui right floated inverted red button" onClick={endVote}>end vote</button>
                     <br></br>
 
                     {displayPer()}

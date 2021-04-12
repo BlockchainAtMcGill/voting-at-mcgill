@@ -98,7 +98,6 @@ function App() {
         VoteContract.abi,
         address
       );
-      await instance.methods.updateVoteStatus(new Date().getTime());
       if((await instance.methods.voteType().call()) == 0) {
         return [await instance.methods.getElection().call(), await instance.methods.getVoted(currentUser).call()];
       }
@@ -133,8 +132,7 @@ function App() {
   },[votesAddresses]);
 
   useEffect(()=> {
-    if(votes) {
-    }
+    console.log(votes);
   },[votes])
 
   function displayElectionsList() {
@@ -174,7 +172,7 @@ function App() {
 
                   <div className="ui sub header" style={{marginLeft:10}}>
                     <i className="checkmark icon small"></i>  
-                    {vote.aTypeOfElection ?  "Election" : "Petition" }
+                    {vote.aTypeOfElection ?  "Election" : "Petition" }  | typeof vote : {vote.aVoteType == "0" ? "Majority" : "Two-Thirds"}
                   </div>
                   <div className="ui feed" style={{marginLeft:10}}>{ vote.aDescription }</div>
                 </div>

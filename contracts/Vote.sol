@@ -96,11 +96,8 @@ contract Vote{
     //enter as a candidate
     function enterElection(string memory aName, string memory aDescription,uint256 aCurrentDate)// should check if user with current address already exists
     public typeElection {
-
         //Check if the registration is before the required deadline
-
         // require(aCurrentDate < currentElection.startDate);
-
         //enter candidate
         candidate storage currentCandidate = candidates[msg.sender];
         currentCandidate.name = aName;
@@ -228,14 +225,14 @@ contract Vote{
 
 
     //MISC.
-    function updateVoteStatus(uint256 aCurrentDate) public {
-        if (aCurrentDate < startDate && voteState != voteStatus.before) {
+    function updateVoteStatus(uint8 state) public {
+        if (state == 0) {
             voteState = voteStatus.before;
         }
-        else if (aCurrentDate < endDate && voteState != voteStatus.onGoing) {
+        else if (state == 1) {
             voteState = voteStatus.onGoing;
         }
-        else if (aCurrentDate > endDate && (voteState != voteStatus.archived || voteState != voteStatus.inconclusive)) {
+        else if (state == 2) {
             if(voteType == typeOfVote.election) {
                 setElectionWinner();
             }
