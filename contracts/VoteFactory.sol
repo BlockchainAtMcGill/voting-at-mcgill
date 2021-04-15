@@ -9,7 +9,8 @@ contract VoteFactory{
     struct groupStruct {
         string name;
         string description;
-        address[] members;     
+        address[] members;
+        // uint groupID;
     }
     
     // Representation of an instance of User
@@ -17,6 +18,7 @@ contract VoteFactory{
         address userAddress;
         string name;
         string email;
+        uint256 studentID;
         string password;
         // address[] running;
         // address[] createdElection;
@@ -86,7 +88,7 @@ contract VoteFactory{
 
 // USER   
     // UPDATED Registers the user and add the user to the default group
-    function registerUser(string memory name, string memory email, string memory password) public {
+    function registerUser(string memory name, string memory email, uint256 studentID, string memory password) public {
         userStruct storage u = userInfo[msg.sender]; //innitialize
         groupStruct storage studentGroup = groupInfo[defaultGroupID];
         if (!isGroup(0)) {
@@ -94,9 +96,11 @@ contract VoteFactory{
             studentGroup.description = "Default Group";
             existingGroups.push(groupCount++);
         }
-        require(!compareStrings(groupInfo[0].name, ""));
+        require(compareStrings(u.name, ""));
+        //require(!compareStrings(groupInfo[0].name, ""));
         u.name = name;
         u.email = email;
+        u.studentID = studentID;
         u.password = password;
         u.userAddress =  msg.sender;
         u.isAdmin = true;
@@ -109,8 +113,9 @@ contract VoteFactory{
     }
     
     // UPDATED Logins the user
-    function loginUser(string memory password) public returns (string memory, string memory, uint32[] memory, bool) { // add username
+    function loginUser(uint256 studentID, string memory password) public returns (string memory, string memory, uint32[] memory, bool) { // add username
        userStruct storage u = userInfo[msg.sender];
+       require(studentID == u.studentID);
        require(compareStrings(password, u.password)); // NEW implemented the helper method
        u.isLogin = true;
        return(u.name, u.email, u.groups, u.isAdmin);
@@ -173,9 +178,9 @@ contract VoteFactory{
     }
     
     // Returns a specific group of the website
-    function getGroup(uint8 id) public view returns(string memory, string memory, address[] memory, uint) {
+    function getGroup(uint8 id) public view returns(string memory aName, string memory aDescription, address[] memory aMembers, uint aMembersLength) {
         groupStruct storage g = groupInfo[id];
-        return (g.name, g.description, g.members, g.members.length);
+        return (g.name, g.description, g.members, g.members.length); // remove members length
     }
     
     function getExistingGroups() public view returns(uint32[] memory) {
@@ -186,10 +191,14 @@ contract VoteFactory{
         return existingGroups.length;
     }
 
-    //NEED TO BE FIX (u.groups)
-    function getUser() public view returns (string memory, string memory, uint32[] memory, bool){
+    //NEED TO BE FIX (u.groups) FOLLOW VOTE.SOL SYNTAX
+    function getUser() public view returns (string memory aName, string memory aEmail, uint256 aStudentID, uint32[] memory aGroups, bool aIsAdmin) {
         userStruct storage u = userInfo[msg.sender];
-        return(u.name, u.email, u.groups, u.isAdmin);
+        return(u.name, 
+               u.email, 
+               u.studentID, 
+               u.groups, 
+               u.isAdmin);
     }
     
     function getDeployedVotes() public view returns (address[] memory) {

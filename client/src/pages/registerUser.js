@@ -22,11 +22,13 @@ const RegisterUser = () => {
     const [web3, setWeb3] = useState('');
     const [Load, setLoad] = useState(true);
     const [registeringUser, setRegisteringUser] = useState(false);
+    const [errorRegister, setErrorRegister] = useState(false);
 
     // Call the contract
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [studentID, setStudentID] = useState('');
 
     useEffect(() => {
         async function initWeb3() {
@@ -69,35 +71,61 @@ const RegisterUser = () => {
         // Calls VoteFactory Contract to create a new instance of Group
         var registerUser = async () => {
             setRegisteringUser(true);
+            var error = ``;
+
             if(factoryContract == ''){
                 return;
             }
             // Calls the method createGroup from VoteFactory.sol
             // TO FIX Verify that is a valid email
-            // var temp = email.split("@");
-            // if (temp.length != 0 && (temp[1] == "mail.mcgill.ca" || temp[1] == "mail.mcgill.ca")) {
-                await factoryContract.methods.registerUser(username, email, password).send({
+            var temp = email.split("@");
+            if (!(temp[1] === "mcgill.ca") && !(temp[1] === "mail.mcgill.ca")) {
+                error += `Wrong email format. Make sure to use a McGill email e.g., @mcgill.ca or @mail.mcgill.ca \n`;
+            }
+
+            if (studentID.length != 9) {
+                error += `Wrong student ID format. Make sure that the student ID has a length of 9 digits`;
+            }
+            
+            if (error.length != 0) {
+                alert(error);
+                setErrorRegister(true);
+            }
+
+            try {
+                await factoryContract.methods.registerUser(username, email, studentID, password).send({
                     from: user
                 });
-            // }
+            } catch (error) {
+                alert(error);
+            }
+
             setRegisteringUser(false);
             setLoad(!Load);
         };
 
         // Verify the values of the newly created instance of Group
         var displayUser = async () => {
-            const summary = await factoryContract.methods.getUser().call();
-            console.log(summary);
+            if (!errorRegister) {
+                const summary = await factoryContract.methods.getUser().call({
+                    from: user
+                });
+                console.log(summary);
+            }
         };
 
         var displayDefaultGroup = async () => {
-            const summary = await factoryContract.methods.getGroup(0).call();
-            console.log(summary);
+            if (!errorRegister) {
+                const summary = await factoryContract.methods.getGroup(0).call();
+                console.log(summary);
+            }
         };
 
         var  displayGroups = async () => {
-            const summary = await factoryContract.methods.getExistingGroups().call();
-            console.log(summary);
+            if (!errorRegister) {
+                const summary = await factoryContract.methods.getExistingGroups().call();
+                console.log(summary);
+            }
         };
 
         await setupVoteFactory();
@@ -133,7 +161,15 @@ const RegisterUser = () => {
                 </div>
                 <br></br>
                 <div>
+                    <Form.Input required label="StudentID"
+                                 value={studentID}
+                                 onChange={event => setStudentID(event.target.value)}
+                    />
+                </div>
+                <br></br>
+                <div>
                     <Form.Input required label="Password"
+                                 type="password"
                                  value={password}
                                  onChange={event => setPassword(event.target.value)}
                     >

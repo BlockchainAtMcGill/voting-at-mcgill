@@ -82,9 +82,10 @@ const NewGroup = () => {
 
         // Verify the values of the newly created instance of Group
         var displayGroup = async () => {
-            var groupID = await factoryContract.methods.getNumOfGroups();
-            const summary = await factoryContract.methods.getGroup(groupID - 1).call();
-            console.log(summary);
+            var groupID = await factoryContract.methods.getNumOfGroups().call();
+            console.log(groupID);
+            // const summary = await factoryContract.methods.getGroup(groupID - 1).call();
+            // console.log(summary);
         };
 
         await setupVoteFactory();

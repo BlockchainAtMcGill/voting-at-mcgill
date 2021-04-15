@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import getWeb3 from "../getWeb3";
-import { Form} from "semantic-ui-react";
+import { Form, Button} from "semantic-ui-react";
 import { Header } from '../components/header';
 import 'semantic-ui-css/semantic.min.css';
 
@@ -37,6 +37,7 @@ const JoinGroup = () => {
   const [groupsID, setGroupsID] = useState('');
   const [contract, setContract] = useState('');
   const [renderedGroups, renderGroups] = useState([]);
+  const [youJoined, setYouJoined] = useState([]);
   const [joiningGroup, setJoiningGroup] = useState(false);
 
   var user;
@@ -78,22 +79,31 @@ const JoinGroup = () => {
       setup();
   },[web3]);
 
-  // Return all group IDs as an array
+  // Return all group IDs as an array DO NOT USE useEffect
   useEffect(()=> {
     var displayVotes = async () => {
       if(contract == '') {
         return;
       }
       const response = await contract.methods.getExistingGroups().call();
-      const joinedGroups = await contract.methods.getUserAllGroups().call();
+      // const joinedGroups = await contract.methods.getUserAllGroups().call();
       const temp = [];
       for (var i = 0; i < response.length; i++) {
-        for (var j = 0; j < joinedGroups.length; j++) {
-          if (response[i] == joinedGroups[j]) {
-            // GROUPS TO NOT ADD
+        temp.push(response[i]);
+
+        // CHANGE BASED ON INDEX
+        var currentGroup = await contract.methods.getGroup(i).call();
+        var isJoined = false;
+
+        for (var j = 0; j < currentGroup[3]; j++) {
+          if ((currentGroup.aMembers)[j] == user) {
+            isJoined = true;
+            break;
           }
         }
+        youJoined.push(isJoined);
       }
+      console.log(isJoined);
       console.log(temp);
       setGroupsID(temp);
     };
@@ -112,6 +122,7 @@ const JoinGroup = () => {
       console.error(error);
     }
   };
+
   useEffect(()=> {//render votes
     var renderVotes = async () => {
         if (!groupsID) {
@@ -137,32 +148,44 @@ const JoinGroup = () => {
     }
   },[renderedGroups]);
 
-  var onSubmit = async (event) => {
-    event.preventDefault();
-    
-    // Calls VoteFactory Contract to create a new instance of Group
-    var joinGroup = async () => {
+  // function registerGroup(groupID) {
+  //   var joinGroup = async (groupID) => {
       
-        setJoiningGroup(true);
-        if(contract == ''){
-            return;
-        }
-        // Calls the method createGroup from VoteFactory.sol
-        await contract.methods.joinGroup(groupID).send({
-            from: user
-        });
-        setJoiningGroup(false);
-        setLoad(!Load);
-    };
+  //     setJoiningGroup(true);
+  //     if(contract == ''){
+  //         return;
+  //     }
+  //     // Calls the method createGroup from VoteFactory.sol
+  //     await contract.methods.registerGroup(groupID).send({
+  //         from: user
+  //     });
+  //     setJoiningGroup(false);
+  //     setLoad(!Load);
+  //   };
 
-    var displayJoin = async () => {
-      const summary = await contract.methods.getUserGroup(groupID).call();
-      console.log(summary);
-    };
-    await joinGroup();
-    await displayJoin();
-  };
-  
+  //   var displayJoin = async () => {
+  //     const summary = await contract.methods.getUserGroup(groupID).call();
+  //     console.log(summary);
+  //   };
+  //   await joinGroup();
+  //   await displayJoin();
+  // };
+
+  var onClick = async(groupID) => {
+    console.log(groupID);
+    if (contract == '') {
+      return;
+    }
+
+    try {
+      await contract.methods.registerGroup(groupID).send({
+        from: user
+      });
+    } catch (error) {
+      alert(error);
+    }
+  }
+
   function displayGroupList() {
     if (web3 == "") {
       return "waiting for votes to display...";
@@ -175,26 +198,20 @@ const JoinGroup = () => {
     return renderedGroups ? renderedGroups.map((group, index) =>
     <div className="ui card" style={styles.card}>
       <div className="card">
-        <span className="right floated" key={index}>
+        <span className="right floated">
           {group[3]}
           <i className="user icon" style={{margin: 3}}></i>
-          <i className="circle outline icon" style={{margin: 3}}></i>
+          {youJoined[index] ? <i className="check circle icon" style={{margin: 3}}></i>  : <i className="circle outline icon" style={{margin: 3}}></i>}
         </span>
-
         <div className="content">
           <div className="header" style={styles.title} key={index}>
               {group[0]}
           </div>
         </div>
         <div className="content">
-
-          <span className="right floated">
-            <Form.Button onSubmit={onSubmit}>Join Group</Form.Button>
-          </span>
-
+        <Form.Button className="float right" style={styles.access} type="button" onClick={() => onClick(index)}>join group</Form.Button>
           <div className="ui sub header" style={{marginLeft:10}}>
-            <i className="checkmark icon small"></i>  
-            group 
+            <i className="checkmark icon small"></i>
           </div>
           <div className="ui feed" style={{marginLeft:10}} key={index}>{ group[1] }</div>
         </div>
