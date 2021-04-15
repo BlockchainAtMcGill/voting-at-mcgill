@@ -29,7 +29,7 @@ const NewElection = () => {
     const [title, setTitle] = useState('');
     const [startDate, setStartDate] = useState(0);
     const [endDate, setEndDate] = useState(0);
-    const [electionType, setElectionType] = useState('majority');
+    const [electionType, setElectionType] = useState(0);
     const [electionGroups, setElectionGroups] = useState([]);
     const [description, setDescription] = useState('');
     
@@ -93,13 +93,13 @@ const NewElection = () => {
         {
             key: 'sm',
             text: 'simple majority',
-            value: 'majority'
+            value: 0
 
         },
         {
             key: 'tt',
             text: 'two thirds',
-            value: 'twoThirds'
+            value: 1
         }
     ];
 

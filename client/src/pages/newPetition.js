@@ -96,20 +96,21 @@ const NewPetition = () => {
                 console.error(error);
             }
         };
+        const electionType="";
         var setUpPetition = async() => {//call to vote contract to edit petition
             if (!voteContract) {
                 console.log("voteContract dne");
                 return;
             }
             await voteContract.methods
-                .editPetition(title, new Date(startDate).getTime(), new Date(endDate).getTime(), description)
+                .editVote(title, new Date(startDate).getTime(), new Date().getTime(),new Date(endDate).getTime(), description, electionType)
                 .send({
                     from: manager
                 })
         };
 
         var displayVote = async () => { // testing purposes
-            const summary = await voteContract.methods.currentPetition().call();
+            const summary = await voteContract.methods.getPetition().call();
             console.log(summary);
         };
         await setupVoteFactory();
