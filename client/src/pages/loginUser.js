@@ -24,7 +24,7 @@ const LoginUser = () => {
     const [userLogin, setUserLogin] = useState(false);
 
     // Call the contract
-    const [username, setUsername] = useState('');
+    const [studentID, setStudentID] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -68,17 +68,30 @@ const LoginUser = () => {
         };
         // Calls VoteFactory Contract to create a new instance of Group
         var logInUser = async () => {
-            var isLogin = await factoryContract.methods.isLoggedIn().call();
+            var isLogin = await factoryContract.methods.isUserLoggedIn().call();
             setUserLogin(isLogin);
+            var error = ``;
             if(factoryContract == ''){
                 return;
             }
 
-            if (!userLogin) {
-                // Calls the method createGroup from VoteFactory.sol
-                await factoryContract.methods.loginUser(password).send({
-                    from: user
-                });
+            if (studentID.length != 9) {
+                error += `Wrong student ID format. Make sure that the student ID has a length of 9 digits`;
+            }
+            
+            if (error.length != 0) {
+                alert(error);
+            }
+            
+            try {
+                if (!userLogin) {
+                    // Calls the method createGroup from VoteFactory.sol
+                    await factoryContract.methods.loginUser(studentID, password).send({
+                        from: user
+                    });
+                }
+            } catch (error) {
+                alert(error);
             }
             setLoad(!Load);
         };
@@ -104,9 +117,9 @@ const LoginUser = () => {
             
             <Form onSubmit={onSubmit} style={adminFields}>
                 <div>
-                    <Form.Input required label="Username"
-                                 value={username}
-                                 onChange={event => setUsername(event.target.value)}
+                    <Form.Input required label="StudentID"
+                                 value={studentID}
+                                 onChange={event => setStudentID(event.target.value)}
                     >
 
                     </Form.Input>
@@ -114,6 +127,7 @@ const LoginUser = () => {
                 <br></br>
                 <div>
                     <Form.Input required label="Password"
+                                 type="password"
                                  value={password}
                                  onChange={event => setPassword(event.target.value)}
                     >
