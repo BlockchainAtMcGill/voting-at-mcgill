@@ -176,7 +176,6 @@ function App() {
                   </div>
                   <div className="ui feed" style={{marginLeft:10}}>{ vote.aDescription }</div>
                 </div>
-
               </div>
             </div>
           </Link>
