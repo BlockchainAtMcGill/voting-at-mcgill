@@ -3,6 +3,7 @@ import { Header } from '../components/header';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import { Form, Loader  } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
+import { Link } from '../../../../routes';
 import 'semantic-ui-css/semantic.min.css';
 
 const adminTitle = {
@@ -40,7 +41,7 @@ const LoginUser = () => {
         event.preventDefault();
         var user;
         var factoryContract;
-        
+
         // Initializes VoteFactory Contract
         var setupVoteFactory = async () => {
             if(web3 == '') {
@@ -78,11 +79,11 @@ const LoginUser = () => {
             if (studentID.length != 9) {
                 error += `Wrong student ID format. Make sure that the student ID has a length of 9 digits`;
             }
-            
+
             if (error.length != 0) {
                 alert(error);
             }
-            
+
             try {
                 if (!userLogin) {
                     // Calls the method createGroup from VoteFactory.sol
@@ -105,6 +106,7 @@ const LoginUser = () => {
         await setupVoteFactory();
         await logInUser();
         await displayUser();
+        Router.push("/");
     };
 
     return (
@@ -114,7 +116,7 @@ const LoginUser = () => {
             <br></br>
             <br></br>
             <h1 style={adminTitle}>Log In</h1>
-            
+
             <Form onSubmit={onSubmit} style={adminFields}>
                 <div>
                     <Form.Input required label="StudentID"
@@ -138,7 +140,7 @@ const LoginUser = () => {
                 <Loader
                         active={userLogin}
                         inline='centered'
-                />                     
+                />
                 <br></br>
                 <div>
                     <Form.Button>Cancel</Form.Button>

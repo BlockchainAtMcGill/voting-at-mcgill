@@ -4,7 +4,7 @@ import VoteFactoryContract from "../contracts/VoteFactory.json";
 import { Form, Loader  } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
 import 'semantic-ui-css/semantic.min.css';
-
+import { Link } from '../../../../routes';
 const adminTitle = {
     color: "red",
     marginBottom: "5%",
@@ -42,7 +42,7 @@ const RegisterUser = () => {
         event.preventDefault();
         var user;
         var factoryContract;
-        
+
         // Initializes VoteFactory Contract
         var setupVoteFactory = async () => {
             if(web3 == '') {
@@ -86,7 +86,7 @@ const RegisterUser = () => {
             if (studentID.length != 9) {
                 error += `Wrong student ID format. Make sure that the student ID has a length of 9 digits`;
             }
-            
+
             if (error.length != 0) {
                 alert(error);
                 setErrorRegister(true);
@@ -133,6 +133,7 @@ const RegisterUser = () => {
         await displayUser();
         await displayDefaultGroup();
         await displayGroups();
+        Router.push("/");
     };
 
     return (
@@ -142,7 +143,7 @@ const RegisterUser = () => {
             <br></br>
             <br></br>
             <h1 style={adminTitle}>Register</h1>
-            
+
             <Form onSubmit={onSubmit} style={adminFields}>
                 <div>
                     <Form.Input required label="Username"
@@ -180,7 +181,7 @@ const RegisterUser = () => {
                 <Loader
                         active={registeringUser}
                         inline='centered'
-                />                     
+                />
                 <br></br>
                 <div>
                     <Form.Button>Cancel</Form.Button>
