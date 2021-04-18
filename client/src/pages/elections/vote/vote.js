@@ -165,7 +165,7 @@ const Vote = () => {
         )
     //   }
     }
-    var endVote = async () => { 
+    var endVote = async () => {
         await voteInstance.methods.updateVoteStatus(2).send({
             from: currentUser
         });
@@ -203,8 +203,11 @@ const Vote = () => {
                 return <div  className="card" style={long}>
                             <div className="content">
                                 <div className="header">
-                                    Results
+                                    Results:
                                 </div>
+                                <br></br>
+                                <br></br>
+                                {checkyboi()}
                             </div>
                         </div>
           }
@@ -217,9 +220,9 @@ const Vote = () => {
     function checkyboi(){
       var onChange = e =>{setState(e.target.checked)}
       return(
-        <div class="ui left floated compact segment">
-        <h1>Change your view to a {state ?  "Pie Chart": "Bar Chart"} </h1>
-            <div class="ui fitted toggle checkbox">
+        <div class="ui center floated compact segment">
+        <h1>Change your view to a {state ? "Bar Chart" : "Pie Chart"} </h1>
+            <div class="ui fitted slider checkbox">
           <label>
             <input type="checkbox"
                   checked={state}
@@ -227,13 +230,14 @@ const Vote = () => {
                   />
           </label>
           </div>
+          {chart()}
         </div>
       )
     }
 
 
     function chart(){
-      if (state==false){
+      if (state==true){
 
       return(
         <ResponsiveContainer width="100%" height={300}>
@@ -282,7 +286,7 @@ const Vote = () => {
 
     }
 
-      if(state==true){
+      if(state==false){
       return(
         <ResponsiveContainer width="100%" height={300}>
           <BarChart width ={600} height={400} data={data}>
@@ -443,10 +447,7 @@ const Vote = () => {
                     {displayPer()}
                     <br></br>
                     <br></br>
-                    {checkyboi()}
-                    {chart()}
-                    <br></br>
-                    <br></br>
+
                     </div>
 
             </>

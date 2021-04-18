@@ -30,7 +30,6 @@ const Apply = () => {
     },[]);
 
     //please follow the course for a better implementation @Jing
-    const [candidateName, setName] = useState('');
     const [currentDate, setCurrentDate] = useState(0);
     const [description, setDescription] = useState('');
 
@@ -41,7 +40,8 @@ const Apply = () => {
         var factoryContract
         var voteContract;
         var addressOfVote;
-
+        var currDate= new Date();
+        setCurrentDate(currDate);
         var setupVoteFactory = async () => { //initializes voteFactory
             if(web3 == '') {
                 return;
@@ -88,9 +88,15 @@ const Apply = () => {
                 console.error(error);
             }
         };
+
+
         var setCandidate = async () => {
-            await voteContract.methods.enterElection(candidateName, description ,new Date(currentDate).getTime()).send({from: manager});
+            const userinfo = await factoryContract.methods.getUser().call({
+                from: manager
+              });
+            await voteContract.methods.enterElection(userinfo[0], description ,new Date(currentDate).getTime()).send({from: manager});
         };
+
         var displayCand = async () => { // testing purposes
             const summary = await voteContract.methods.get_candidate(manager).call();
             console.log(summary);
@@ -112,32 +118,16 @@ const Apply = () => {
             <h1 style= {candTitle}>Run for Election</h1>
             <h3 style={{color: "red"}}> </h3>
             <Form onSubmit={onSubmit} style={candFields}>
-                <div>
-                    <Form.Input required label="Enter Name"
-                                 value={candidateName}
-                                 onChange={event => setName(event.target.value)}
-                    >
-
-                    </Form.Input>
-                </div>
 
                 <br></br>
 
-                <div>
-                    <Form.Input label="Current date" type="date"
 
-                                 value={currentDate}
-                                 onChange={event => setCurrentDate(event.target.value)}
-                    >
-
-                    </Form.Input>
-                </div>
 
                 <br></br>
 
                 <div>
                     <Form.TextArea required
-                                 label="Description"
+                                 label="Enter candidate blurb here"
 
                                  value={description}
                                  onChange={event => setDescription(event.target.value)}
