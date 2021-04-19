@@ -4,7 +4,7 @@ import VoteFactoryContract from "../contracts/VoteFactory.json";
 import { Form, Loader  } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
 import 'semantic-ui-css/semantic.min.css';
-import { Link } from '../../../../routes';
+import { Link } from '../../routes'
 const adminTitle = {
     color: "red",
     marginBottom: "5%",

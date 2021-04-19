@@ -169,7 +169,7 @@ function App() {
                     <span style={styles.access} >access vote</span>
                     <i className="angle right icon huge"></i>
                   </span>
-
+                  
                   <div className="ui sub header" style={{marginLeft:10}}>
                     <i className="checkmark icon small"></i>  
                     {vote.aTypeOfElection ?  "Election" : "Petition" }  | typeof vote : {vote.aVoteType == "0" ? "Majority" : "Two-Thirds"}

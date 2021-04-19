@@ -6,6 +6,7 @@ import { Form } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
 import 'semantic-ui-css/semantic.min.css';
 import Router from 'next/router';
+import { Dropdown } from 'semantic-ui-react'
 
 const adminTitle = {
     color: "red",
@@ -25,12 +26,11 @@ const NewElection = () => {
     const [voteFactory, setVoteFactory] = useState('');
     const [groupsID, setGroupsID] = useState('');
 
-
+    const [selectedGroups, setSelectedGroups] = useState('');
     const [title, setTitle] = useState('');
     const [startDate, setStartDate] = useState(0);
     const [endDate, setEndDate] = useState(0);
     const [electionType, setElectionType] = useState(0);
-    const [electionGroups, setElectionGroups] = useState([]);
     const [description, setDescription] = useState('');
     
     // initializing web3
@@ -73,6 +73,7 @@ const NewElection = () => {
     },[web3])
 
     // Return all group IDs of a user as an array
+
     useEffect(()=> {
         var displayVotes = async () => {
         if(voteFactory == '') {
@@ -81,9 +82,8 @@ const NewElection = () => {
         const response = await voteFactory.methods.getUserAllGroups().call();
         const temp = [];
         for (var i = 0; i < response.length; i++) {
-            temp[i] = parseInt(response[i]);
+            temp[i] = { key: parseInt(response[i]), text: parseInt(response[i]), value: parseInt(response[i])};
         }
-        console.log(temp);
         setGroupsID(temp);
         };
         displayVotes();
@@ -167,12 +167,11 @@ const NewElection = () => {
             }
             //string memory aTitle, uint256 aStartDate, uint256 aEndDate, string memory aDescription, string memory aTypeOfElection
             await voteContract.methods
-                .editVote(title, new Date(startDate).getTime(), new Date().getTime(),new Date(endDate).getTime(), description, electionType)
+                .editVote(title, new Date(startDate).getTime(), new Date().getTime(),new Date(endDate).getTime(), description, electionType, selectedGroups)
                 .send({
                     from: manager
                 })
         };
-
         var displayVote = async () => { // testing purposes
             const summary = await voteContract.methods.getElection().call();
             console.log(summary);
@@ -186,6 +185,11 @@ const NewElection = () => {
         Router.push("/");
     };
 
+    const onChange = (event, result) => {
+        const { name, value } = result || event.target;
+        setSelectedGroups(value)
+      };
+
     return (
         <>
             <Header/>
@@ -193,20 +197,17 @@ const NewElection = () => {
             <br></br>
             <br></br>
             <h1 style={adminTitle}>New Election</h1>
-            
             <Form onSubmit={onSubmit} style={adminFields}>
                 <div>
                     <Form.Input required label="Election title"
                                  value={title}
                                  onChange={event => setTitle(event.target.value)}
                     >
-
                     </Form.Input>
                 </div>
                 <br></br>
                 <div>
                     <Form.Input label="Start date" type="date"
-
                                  value={startDate}
                                  onChange={event => setStartDate(event.target.value)}
                     >
@@ -216,7 +217,6 @@ const NewElection = () => {
                 <br></br>
                 <div>
                     <Form.Input required label="End date" type="date"
-
                                  value={endDate}
                                  onChange={event => setEndDate(event.target.value)}
                     />
@@ -233,16 +233,20 @@ const NewElection = () => {
                     />
                 </div>
                 <br></br>
+
+                <Dropdown placeholder='group IDs' fluid multiple selection options={groupsID} onChange = {onChange}/>
+
+                <br></br>
+                
                 <div>
                     <Form.TextArea required
                                  label="Description"
-
                                  value={description}
-                                 onChange={event => setDescription(event.target.value)}
-                    />
+                                 onChange={event => setDescription(event.target.value)}/>
                 </div>
 
                 <br></br>
+
                 <div>
                     <Form.Button>Cancel</Form.Button>
                     <Form.Button type="submit" onSubmit={onSubmit}>Publish Election</Form.Button>

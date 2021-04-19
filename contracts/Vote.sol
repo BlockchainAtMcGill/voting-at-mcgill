@@ -6,6 +6,8 @@ contract Vote{
 
     address public manager;
 
+    uint[] groupIDs;
+    
     enum typeOfVote {
         election,
         petition
@@ -27,8 +29,6 @@ contract Vote{
     uint endDate;
     string description;
     uint numVotes = 0;
-
-
 
     //election only
     uint public candidatesCount = 0;
@@ -57,7 +57,7 @@ contract Vote{
     }
 
     //Setters
-    function editVote (string memory aTitle, uint256 aStartDate, uint256 aCurrentDate, uint256 aEndDate, string memory aDescription, uint aTypeOfElection)
+    function editVote (string memory aTitle, uint256 aStartDate, uint256 aCurrentDate, uint256 aEndDate, string memory aDescription, uint aTypeOfElection, uint[] memory aGroupIDs)
     public {
         title = aTitle;
         startDate = aStartDate;
@@ -67,10 +67,11 @@ contract Vote{
         if(voteType == typeOfVote.election) {
             typeOfElection = electionType(aTypeOfElection);
         }
+        groupIDs = aGroupIDs;
     }
 
     //vote for a candidate
-    function voteFor(address aCandidateAddress) public typeElection{
+    function voteFor(address aCandidateAddress) public typeElection {
         //needs to be between start end end
         if(voted[msg.sender] == false){
             if(candidates[aCandidateAddress].candidateAddr != address(0)){
@@ -129,7 +130,7 @@ contract Vote{
 
     //GETTERS
 
-    function getElection() public view typeElection returns(address aManager, uint aVoteType, uint aVoteStatus, string memory aTitle, uint aStartDate, uint aEndDate, string memory aDescription, uint aNumVotes, address aVoteAddress, uint aCandidateCount, uint256 aTypeOfElection) {
+    function getElection() public view typeElection returns(address aManager, uint aVoteType, uint aVoteStatus, string memory aTitle, uint aStartDate, uint aEndDate, string memory aDescription, uint aNumVotes, address aVoteAddress, uint aCandidateCount, uint256 aTypeOfElection, uint[] memory aGroupIDs) {
         return(
             manager,
             uint(voteType),
@@ -141,10 +142,11 @@ contract Vote{
             numVotes,
             address(this),
             candidatesCount,
-            uint(typeOfElection)
+            uint(typeOfElection),
+            groupIDs
         );
     }
-    function getPetition() public view typePetition returns(address aManager, uint aVoteType, uint aVoteStatus, string memory aTitle, uint aStartDate, uint aEndDate, string memory aDescription, uint aNumVotes, address aVoteAddress) {
+    function getPetition() public view typePetition returns(address aManager, uint aVoteType, uint aVoteStatus, string memory aTitle, uint aStartDate, uint aEndDate, string memory aDescription, uint aNumVotes, address aVoteAddress, uint[] memory aGroupIDs) {
         return(
             manager,
             uint(voteType),
@@ -154,7 +156,8 @@ contract Vote{
             endDate,
             description,
             numVotes,
-            address(this)
+            address(this),
+            groupIDs
         );
     }
 

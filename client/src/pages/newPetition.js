@@ -6,6 +6,7 @@ import { Form } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
 import 'semantic-ui-css/semantic.min.css';
 import Router from 'next/router';
+import { Dropdown } from 'semantic-ui-react'
 
 const adminTitle = {
     color: "red",
@@ -21,7 +22,16 @@ const adminFields = {
 const NewPetition = () => {
 
     const [web3, setWeb3] = useState('');
-
+    const [title, setTitle] = useState('');
+    const [manager, setManager] = useState('');
+    const [voteFactory, setVoteFactory] = useState('');
+    const [startDate, setStartDate] = useState(0);
+    const [groupsID, setGroupsID] = useState('');
+    const [selectedGroups, setSelectedGroups] = useState('');
+    const [endDate, setEndDate] = useState(0);
+    const [description, setDescription] = useState('');
+    
+    
     var web3Instance;
     useEffect(() => {
         async function initWeb3() {
@@ -31,53 +41,65 @@ const NewPetition = () => {
         initWeb3();
     },[]);
 
-    //please follow the course for a better implementation @Jing
-    const [title, setTitle] = useState('');
-    const [startDate, setStartDate] = useState(0);
-    const [endDate, setEndDate] = useState(0);
-    const [description, setDescription] = useState('');
+    // Return all group IDs of a user as an array
+    useEffect(()=> {
+        async function setup() {
+            if(web3 == "") {
+              console.log('unable to get factory')
+              return;
+            }
+            try {
+              var [user] = await web3.eth.getAccounts();
+              setManager(user);
+              const networkId = await web3.eth.net.getId();
+              const deployedNetwork = VoteFactoryContract.networks[networkId];
+              const instance = new web3.eth.Contract(
+                VoteFactoryContract.abi,
+                deployedNetwork && deployedNetwork.address,
+              );
+              setVoteFactory(instance);
+          
+            } catch (error) {
+              alert(
+                `Failed to load web3, accounts, or contract. Check console for details.`,
+              );
+              console.error(error);
+            }
+          }
+            setup();
+
+    },[web3])
+
+    useEffect(()=> {
+        var displayVotes = async () => {
+        if(voteFactory == '') {
+            return;
+        }
+        const response = await voteFactory.methods.getUserAllGroups().call();
+        const temp = [];
+        for (var i = 0; i < response.length; i++) {
+            temp[i] = { key: parseInt(response[i]), text: parseInt(response[i]), value: parseInt(response[i])};
+        }
+        setGroupsID(temp);
+        };
+        displayVotes();
+    },[voteFactory]);
 
     var onSubmit = async (event) => {
         event.preventDefault();
-        var manager;
-        var factoryContract;
         var voteContract;
         var addressOfVote;
-        var setupVoteFactory = async () => { //initializes voteFactory
-            if(web3 == '') {
-                return;
-            }
-            try {
-                [manager] = (await web3.eth.getAccounts());
-                // Get the contract instance.
-                const networkId = await web3.eth.net.getId();
-                const deployedNetwork = VoteFactoryContract.networks[networkId];
-                const instance = new web3.eth.Contract(
-                    VoteFactoryContract.abi,
-                    deployedNetwork && deployedNetwork.address,
-                );
-                factoryContract = instance;
-
-                // Set web3, accounts, and contract to the state, and then proceed with an
-            } catch (error) {
-                // Catch any errors for any of the above operations.
-                alert(
-                    `Failed to load web3, accounts, or contract. Check console for details.`,
-                );
-                console.error(error);
-            }
-        };
         var createVote = async () => {//uses voteFactory to create Vote
-            if(factoryContract == ''){
+            if(voteFactory == ''){
                 return;
             }
             // Get the value from the contract to prove it worked.
-            await factoryContract.methods.createVote(1).send({
+            await voteFactory.methods.createVote(1).send({
                 from: manager
             });
         };
         var getPetitionAddress = async () => {//calls voteFactory method to get new Vote address
-            const response = await factoryContract.methods.getDeployedVotes().call();
+            const response = await voteFactory.methods.getDeployedVotes().call();
             addressOfVote = response[response.length - 1];
         };
         var initializePetition = async () => {//initializes vote contract
@@ -103,7 +125,7 @@ const NewPetition = () => {
                 return;
             }
             await voteContract.methods
-                .editVote(title, new Date(startDate).getTime(), new Date().getTime(),new Date(endDate).getTime(), description, electionType)
+                .editVote(title, new Date(startDate).getTime(), new Date().getTime(),new Date(endDate).getTime(), description, electionType, selectedGroups)
                 .send({
                     from: manager
                 })
@@ -113,7 +135,6 @@ const NewPetition = () => {
             const summary = await voteContract.methods.getPetition().call();
             console.log(summary);
         };
-        await setupVoteFactory();
         await createVote();
         await getPetitionAddress();
         await initializePetition();
@@ -121,6 +142,11 @@ const NewPetition = () => {
         await displayVote();
         Router.push("/");
     };
+
+    const onChange = (event, result) => {
+        const { name, value } = result || event.target;
+        setSelectedGroups(value)
+      };
 
     return (
         <>
@@ -159,7 +185,9 @@ const NewPetition = () => {
                 </div>
                 <br></br>
                 <div>
-
+                <br></br>
+                <Dropdown placeholder='group IDs' fluid multiple selection options={groupsID} onChange = {onChange}/>
+                <br></br>
                 </div>
                 <br></br>
                 <div>

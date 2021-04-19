@@ -3,7 +3,7 @@ import { Header } from '../components/header';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import { Form, Loader  } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
-import { Link } from '../../../../routes';
+import { Link } from '../../routes';
 import 'semantic-ui-css/semantic.min.css';
 
 const adminTitle = {
