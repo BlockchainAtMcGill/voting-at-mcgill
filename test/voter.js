@@ -8,7 +8,9 @@ contract("VoteFactory", accounts => {
   let election;
   let petition;
   let user;
-  let member;
+  let member1;
+  let member2;
+  let testUser;
 
   before(async() => {
     factory = await VoteFactory.deployed();
@@ -24,36 +26,53 @@ contract("VoteFactory", accounts => {
     petitionAddress = (await factory.getDeployedVotes())[1];
     petition = await Vote.at(petitionAddress);
 
-    // Initialize Groups
-    await factory.createGroup("SSMU", "For The Students", 123);
-    await factory.createGroup("BAM", "Blockchain", 133);
-
+    /**
+     * User Setup
+     */
     // Initialize Users
-    await factory.registerUser("name", "email", "password", {
+    await factory.registerUser("name", "email", "123", "password", {
       from: accounts[0]
     });
-
-    await factory.registerUser("member1", "email", "password", {
+    await factory.registerUser("member1", "email", "456", "password", {
       from: accounts[1]
     });
-    await factory.registerUser("member2", "email", "password", {
+    await factory.registerUser("member2", "email", "789", "password", {
       from: accounts[2]
     });
 
+    // Login Users
+    await factory.loginUser("123", "password", {
+      from: accounts[0]
+    });
+
+    await factory.loginUser("456", "password", {
+      from: accounts[1]
+    });
+
+    // Get existing Users
     user = await factory.getUser({
       from: accounts[0]
     });
-
-    member = await factory.getUser({
+    member1 = await factory.getUser({
       from: accounts[1]
     });
-
-    await factory.registerGroup(123, {
-      from: accounts[1]
-    });
-
-    await factory.registerGroup(123, {
+    member2 = await factory.getUser({
       from: accounts[2]
+    });
+
+    /**
+     * Groups Setup
+     */
+    // Initialize Groups
+    await factory.createGroup("SSMU", "For The Students");
+    await factory.createGroup("BAM", "Blockchain");
+
+    // Assign existing users to groups
+    await factory.registerGroup(123, {
+      from: accounts[0]
+    });
+    await factory.registerGroup(123, {
+      from: accounts[1]
     });
 
   });
@@ -144,7 +163,54 @@ contract("VoteFactory", accounts => {
     });
 
   });
+  describe('User', async () =>{
+    it('creates user instance', async() => {
+      testUser = await factory.registerUser("test", "test@mcgill.ca", "012", "password", {
+        from: accounts[3]
+      });
+      assert.ok(currentUser);
+    });
 
+    it('outputs created user successfully', async() => {
+      let currentUser = await factory.getUser({
+        from: accounts[3]
+      });
+      assert.equal(currentUser['0'], testUser['0']);
+      assert.equal(currentUser['1'], testUser['1']);
+      assert.equal(currentUser['2'], testUser['1']);
+      assert.equal(currentUser['3'], testUser['1']);
+      assert.equal(currentUser['4'], testUser['1']);
+      assert.equal(currentUser['5'], testUser['1']);
+      assert.equal(currentUser['6'], testUser['1']);
+    });
+
+    it("gets groups from user", async() => {
+      let userGroups = await factory.getUserAllGroups(
+        {from:accounts[0]}
+      );
+      assert.strictEqual(1, userGroups[0]['words'][0]);
+    });
+
+    it("able to login once registered", async () => {
+      let loggedIn = await factory.loginUser("password",(
+        {from:accounts[0]})
+      );
+      assert.equal("name", loggedIn['0']);
+      assert.equal("email", loggedIn['1']);
+      assert.equal(1, (((loggedIn)['2'])[0])['words'][0]);
+      assert.equal(true, loggedIn['3']);
+    });
+
+    it("throws error with wrong password", async () => {
+      try {
+        await factory.loginUser("wrongPassword",({from:accounts[0]}));
+      } catch (error) {
+        assert.ok(error);
+        return;
+      }
+      assert.fail("should have raised an error");
+    })
+  });
   describe('Groups', async () => {
     it('deploys a group', async () => {
       const group = await factory.createGroup("MariHacks", "Open to all Levels", 101);
@@ -257,44 +323,4 @@ contract("VoteFactory", accounts => {
       }
     });
  });
-
-  describe('User', async () =>{
-    it('creates user instance', async() => {
-      assert.ok(user);
-    });
-
-    it('outputs created user successfully', async() => {
-      assert.equal("name", user['0']);
-      assert.equal("email", user['1']);
-      assert.equal(1, (((user)['2'])[0])['words'][0]);
-      assert.equal(true, user['3']);
-    });
-
-    it("gets groups from user", async() => {
-      let userGroups = await factory.getUserAllGroups(
-        {from:accounts[0]}
-      );
-      assert.strictEqual(1, userGroups[0]['words'][0]);
-    });
-
-    it("able to login once registered", async () => {
-      let loggedIn = await factory.loginUser("password",(
-        {from:accounts[0]})
-      );
-      assert.equal("name", loggedIn['0']);
-      assert.equal("email", loggedIn['1']);
-      assert.equal(1, (((loggedIn)['2'])[0])['words'][0]);
-      assert.equal(true, loggedIn['3']);
-    });
-
-    it("throws error with wrong password", async () => {
-      try {
-        await factory.loginUser("wrongPassword",({from:accounts[0]}));
-      } catch (error) {
-        assert.ok(error);
-        return;
-      }
-      assert.fail("should have raised an error");
-    })
-  });
 });

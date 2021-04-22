@@ -77,10 +77,10 @@ class App extends Component {
                     <Link to="/aboutus">About Us</Link>
                   </li>
                   <li>
-                    <Link to="/login">login</Link>
+                    <Link to="/loginUser">login</Link>
                   </li>
                   <li>
-                    <Link to="/logout">logout</Link>
+                    <Link to="/logoutUser">logout</Link>
                   </li>
                   <li>
                     <Link to="/registerUser">register</Link>
@@ -103,8 +103,8 @@ class App extends Component {
                   <Route path="/loginUser">
                     {}
                   </Route>
-                  <Route path="/logout">
-                    {/* <Home /> */}
+                  <Route path="/logoutUser">
+                    {}
                   </Route>
                   <Route path="/registerUser">
                     {}

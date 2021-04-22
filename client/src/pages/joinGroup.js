@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import getWeb3 from "../getWeb3";
-import { Form, Button} from "semantic-ui-react";
+import { Form} from "semantic-ui-react";
 import { Header } from '../components/header';
 import 'semantic-ui-css/semantic.min.css';
+import Router from "next/router";
 
 require("regenerator-runtime/runtime");
 
-// Card UI details
+// Style UI Cards
 const styles = {
   card: {
     width: '90%',
@@ -31,18 +32,24 @@ const styles = {
   }
 };
 
-// Initialize Join Group page
+/**
+ * Join Group Page - a Page where user can see all existing group and/or join a new group
+ * DISCLAMER - majority of the code is based on index.js written by Simon Wang
+ * 
+ * @author Brandon Wong
+ * @author Simon Wang
+ */
 const JoinGroup = () => {
+  // Initialize necessary values for the Join Group Page
+
   const [web3, setWeb3] = useState('');
+  const [currentUser, setCurrentUser] = useState('');
   const [groupsID, setGroupsID] = useState('');
   const [contract, setContract] = useState('');
-  const [renderedGroups, renderGroups] = useState([]);
-  const [youJoined, setYouJoined] = useState([]);
-  const [joiningGroup, setJoiningGroup] = useState(false);
+  const [renderedGroups, setRenderGroups] = useState([]);
+  const [groupJoined, setGroupJoined] = useState([]);
 
-  var user;
-
-  // Setup Web3 on the current page
+  // Setup Web3
   useEffect(() => {
     async function initWeb3() {
       console.log('initializing web3');
@@ -52,7 +59,7 @@ const JoinGroup = () => {
     initWeb3();
   },[]);
 
-  // Initializeing VoteFactory contract
+  // Initializeing VoteFactory contract and the current user
   useEffect(() => {
     async function setup() {
       if(web3 == "") {
@@ -60,7 +67,6 @@ const JoinGroup = () => {
         return;
       }
       try {
-        [user] = await web3.eth.getAccounts();
         const networkId = await web3.eth.net.getId();
         const deployedNetwork = VoteFactoryContract.networks[networkId];
         const instance = new web3.eth.Contract(
@@ -68,6 +74,9 @@ const JoinGroup = () => {
           deployedNetwork && deployedNetwork.address,
         );
         setContract(instance);
+
+        const [user] = await web3.eth.getAccounts();
+        setCurrentUser(user);
     
       } catch (error) {
         alert(
@@ -76,101 +85,93 @@ const JoinGroup = () => {
         console.error(error);
       }
     }
-      setup();
+
+    /*
+    var userLoggedIn = async () => {
+      try {
+        var isLog = await contract.methods.isUserLoggedIn().call({
+          from: currentUser
+        });
+  
+        setIsLoggedIn(isLog);
+      } catch (error) {
+        alert(
+          `Failed to verify if the user has logged in.`
+        );
+      }
+    } */
+    setup();
+    // userLoggedIn();
   },[web3]);
 
-  // Return all group IDs as an array DO NOT USE useEffect
+  // Initialize all existing groups
   useEffect(()=> {
-    var displayVotes = async () => {
+    var displayGroups = async () => {
       if(contract == '') {
         return;
       }
-      const response = await contract.methods.getExistingGroups().call();
-      // const joinedGroups = await contract.methods.getUserAllGroups().call();
-      const temp = [];
-      for (var i = 0; i < response.length; i++) {
-        temp.push(response[i]);
 
-        // CHANGE BASED ON INDEX
-        var currentGroup = await contract.methods.getGroup(i).call();
-        var isJoined = false;
-
-        for (var j = 0; j < currentGroup[3]; j++) {
-          if ((currentGroup.aMembers)[j] == user) {
-            isJoined = true;
-            break;
-          }
-        }
-        youJoined.push(isJoined);
+      try {
+        const response = await contract.methods.getExistingGroups().call();
+      setGroupsID(response);
+      } catch (error) {
+        alert(
+          `Failed to initialize all existing groups.`
+        );
       }
-      console.log(isJoined);
-      console.log(temp);
-      setGroupsID(temp);
     };
-    displayVotes();
+    displayGroups();
   },[contract]);
   
-
-
+  // Initialize the content of each group and verify if the user is part of the current group
   var displayInfo = async (identification) => { 
     if(groupsID == '') {
       return;
     }
     try {
-      return await contract.methods.getGroup(identification).call();
+
+      return [await contract.methods.getGroup(identification).call(), await contract.methods.isUserGroup(identification).call({
+        from: currentUser
+      })];
     } catch (error) {
-      console.error(error);
+      alert(
+        `Failed to initialize the info of each group.`
+      );
     }
   };
 
-  useEffect(()=> {//render votes
-    var renderVotes = async () => {
-        if (!groupsID) {
+  // Render an array of all existing groups and an array that corresponds to whether they have joined
+  useEffect(()=> {
+    var renderGroups = async () => {
+        if (!groupsID || !currentUser) {
           return;
         }
-        var temp = [];
-        await groupsID.forEach(identification => {
-            displayInfo(identification).then(newGroup => {
-              // Check if user has joined the group
-              temp.push(newGroup);
+
+        try {
+          var tempGroups = [];
+          var tempJoined = [];
+          await groupsID.forEach(identification => {
+              displayInfo(identification).then(newGroup => {
+                // Check if user has joined the group
+                tempGroups.push(newGroup[0]);
+                tempJoined.push(newGroup[1]);
+            });
           });
-        });
-        setTimeout(function(){
-          renderGroups(temp);
-        }, 1000);
+          setTimeout(function(){
+            setRenderGroups(tempGroups);
+            setGroupJoined(tempJoined);
+
+          }, 1000);
+        } catch (error) {
+          alert(
+            `Failed to display groups.`
+          );
+        }
       }
-    renderVotes();
+    renderGroups();
   },[groupsID]);
 
-  useEffect(()=> {
-    if(renderedGroups) {
-      console.log(renderedGroups);
-    }
-  },[renderedGroups]);
-
-  // function registerGroup(groupID) {
-  //   var joinGroup = async (groupID) => {
-      
-  //     setJoiningGroup(true);
-  //     if(contract == ''){
-  //         return;
-  //     }
-  //     // Calls the method createGroup from VoteFactory.sol
-  //     await contract.methods.registerGroup(groupID).send({
-  //         from: user
-  //     });
-  //     setJoiningGroup(false);
-  //     setLoad(!Load);
-  //   };
-
-  //   var displayJoin = async () => {
-  //     const summary = await contract.methods.getUserGroup(groupID).call();
-  //     console.log(summary);
-  //   };
-  //   await joinGroup();
-  //   await displayJoin();
-  // };
-
+  // Function that adds the current user to the group
   var onClick = async(groupID) => {
     console.log(groupID);
     if (contract == '') {
@@ -179,13 +180,26 @@ const JoinGroup = () => {
 
     try {
       await contract.methods.registerGroup(groupID).send({
-        from: user
+        from: currentUser
       });
     } catch (error) {
-      alert(error);
+      alert(
+        `Failed to join group.`
+      );
     }
+
+    Router.push("/joinGroup");
   }
 
+  // Display in the console the two arrays above to verify its consistency (testing purposes)
+  useEffect(()=> {
+    if(renderedGroups) {
+      console.log(renderedGroups);
+      console.log(groupJoined);
+    }
+  },[renderedGroups]);
+
+  // Displays the list of all exisiting groups as UI Cards
   function displayGroupList() {
     if (web3 == "") {
       return "waiting for votes to display...";
@@ -196,24 +210,27 @@ const JoinGroup = () => {
     }
 
     return renderedGroups ? renderedGroups.map((group, index) =>
-    <div className="ui card" style={styles.card}>
+    <div className="ui card" style={styles.card} key={index}>
       <div className="card">
         <span className="right floated">
           {group[3]}
           <i className="user icon" style={{margin: 3}}></i>
-          {youJoined[index] ? <i className="check circle icon" style={{margin: 3}}></i>  : <i className="circle outline icon" style={{margin: 3}}></i>}
+          {groupJoined[index] ? <i className="check circle icon" style={{margin: 3}}></i>  : <i className="circle outline icon" style={{margin: 3}}></i>}
         </span>
         <div className="content">
-          <div className="header" style={styles.title} key={index}>
+          <div className="header" style={styles.title}>
               {group[0]}
           </div>
         </div>
         <div className="content">
-        <Form.Button className="float right" style={styles.access} type="button" onClick={() => onClick(index)}>join group</Form.Button>
+          <span className="right floated">
+          {groupJoined[index] ? <span></span> : <span className="float right" style={styles.access} type="button" onClick={() => onClick(index)}>join group</span>}
+          <i className="angle right icon huge"></i>
+          </span>
           <div className="ui sub header" style={{marginLeft:10}}>
             <i className="checkmark icon small"></i>
           </div>
-          <div className="ui feed" style={{marginLeft:10}} key={index}>{ group[1] }</div>
+          <div className="ui feed" style={{marginLeft:10}}>{ group[1] }</div>
         </div>
       </div>
     </div>

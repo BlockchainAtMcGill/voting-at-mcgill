@@ -3,7 +3,7 @@ import { Header } from '../components/header';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import { Form, Loader  } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
-import { Link } from '../../routes';
+import Router from "next/router";
 import 'semantic-ui-css/semantic.min.css';
 
 const adminTitle = {
@@ -17,18 +17,24 @@ const adminFields = {
     margin: "auto 5% auto 5%"
 };
 
+/**
+ * Login User Page - a Page where user can see all existing group and/or join a new group
+ * DISCLAMER - majority of the code is based on vote.js written by Simon Wang
+ * 
+ * @author Brandon Wong
+ * @author Simon Wang
+ */
 const LoginUser = () => {
-    // Basic
+ 
     var web3Instance;
     const [web3, setWeb3] = useState('');
     const [Load, setLoad] = useState(true);
+    const [currentUser, setCurrentUser] = useState('');
     const [userLogin, setUserLogin] = useState(false);
-
-    // Call the contract
     const [studentID, setStudentID] = useState('');
-    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    // Initialize Web3
     useEffect(() => {
         async function initWeb3() {
             web3Instance = await getWeb3();
@@ -37,9 +43,9 @@ const LoginUser = () => {
         initWeb3();
     },[Load]);
 
+    // Login implementation
     var onSubmit = async (event) => {
         event.preventDefault();
-        var user;
         var factoryContract;
 
         // Initializes VoteFactory Contract
@@ -48,7 +54,8 @@ const LoginUser = () => {
                 return;
             }
             try {
-                [user] = (await web3.eth.getAccounts());
+                cosnt [user] = (await web3.eth.getAccounts());
+                setCurrentUser(user);
                 // Get the contract instance.
                 const networkId = await web3.eth.net.getId();
                 const deployedNetwork = VoteFactoryContract.networks[networkId];
@@ -67,6 +74,7 @@ const LoginUser = () => {
                 console.error(error);
             }
         };
+
         // Calls VoteFactory Contract to create a new instance of Group
         var logInUser = async () => {
             var isLogin = await factoryContract.methods.isUserLoggedIn().call();
@@ -86,9 +94,8 @@ const LoginUser = () => {
 
             try {
                 if (!userLogin) {
-                    // Calls the method createGroup from VoteFactory.sol
                     await factoryContract.methods.loginUser(studentID, password).send({
-                        from: user
+                        from: currentUser
                     });
                 }
             } catch (error) {
