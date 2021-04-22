@@ -127,7 +127,7 @@ const Apply = () => {
 
                 <div>
                     <Form.TextArea required
-                                 label="Enter candidate blurb here"
+                                 label="Enter candidate description here"
 
                                  value={description}
                                  onChange={event => setDescription(event.target.value)}

@@ -5,6 +5,7 @@ import getWeb3 from "../getWeb3";
 import { Header } from '../components/header';
 import { Link } from '../../routes'
 import 'semantic-ui-css/semantic.min.css';
+import Web3 from "web3";
 // CommonJS
 require("regenerator-runtime/runtime");
 
@@ -38,6 +39,7 @@ function App() {
   const [contract, setContract] = useState('');
   const [votes, setVotes] = useState([]);
   const [currentUser, setCurrentUser] = useState('');
+  const [groups, setGroups] = useState([]);
   const [youVoted, setYouVoted] = useState([]);
 
   useEffect(() => {// get web3
@@ -81,6 +83,17 @@ function App() {
   },[web3]);
 
   useEffect(()=> {//display available votes addresses
+    var getGroups = async () => {
+      if(contract == ''){
+        return;
+      }
+      const instance = await contract.methods.getUserAllGroups().call();
+      setGroups(instance)
+    };
+    getGroups();
+  },[contract]);
+
+  useEffect(()=> {//display available votes addresses
     var displayVotes = async () => {
       if(contract == ''){
         return;
@@ -92,6 +105,7 @@ function App() {
     displayVotes();
   },[contract]);
 
+
   var displayInfo = async (address) => { 
     try {// Get the contract instance.
       const instance = new web3.eth.Contract(
@@ -99,10 +113,16 @@ function App() {
         address
       );
       if((await instance.methods.voteType().call()) == 0) {
-        return [await instance.methods.getElection().call(), await instance.methods.getVoted(currentUser).call()];
+        const election = await instance.methods.getElection().call();//we take a filter
+        if(groups.some(r=> election.aGroupIDs.includes(r))){//https://stackoverflow.com/questions/16312528/check-if-an-array-contains-any-element-of-another-array-in-javascript
+          return [election, await instance.methods.getVoted(currentUser).call()];
+        }
       }
       else{
-        return [await instance.methods.getPetition().call(), await instance.methods.getVoted(currentUser).call()]
+        const petition = await instance.methods.getPetition().call();
+        if(groups.some(r=> petition.aGroupIDs.includes(r))) {
+        return [petition, await instance.methods.getVoted(currentUser).call()]
+        }
       }
     } catch (error) {
       console.error(error);
@@ -118,8 +138,10 @@ function App() {
         var tempVoted = [];
         await votesAddresses.forEach(address => {
             displayInfo(address).then(voteInfo => {
+              if(voteInfo){
               tempVotes.push(voteInfo[0]);
               tempVoted.push(voteInfo[1]);
+              }
           })
         })
         setTimeout(function(){
@@ -132,7 +154,8 @@ function App() {
   },[votesAddresses]);
 
   useEffect(()=> {
-    console.log(votes);
+    // console.log(votes);
+    // console.log(groups);
   },[votes])
 
   function displayElectionsList() {
