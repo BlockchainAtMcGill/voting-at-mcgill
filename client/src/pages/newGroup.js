@@ -32,7 +32,7 @@ const NewGroup = () => {
     const [creatingGroup, setCreatingGroup] = useState(false);
 
     // Call the contract
-    const [currentUser, setCurrentUser] = useState('');
+    const [userLogin, setUserLogin] = useState(false);
     const [groupName, setGroupName] = useState('');
     const [description, setDescription] = useState('');
 
@@ -47,6 +47,7 @@ const NewGroup = () => {
     var onSubmit = async (event) => {
         event.preventDefault();
         var factoryContract;
+        var user;
         
         // Initializes VoteFactory Contract
         var setupVoteFactory = async () => {
@@ -54,8 +55,7 @@ const NewGroup = () => {
                 return;
             }
             try {
-                const [user] = (await web3.eth.getAccounts());
-                setCurrentUser(user);
+                [user] = (await web3.eth.getAccounts());
                 // Get the contract instance.
                 const networkId = await web3.eth.net.getId();
                 const deployedNetwork = VoteFactoryContract.networks[networkId];
@@ -76,16 +76,26 @@ const NewGroup = () => {
         };
         // Calls VoteFactory Contract to create a new instance of Group
         var createGroup = async () => {
+            var isLogin = await factoryContract.methods.isUserLoggedIn().call();
+            setUserLogin(isLogin);
             setCreatingGroup(true);
             if(factoryContract == ''){
                 return;
             }
-            // Calls the method createGroup from VoteFactory.sol
-            await factoryContract.methods.createGroup(groupName, description).send({
-                from: currentUser
-            });
-            setCreatingGroup(false);
-            setLoad(!Load);
+
+            try {
+                if (isLogin) {
+                    await factoryContract.methods.createGroup(groupName, description).send({
+                        from: user
+                    });
+                    setCreatingGroup(false);
+                    setLoad(!Load);
+                }
+            } catch (error) {
+                alert (
+                    `Failed to create new group.`
+                );
+            }
         };
 
         // Verify the values of the newly created instance of Group

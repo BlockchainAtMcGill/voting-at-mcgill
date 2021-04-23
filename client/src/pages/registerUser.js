@@ -33,7 +33,6 @@ const RegisterUser = () => {
     const [errorRegister, setErrorRegister] = useState(false);
 
     // Call the contract
-    const [currentUser, setCurrentUser] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -50,6 +49,7 @@ const RegisterUser = () => {
     var onSubmit = async (event) => {
         event.preventDefault();
         var factoryContract;
+        var user;
 
         // Initializes VoteFactory Contract
         var setupVoteFactory = async () => {
@@ -57,8 +57,6 @@ const RegisterUser = () => {
                 return;
             }
             try {
-                const [user] = (await web3.eth.getAccounts());
-                setCurrentUser(user);
                 // Get the contract instance.
                 const networkId = await web3.eth.net.getId();
                 const deployedNetwork = VoteFactoryContract.networks[networkId];
@@ -67,6 +65,8 @@ const RegisterUser = () => {
                     deployedNetwork && deployedNetwork.address,
                 );
                 factoryContract = instance;
+
+                [user] = (await web3.eth.getAccounts());
 
                 // Set web3, accounts, and contract to the state, and then proceed with an
             } catch (error) {
@@ -103,7 +103,7 @@ const RegisterUser = () => {
 
             try {
                 await factoryContract.methods.registerUser(username, email, studentID, password).send({
-                    from: currentUser
+                    from: user
                 });
             } catch (error) {
                 alert(error);
@@ -117,7 +117,7 @@ const RegisterUser = () => {
         var displayUser = async () => {
             if (!errorRegister) {
                 const summary = await factoryContract.methods.getUser().call({
-                    from: currentUser
+                    from: user
                 });
                 console.log(summary);
             }
@@ -142,7 +142,7 @@ const RegisterUser = () => {
         await displayUser();
         await displayDefaultGroup();
         await displayGroups();
-        Router.push("/index");
+        Router.push("/loginUser");
     };
 
     return (

@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from '../components/header';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
-import { Form, Loader  } from "semantic-ui-react";
+import { Form } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
 import Router from "next/router";
 import 'semantic-ui-css/semantic.min.css';
 
-const adminTitle = {
-    color: "red",
-    marginBottom: "5%",
+const logoutButton = {
+    elevation: 8,
+    backgroundColor: "red",
+    borderRadius: 1000,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    color: "white",
     fontSize: "3em",
     textAlign: "center"
 };
 
 const adminFields = {
-    margin: "auto 5% auto 5%"
+    position: 'absolute', left: '50%', top: '20%',
+    transform: 'translate(-50%, -50%)'
 };
 
 const LogoutUser = () => {
@@ -22,9 +27,6 @@ const LogoutUser = () => {
     var web3Instance;
     const [web3, setWeb3] = useState('');
     const [Load, setLoad] = useState(true);
-    const [currentUser, setCurrentUser] = useState('');
-    const [studentID, setStudentID] = useState('');
-    const [password, setPassword] = useState('');
     const [userLogin, setUserLogin] = useState(false);
 
     useEffect(() => {
@@ -38,6 +40,7 @@ const LogoutUser = () => {
     var onSubmit = async (event) => {
         event.preventDefault();
         var factoryContract;
+        var user;
 
         // Initializes VoteFactory Contract
         var setupVoteFactory = async () => {
@@ -45,8 +48,7 @@ const LogoutUser = () => {
                 return;
             }
             try {
-                const [user] = (await web3.eth.getAccounts());
-                setCurrentUser(user);
+                [user] = (await web3.eth.getAccounts());
                 // Get the contract instance.
                 const networkId = await web3.eth.net.getId();
                 const deployedNetwork = VoteFactoryContract.networks[networkId];
@@ -66,27 +68,20 @@ const LogoutUser = () => {
             }
         };
         // Calls VoteFactory Contract to create a new instance of Group
-        var logInUser = async () => {
-            var isLogin = await factoryContract.methods.isUserLoggedIn().call();
+        var logOutUser = async () => {
+            var isLogin = await factoryContract.methods.isUserLoggedIn().call({
+                from: user
+            });
             setUserLogin(isLogin);
-            var error = ``;
             if(factoryContract == ''){
                 return;
             }
 
-            if (studentID.length != 9) {
-                error += `Wrong student ID format. Make sure that the student ID has a length of 9 digits`;
-            }
-
-            if (error.length != 0) {
-                alert(error);
-            }
-
             try {
-                if (!userLogin) {
+                if (userLogin) {
                     // Calls the method createGroup from VoteFactory.sol
-                    await factoryContract.methods.loginUser(studentID, password).send({
-                        from: currentUser
+                    await factoryContract.methods.logoutUser().call({
+                        from: user
                     });
                 }
             } catch (error) {
@@ -97,14 +92,16 @@ const LogoutUser = () => {
 
         // Verify the values of the newly created instance of Group
         var displayUser = async () => {
-            const summary = await factoryContract.methods.getUser().call();
+            const summary = await factoryContract.methods.isUserLoggedIn.call({
+                from: user
+            });
             console.log(summary);
         };
 
         await setupVoteFactory();
-        await logInUser();
+        await logOutUser();
         await displayUser();
-        Router.push("/");
+        Router.push("/loginUser");
     };
 
     return (
@@ -113,36 +110,11 @@ const LogoutUser = () => {
             <br></br>
             <br></br>
             <br></br>
-            <h1 style={adminTitle}>Log In</h1>
 
             <Form onSubmit={onSubmit} style={adminFields}>
+            <br></br>
                 <div>
-                    <Form.Input required label="StudentID"
-                                 value={studentID}
-                                 onChange={event => setStudentID(event.target.value)}
-                    >
-
-                    </Form.Input>
-                </div>
-                <br></br>
-                <div>
-                    <Form.Input required label="Password"
-                                 type="password"
-                                 value={password}
-                                 onChange={event => setPassword(event.target.value)}
-                    >
-
-                    </Form.Input>
-                </div>
-                <br></br>
-                <Loader
-                        active={userLogin}
-                        inline='centered'
-                />
-                <br></br>
-                <div>
-                    <Form.Button>Cancel</Form.Button>
-                    <Form.Button type="submit" onSubmit={onSubmit}>Login</Form.Button>
+                    <Form.Button style={logoutButton} type="submit" onSubmit={onSubmit}>Log Out</Form.Button>
                 </div>
             </Form>
         </>

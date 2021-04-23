@@ -29,7 +29,6 @@ const LoginUser = () => {
     var web3Instance;
     const [web3, setWeb3] = useState('');
     const [Load, setLoad] = useState(true);
-    const [currentUser, setCurrentUser] = useState('');
     const [userLogin, setUserLogin] = useState(false);
     const [studentID, setStudentID] = useState('');
     const [password, setPassword] = useState('');
@@ -47,6 +46,7 @@ const LoginUser = () => {
     var onSubmit = async (event) => {
         event.preventDefault();
         var factoryContract;
+        var user;
 
         // Initializes VoteFactory Contract
         var setupVoteFactory = async () => {
@@ -54,8 +54,7 @@ const LoginUser = () => {
                 return;
             }
             try {
-                cosnt [user] = (await web3.eth.getAccounts());
-                setCurrentUser(user);
+                [user] = (await web3.eth.getAccounts());
                 // Get the contract instance.
                 const networkId = await web3.eth.net.getId();
                 const deployedNetwork = VoteFactoryContract.networks[networkId];
@@ -95,7 +94,7 @@ const LoginUser = () => {
             try {
                 if (!userLogin) {
                     await factoryContract.methods.loginUser(studentID, password).send({
-                        from: currentUser
+                        from: user
                     });
                 }
             } catch (error) {

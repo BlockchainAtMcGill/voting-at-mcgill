@@ -85,21 +85,6 @@ const JoinGroup = () => {
         console.error(error);
       }
     }
-
-    /*
-    var userLoggedIn = async () => {
-      try {
-        var isLog = await contract.methods.isUserLoggedIn().call({
-          from: currentUser
-        });
-  
-        setIsLoggedIn(isLog);
-      } catch (error) {
-        alert(
-          `Failed to verify if the user has logged in.`
-        );
-      }
-    } */
     setup();
     // userLoggedIn();
   },[web3]);

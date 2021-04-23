@@ -20,12 +20,9 @@ contract VoteFactory{
         string email;
         uint256 studentID;
         string password;
-        // address[] running;
-        // address[] createdElection;
-        // address[] createdPetition;
         uint32[] groups;
         bool isAdmin;
-        bool isLogin; // NEW Check if the user is logged in
+        bool isLogin;
     }
     
     mapping(uint => groupStruct) public groupInfo; // KEY: groupID Value: group
@@ -41,6 +38,8 @@ contract VoteFactory{
     function createGroup(string memory name, string memory description) public {
         userStruct storage u = userInfo[msg.sender];
         groupStruct storage g = groupInfo[groupCount];
+        
+        require(u.isLogin);
         require(!compareStrings(groupInfo[0].name, ""));
         g.name = name;
         g.description = description;
@@ -56,6 +55,7 @@ contract VoteFactory{
         userStruct storage u = userInfo[msg.sender];
         groupStruct storage g = groupInfo[groupID];
         
+        require(u.isLogin);
         require(groupID != 0);
         require(!compareStrings(g.name, "")); // Validates the group's existence
         require(!isUserGroup(groupID));
@@ -117,6 +117,7 @@ contract VoteFactory{
        userStruct storage u = userInfo[msg.sender];
        require(studentID == u.studentID);
        require(compareStrings(password, u.password)); // NEW implemented the helper method
+       require(!u.isLogin);
        u.isLogin = true;
        return(u.name, u.email, u.groups, u.isAdmin);
     }
@@ -195,7 +196,7 @@ contract VoteFactory{
     }
 
     //NEED TO BE FIX (u.groups) FOLLOW VOTE.SOL SYNTAX
-    function getUser() public view returns (string memory aAddress, string memory aName, string memory aEmail, uint256 aStudentID, uint32[] memory aGroups, bool aIsAdmin, bool aIsLogin) {
+    function getUser() public view returns (address aAddress, string memory aName, string memory aEmail, uint256 aStudentID, uint32[] memory aGroups, bool aIsAdmin, bool aIsLogin) {
         userStruct storage u = userInfo[msg.sender];
         return(u.userAddress,
                u.name, 
