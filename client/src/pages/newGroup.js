@@ -32,7 +32,6 @@ const NewGroup = () => {
     const [creatingGroup, setCreatingGroup] = useState(false);
 
     // Call the contract
-    const [userLogin, setUserLogin] = useState(false);
     const [groupName, setGroupName] = useState('');
     const [description, setDescription] = useState('');
 
@@ -48,7 +47,6 @@ const NewGroup = () => {
         event.preventDefault();
         var factoryContract;
         var user;
-        
         // Initializes VoteFactory Contract
         var setupVoteFactory = async () => {
             if(web3 == '') {
@@ -76,21 +74,17 @@ const NewGroup = () => {
         };
         // Calls VoteFactory Contract to create a new instance of Group
         var createGroup = async () => {
-            var isLogin = await factoryContract.methods.isUserLoggedIn().call();
-            setUserLogin(isLogin);
             setCreatingGroup(true);
             if(factoryContract == ''){
                 return;
             }
 
             try {
-                if (isLogin) {
-                    await factoryContract.methods.createGroup(groupName, description).send({
-                        from: user
-                    });
-                    setCreatingGroup(false);
-                    setLoad(!Load);
-                }
+                await factoryContract.methods.createGroup(groupName, description).send({
+                    from: user
+                });
+                setCreatingGroup(false);
+                setLoad(!Load);
             } catch (error) {
                 alert (
                     `Failed to create new group.`

@@ -80,7 +80,7 @@ const LogoutUser = () => {
             try {
                 if (userLogin) {
                     // Calls the method createGroup from VoteFactory.sol
-                    await factoryContract.methods.logoutUser().call({
+                    await factoryContract.methods.logoutUser().send({
                         from: user
                     });
                 }
@@ -90,18 +90,8 @@ const LogoutUser = () => {
             setLoad(!Load);
         };
 
-        // Verify the values of the newly created instance of Group
-        var displayUser = async () => {
-            const summary = await factoryContract.methods.isUserLoggedIn.call({
-                from: user
-            });
-            console.log(summary);
-        };
-
         await setupVoteFactory();
         await logOutUser();
-        await displayUser();
-        Router.push("/loginUser");
     };
 
     return (
@@ -112,7 +102,6 @@ const LogoutUser = () => {
             <br></br>
 
             <Form onSubmit={onSubmit} style={adminFields}>
-            <br></br>
                 <div>
                     <Form.Button style={logoutButton} type="submit" onSubmit={onSubmit}>Log Out</Form.Button>
                 </div>

@@ -86,7 +86,6 @@ const JoinGroup = () => {
       }
     }
     setup();
-    // userLoggedIn();
   },[web3]);
 
   // Initialize all existing groups
@@ -98,7 +97,7 @@ const JoinGroup = () => {
 
       try {
         const response = await contract.methods.getExistingGroups().call();
-      setGroupsID(response);
+        setGroupsID(response);
       } catch (error) {
         alert(
           `Failed to initialize all existing groups.`
@@ -135,18 +134,18 @@ const JoinGroup = () => {
         try {
           var tempGroups = [];
           var tempJoined = [];
-          await groupsID.forEach(identification => {
+            await groupsID.forEach(identification => {
               displayInfo(identification).then(newGroup => {
                 // Check if user has joined the group
                 tempGroups.push(newGroup[0]);
                 tempJoined.push(newGroup[1]);
+              });
             });
-          });
-          setTimeout(function(){
-            setRenderGroups(tempGroups);
-            setGroupJoined(tempJoined);
+            setTimeout(function(){
+              setRenderGroups(tempGroups);
+              setGroupJoined(tempJoined);
 
-          }, 1000);
+            }, 1000);
         } catch (error) {
           alert(
             `Failed to display groups.`
@@ -167,13 +166,12 @@ const JoinGroup = () => {
       await contract.methods.registerGroup(groupID).send({
         from: currentUser
       });
+      window.location.reload();
     } catch (error) {
       alert(
         `Failed to join group.`
       );
     }
-
-    Router.push("/joinGroup");
   }
 
   // Display in the console the two arrays above to verify its consistency (testing purposes)
@@ -209,8 +207,8 @@ const JoinGroup = () => {
         </div>
         <div className="content">
           <span className="right floated">
-          {groupJoined[index] ? <span></span> : <span className="float right" style={styles.access} type="button" onClick={() => onClick(index)}>join group</span>}
-          <i className="angle right icon huge"></i>
+          {groupJoined[index] ? <span></span> : <span className="float right" style={styles.access}>join group</span>}
+          {groupJoined[index] ? <i></i> : <i className="angle right icon huge" type="button" onClick={() => onClick(index)}></i>}
           </span>
           <div className="ui sub header" style={{marginLeft:10}}>
             <i className="checkmark icon small"></i>

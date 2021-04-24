@@ -25,14 +25,12 @@ const adminFields = {
  * @author Simon Wang
  */
 const RegisterUser = () => {
-    // Basic
+
     var web3Instance;
     const [web3, setWeb3] = useState('');
     const [Load, setLoad] = useState(true);
     const [registeringUser, setRegisteringUser] = useState(false);
     const [errorRegister, setErrorRegister] = useState(false);
-
-    // Call the contract
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

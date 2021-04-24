@@ -39,7 +39,6 @@ contract VoteFactory{
         userStruct storage u = userInfo[msg.sender];
         groupStruct storage g = groupInfo[groupCount];
         
-        require(u.isLogin);
         require(!compareStrings(groupInfo[0].name, ""));
         g.name = name;
         g.description = description;
@@ -55,7 +54,6 @@ contract VoteFactory{
         userStruct storage u = userInfo[msg.sender];
         groupStruct storage g = groupInfo[groupID];
         
-        require(u.isLogin);
         require(groupID != 0);
         require(!compareStrings(g.name, "")); // Validates the group's existence
         require(!isUserGroup(groupID));
@@ -196,10 +194,9 @@ contract VoteFactory{
     }
 
     //NEED TO BE FIX (u.groups) FOLLOW VOTE.SOL SYNTAX
-    function getUser() public view returns (address aAddress, string memory aName, string memory aEmail, uint256 aStudentID, uint32[] memory aGroups, bool aIsAdmin, bool aIsLogin) {
+    function getUser() public view returns (string memory aName, string memory aEmail, uint256 aStudentID, uint32[] memory aGroups, bool aIsAdmin, bool aIsLogin) {
         userStruct storage u = userInfo[msg.sender];
-        return(u.userAddress,
-               u.name, 
+        return(u.name, 
                u.email, 
                u.studentID, 
                u.groups, 
