@@ -41,9 +41,9 @@ contract("Vote", accounts => {
   });
   describe('candidate', async () =>{
     it('candidate can enter', async() => {
-      await election.editElection("title", 1, 3, "description", 'two-thirds');
+      await election.editVote("title" ,1,2, 3, "description", 0,[0]);
       await election.enterElection('user', 'party1', 0, {from: accounts[0]} );
-      const add = await (election.get_candidates(accounts[0]));
+      const add = await (election.get_candidate(accounts[0]));
       assert.equal(add[0],'user');
       assert.equal(await election.candidatesCount(),1);
     })
