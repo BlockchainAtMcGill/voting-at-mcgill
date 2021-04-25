@@ -14,7 +14,7 @@ import {
   YAxis,
   Legend,
   CartesianGrid,
-  Bar, ResponsiveContainer,Cell,AnswerRef
+  Bar, ResponsiveContainer,Cell,AnswerRef,Brush
 } from "recharts";
 
 const Vote = () => {
@@ -200,30 +200,29 @@ const Vote = () => {
                                 <div className="header">
                                     Results:
                                 </div>
-                                <br></br>
-                                <br></br>
                                 {checkyboi()}
                             </div>
                         </div>
           }
     }
     // console.log('here');
-    // console.log(data);
+    // console.log(data);            <input type="checkbox"
+                    //  checked={state}
+                      //onChange={onChange}
+                      ///>
 
 
 
     function checkyboi(){
       var onChange = e =>{setState(e.target.checked)}
       return(
-        <div class="ui center floated compact segment">
-        <h1>Change your view to a {state ? "Bar Chart" : "Pie Chart"} </h1>
-            <div class="ui fitted slider checkbox">
-          <label>
-            <input type="checkbox"
-                  checked={state}
-                  onChange={onChange}
-                  />
-          </label>
+        <div  class="ui  center aligned compact segment">
+        <h1>Current View:  {state ? "Pie Chart" : "Bar Chart"} </h1>
+
+          <div class="ui slider checkbox">
+            <input type="checkbox"  checked={state}
+              onChange={onChange}/>
+            <label></label>
           </div>
           {chart()}
         </div>
@@ -266,11 +265,11 @@ const Vote = () => {
                     <text
                       x={x}
                       y={y}
-                      fill="FF0000"
+                      fill="#FF0000"
                       textAnchor={x > cx ? "start" : "end"}
                       dominantBaseline="central"
                     >
-                      {data[index].name} ({value})
+                      {data[index].name} ({value/parseInt(currentVote[7])*100}%)
                     </text>
                   );
                 }}
@@ -284,80 +283,22 @@ const Vote = () => {
       if(state==false){
       return(
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart width ={600} height={400} data={data}>
-            <XAxis datakey="name"/>
-            <YAxis />
-            <Tooltip/>
-            <Bar dataKey="value" fill="#FF0000"/>
-          </BarChart>
+          <BarChart
+                  height={300}
+                  data={data}
+                >
+                  <XAxis
+                    dataKey="name"
+                  />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#FF0000" background={{ fill: "#eee" }} />
+                </BarChart>
         </ResponsiveContainer>
       )
     }
   }
 
-    function SimpleBarChart(){
-              const fata = [
-            {
-              "AnswerRef": "one",
-              "Text": "5 out of 50 throws",
-              "Score": 0,
-              "RespondentPercentage": 12,
-              "Rank": 1
-            },
-            {
-              "AnswerRef": "two",
-              "Text": "25 out of 50 throws",
-              "Score": 0,
-              "RespondentPercentage": 32,
-              "Rank": 2
-            },
-            {
-              "AnswerRef": "three",
-              "Text": "30 out of 50 throws",
-              "Score": 1,
-              "RespondentPercentage": 41,
-              "Rank": 3
-            },
-            {
-              "AnswerRef": "four",
-              "Text": "None of the above",
-              "Score": 0,
-              "RespondentPercentage": 16,
-              "Rank": 4
-            }
-        ]
-      return(
-              	<BarChart
-                      width="100%"
-                      height={260}
-                      data={fata}
-                      margin={{top: 0, right: 0, left: 0, bottom: 25}}>
-                 <XAxis
-                     dataKey="Text"
-                     fontFamily="sans-serif"
-                     tickSize
-                     dy='25'
-                 />
-                 <YAxis hide/>
-                 <CartesianGrid
-                     vertical={false}
-                     stroke="#ebf3f0"
-                 />
-                 <Bar
-                     dataKey="RespondentPercentage"
-                     barSize ={170}
-                     fontFamily="sans-serif"
-                     >
-                      {
-                          fata.map((entry, index) => (
-                              <Cell fill={fata[index].AnswerRef === "three" ? '#61bf93' : '#ededed'} />
-                          ))
-                      }
-                  </Bar>
-                </BarChart>
-
-            )
-          }
 
     function displayCandidates() {
         if (candidates == ""){
