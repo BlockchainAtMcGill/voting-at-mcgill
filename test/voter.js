@@ -91,75 +91,123 @@ contract("VoteFactory", accounts => {
       assert.equal(accounts[0],manager);
     })
     it('edits existing election and outputs it', async() => {
-      await election.editElection("title", 1, 2, "description",'two-thirds');
-      const currentElection = await (election.currentElection());
+      await election.editVote("title", 0, 1, 2, "description", 0, [0,1]);
+      const currentElection = await (election.getElection());
       const expectedElection = {
-        title: "title",
-        startDate: 1,
-        endDate: 2,
-        description: "description",
-        numVotes: 0,
-        typeOfElection: 'two-thirds'
+        aManager: accounts[0],
+        aVoteType: 0,
+        aVoteStatus: 1,
+        aTitle: "title",
+        aStartDate: 0,
+        aEndDate: 2,
+        aDescription: "description",
+        aNumVotes: 0,
+        aVoteAddress: "something",
+        aCandidateCount: 0,
+        aTypeOfElection: 0,
+        aGroupIDs: [0,1]
       }
-      assert.equal(expectedElection.title, currentElection['0']);
-      assert.equal(expectedElection.startDate, (currentElection['1'])['words'][0]);
-      assert.equal(expectedElection.endDate, (currentElection['2'])['words'][0]);
-      assert.equal(expectedElection.description, (currentElection['3']));
-      assert.equal(expectedElection.numVotes, (currentElection['4'])['words'][0]);
-      assert.equal(expectedElection.typeOfElection, (currentElection['5']));
+      assert.equal(expectedElection.aManager, currentElection.aManager);
+      assert.equal(expectedElection.aVoteType, (currentElection.aVoteType)['words'][0]);
+      assert.equal(expectedElection.aVoteStatus, (currentElection.aVoteStatus)['words'][0]);
+      assert.equal(expectedElection.aTitle, currentElection.aTitle);
+      assert.equal(expectedElection.aStartDate, (currentElection.aStartDate)['words'][0]);
+      assert.equal(expectedElection.aEndDate, (currentElection.aEndDate)['words'][0]);
+      assert.equal(expectedElection.aDescription, (currentElection.aDescription));
+      assert.equal(expectedElection.aNumVotes, (currentElection.aNumVotes)['words'][0]);
+      assert.ok(currentElection.aVoteAddress);
+      assert.equal(expectedElection.aCandidateCount, (currentElection.aCandidateCount)['words'][0]);
+      assert.equal(expectedElection.aTypeOfElection, (currentElection.aTypeOfElection)['words'][0]);
+      for(var i=0; i<expectedElection.aGroupIDs.length; i++) {
+        assert.equal(expectedElection.aGroupIDs[i], (currentElection.aGroupIDs)[i]['words'][0]);
+      }
     })
     it('users can vote for a certain candidate',async() => {
-      await election.editElection("title", 1, 10, "description",'two-thirds');
+      await election.editVote("title", 0, 1, 2, "description", 0, [0,1]);
       await election.enterElection('user', 'party1', 0, {from: accounts[0]} );
       await election.voteFor(accounts[0],{from:accounts[0]})//someone voting for themselves
-      const electionVotes = ((await (election.currentElection()))['4']['words'][0])
-      // console.log(await election.candidateArray(0))//won't work because array isn't linked to mapping
-      const candidateInfo = await election.candidates(accounts[0]);
+      const currentElection = await (election.getElection());
+      const electionVotes =  (currentElection.aNumVotes)['words'][0];
+      const candidateInfo = await election.get_candidate(accounts[0]);
       const candidateVoters = await election.getCandidateVoters(accounts[0]);
-      const hasVoted = await election.getElectionVoter(accounts[0]);
-
+      const hasVoted = await election.getVoted(accounts[0]);
+      // console.log(electionVotes)
+      // console.log(candidateInfo)
+      // console.log(candidateVoters)
+      // console.log(hasVoted)
       assert.equal(1, electionVotes)
-      assert.equal(1, ((candidateInfo['1'])['words'])[0]);
+      assert.equal(1, ((candidateInfo.aNumVotes)['words'])[0]);
       assert.equal(accounts[0], [candidateVoters])
       assert.equal(true, hasVoted )
     })
     it('users cannot vote more than once for a given election',async() => {
-      await election.editElection("title", 1, 10, "description",'two-thirds');
+      try{
+      await election.editVote("title", 0, 1, 2, "description", 0, [0,1]);
       await election.enterElection('user', 'party1', 0, {from: accounts[0]} );
       await election.enterElection('user2', 'party2', 0, {from: accounts[1]} );
       await election.voteFor(accounts[0],{from:accounts[0]})//someone voting for themselves
       await election.voteFor(accounts[1],{from:accounts[0]})//someone that already voted voted for someone else
-      const electionVotes = ((await (election.currentElection()))['4']['words'][0])
-      const candidateInfo1 = await election.candidates(accounts[0]);
-      const candidateInfo2 = await election.candidates(accounts[1]);
-      const candidateVoters = await election.getCandidateVoters(accounts[0]);
-      assert.equal(1, electionVotes)
-      assert.equal(1, ((candidateInfo1['1'])['words'])[0]);
-      assert.equal(0, ((candidateInfo2['1'])['words'])[0]);
-      assert.equal(accounts[0], [candidateVoters])
+      } catch(e){
+        const currentElection = await (election.getElection());
+        const electionVotes =  (currentElection.aNumVotes)['words'][0];
+        const candidateVoters = await election.getCandidateVoters(accounts[0]);
+
+        const candidateInfo1 = await election.get_candidate(accounts[0]);
+        const candidateInfo2 = await election.get_candidate(accounts[1]);
+
+        assert.equal(1, electionVotes)
+        assert.equal(1, ((candidateInfo1.aNumVotes)['words'])[0]);
+        assert.equal(0, ((candidateInfo2.aNumVotes)['words'])[0]);
+        assert.equal(accounts[0], [candidateVoters])
+      }
+    })
+    // it('correct winner is displayed in majority election',async() => {
+    //   await election.editVote("title", 0, 1, 2, "description", 0, [0,1]);
+    //   await election.enterElection('user', 'party1', 0, {from: accounts[0]} );
+    //   await election.enterElection('user2', 'party2', 0, {from: accounts[1]} );
+      
+    //   await election.voteFor(accounts[0],{from:accounts[0]});//someone voting for themselves
+      // await election.updateVoteStatus(2,{from: accounts[0]});
+      // const winner = await election.get_Winner()
+      // asser.ok(1)
+      // assert.equal('user', winner.aName)
+      // assert.equal('party1', winner.aDescription)
+      // assert.equal(1, ((winner.aNumVotes)['words'])[0]);
     })
   })
 
   describe('Petition', async () =>{
     it('marks caller as petition manager', async() => {
-      const manager = await election.manager();
+      const manager = await petition.manager();
       assert.equal(accounts[0],manager);
     })
     it('edits existing petition and outputs it', async() => {
-      await petition.editPetition("title", 1, 2, "description");
-      const currentPetition = await (petition.currentPetition());
+      await petition.editVote("title", 0, 1, 2, "description", 1, [0,1]);
+      const currentPetition = await (petition.getPetition());
       const expectedPetition = {
-        title: "title",
-        startDate: 1,
-        endDate: 2,
-        description: "description",
-        numVotes: 0,
+        aManager: accounts[0],
+        aVoteType: 1,
+        aVoteStatus: 1,
+        aTitle: "title",
+        aStartDate: 0,
+        aEndDate: 2,
+        aDescription: "description",
+        aNumVotes: 0,
+        aVoteAddress: "something",
+        aGroupIDs: [0,1]
       }
-      assert.equal(expectedPetition.title, currentPetition['0']);
-      assert.equal(expectedPetition.startDate, (currentPetition['1'])['words'][0]);
-      assert.equal(expectedPetition.endDate, (currentPetition['2'])['words'][0]);
-      assert.equal(expectedPetition.description, (currentPetition['3']));
-      assert.equal(expectedPetition.numVotes, (currentPetition['4'])['words'][0]);
+      assert.equal(expectedPetition.aManager, currentPetition.aManager);
+      assert.equal(expectedPetition.aVoteType, (currentPetition.aVoteType)['words'][0]);
+      assert.equal(expectedPetition.aVoteStatus, (currentPetition.aVoteStatus)['words'][0]);
+      assert.equal(expectedPetition.aTitle, currentPetition.aTitle);
+      assert.equal(expectedPetition.aStartDate, (currentPetition.aStartDate)['words'][0]);
+      assert.equal(expectedPetition.aEndDate, (currentPetition.aEndDate)['words'][0]);
+      assert.equal(expectedPetition.aDescription, (currentPetition.aDescription));
+      assert.equal(expectedPetition.aNumVotes, (currentPetition.aNumVotes)['words'][0]);
+      assert.ok(currentPetition.aVoteAddress);
+      for(var i=0; i<expectedPetition.aGroupIDs.length; i++) {
+        assert.equal(expectedPetition.aGroupIDs[i], (currentPetition.aGroupIDs)[i]['words'][0]);
+      }
     });
 
   });

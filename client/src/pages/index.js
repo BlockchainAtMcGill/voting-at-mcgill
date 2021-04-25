@@ -154,8 +154,8 @@ function App() {
   },[votesAddresses]);
 
   useEffect(()=> {
-    // console.log(votes);
-    // console.log(groups);
+    console.log(votes);
+    console.log(groups);
   },[votes])
 
   function displayElectionsList() {
