@@ -78,7 +78,7 @@ const NewElection = () => {
         if(voteFactory == '') {
             return;
         }
-        const response = await voteFactory.methods.getUserAllGroups().call();
+        const response = await voteFactory.methods.getUserAllGroups(manager).call();
         const temp = [];
         for (var i = 0; i < response.length; i++) {
             temp.push({ key: parseInt(response[i]), text: parseInt(response[i]), value: parseInt(response[i])});

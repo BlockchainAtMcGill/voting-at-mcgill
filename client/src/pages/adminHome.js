@@ -31,7 +31,7 @@ const AdminHome = () => {
         <br></br>
         <br></br>
         <h1 className="ui title" style={adminTitle}>
-            Welcome Admin!
+            Menu
         </h1>
         <Grid columns={2} divided>
             <Grid.Row>
