@@ -91,9 +91,7 @@ const Apply = () => {
 
 
         var setCandidate = async () => {
-            const userinfo = await factoryContract.methods.getUser().call({
-                from: manager
-              });
+            const userinfo = await factoryContract.methods.getUser(manager).call();
             await voteContract.methods.enterElection(userinfo[0], description ,new Date(currentDate).getTime()).send({from: manager});
         };
 

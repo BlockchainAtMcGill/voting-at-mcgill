@@ -48,6 +48,7 @@ const JoinGroup = () => {
   const [contract, setContract] = useState('');
   const [renderedGroups, setRenderGroups] = useState([]);
   const [groupJoined, setGroupJoined] = useState([]);
+  const [logged, setLogged] = useState(false);
 
   // Setup Web3
   useEffect(() => {
@@ -77,6 +78,8 @@ const JoinGroup = () => {
 
         const [user] = await web3.eth.getAccounts();
         setCurrentUser(user);
+        const isLogin = await instance.methods.isUserLoggedIn(user);
+        setLogged(isLogin);
     
       } catch (error) {
         alert(
@@ -114,9 +117,7 @@ const JoinGroup = () => {
     }
     try {
 
-      return [await contract.methods.getGroup(identification).call(), await contract.methods.isUserGroup(identification).call({
-        from: currentUser
-      })];
+      return [await contract.methods.getGroup(identification).call(), await contract.methods.isUserGroup(currentUser, identification).call()];
     } catch (error) {
       alert(
         `Failed to initialize the info of each group.`
@@ -228,7 +229,9 @@ const JoinGroup = () => {
       <br></br>
       <br></br>
       <div className="App">
-        <div>{ displayGroupList() }</div>
+        <div>
+          { logged ? displayGroupList() : <div>You must log in to view groups</div>}
+          </div>
       </div>
     </>
   ); 

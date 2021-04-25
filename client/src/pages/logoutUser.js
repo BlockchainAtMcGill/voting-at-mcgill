@@ -9,7 +9,8 @@ import 'semantic-ui-css/semantic.min.css';
 const logoutButton = {
     elevation: 8,
     backgroundColor: "red",
-    borderRadius: 1000,
+    borderRadius: 100,
+    shadowRadius: 15,
     paddingVertical: 10,
     paddingHorizontal: 12,
     color: "white",
@@ -69,9 +70,7 @@ const LogoutUser = () => {
         };
         // Calls VoteFactory Contract to create a new instance of Group
         var logOutUser = async () => {
-            var isLogin = await factoryContract.methods.isUserLoggedIn().call({
-                from: user
-            });
+            var isLogin = await factoryContract.methods.isUserLoggedIn(user).call();
             setUserLogin(isLogin);
             if(factoryContract == ''){
                 return;

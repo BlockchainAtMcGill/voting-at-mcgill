@@ -14,7 +14,7 @@ const headersData = [
       key:1
     },
     {
-      label: "menu",
+      label: "Menu",
       href: "/adminHome",
       key:2
     },

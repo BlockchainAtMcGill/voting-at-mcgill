@@ -68,6 +68,10 @@ function App() {
         setContract(instance);
         const [user] = await web3.eth.getAccounts();
         setCurrentUser(user);
+        if (user) {
+          const instance1 = await instance.methods.getUserAllGroups(user).call();
+          setGroups(instance1);
+        }
     
         // Set web3, accounts, and contract to the state, and then proceed with an
       } catch (error) {
@@ -77,21 +81,12 @@ function App() {
         );
         console.error(error);
       }
+
+      
     }
       setup();
       // console.log('ok')
   },[web3]);
-
-  useEffect(()=> {//display available votes addresses
-    var getGroups = async () => {
-      if(contract == ''){
-        return;
-      }
-      const instance = await contract.methods.getUserAllGroups().call();
-      setGroups(instance)
-    };
-    getGroups();
-  },[contract]);
 
   useEffect(()=> {//display available votes addresses
     var displayVotes = async () => {
@@ -151,11 +146,11 @@ function App() {
 
       }
     renderVotes();
-  },[votesAddresses]);
+  },[groups]);
 
   useEffect(()=> {
-    // console.log(votes);
-    // console.log(groups);
+    console.log(votes);
+    console.log(groups);
   },[votes])
 
   function displayElectionsList() {
