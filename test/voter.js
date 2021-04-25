@@ -49,15 +49,9 @@ contract("VoteFactory", accounts => {
     });
 
     // Get existing Users
-    user = await factory.getUser({
-      from: accounts[0]
-    });
-    member1 = await factory.getUser({
-      from: accounts[1]
-    });
-    member2 = await factory.getUser({
-      from: accounts[2]
-    });
+    user = await factory.getUser(accounts[0]);
+    member1 = await factory.getUser(accounts[1]);
+    member2 = await factory.getUser(accounts[2]);
 
     /**
      * Groups Setup
@@ -216,9 +210,7 @@ contract("VoteFactory", accounts => {
       await factory.registerUser("test", "test@mcgill.ca", "012", "password", {
         from: accounts[3]
       });
-      testUser = await factory.getUser({
-        from: accounts[3]
-      });
+      testUser = await factory.getUser(accounts[3]);
       assert.ok(testUser);
     });
     it('attempts to create user with empty username', async() => {
@@ -226,9 +218,7 @@ contract("VoteFactory", accounts => {
         await factory.registerUser("", "test@mcgill.ca", "013", "password", {
           from: accounts[3]
         });
-        testUser = await factory.getUser({
-          from: accounts[3]
-        });
+        testUser = await factory.getUser(accounts[3]);
       } catch (error) {
         assert.ok(error);
         return;
@@ -239,9 +229,7 @@ contract("VoteFactory", accounts => {
       await factory.loginUser(789, "password", {
         from: accounts[2]
       });
-      let isLog = await factory.isUserLoggedIn({
-        from: accounts[2]
-      });
+      let isLog = await factory.isUserLoggedIn(accounts[2]);
       assert.equal(true, isLog);
     });
     it("attempt to login with incorrect student ID once registered", async () => {
@@ -284,9 +272,7 @@ contract("VoteFactory", accounts => {
       await factory.logoutUser({
         from: accounts[0]
       });
-      let isLog = await factory.isUserLoggedIn({
-        from: accounts[0]
-      });
+      let isLog = await factory.isUserLoggedIn(accounts[0]);
       assert.equal(false, isLog);
     });
     it("attempt to login once logged in", async () => {
@@ -304,28 +290,20 @@ contract("VoteFactory", accounts => {
       assert.fail("should have raised an error");
     });
     it("verify if user is part of the group", async() => {
-      let isGroup = await factory.isUserGroup(0,
-        ({from:accounts[0]})
-      );
+      let isGroup = await factory.isUserGroup(accounts[0], 0);
       assert.equal(true, isGroup);
     });
     it("verify if user is not part of the group", async() => {
-      let isGroup = await factory.isUserGroup(5,
-        ({from:accounts[0]})
-      );
+      let isGroup = await factory.isUserGroup(accounts[0], 5);
       assert.equal(false, isGroup);
     });
     it("gets specific group from user", async() => {
-      let groupID = await factory.getUserGroup(0,
-        {from:accounts[0]}
-      );
+      let groupID = await factory.getUserGroup(accounts[0], 0);
 
       assert.equal(0, groupID);
     });
     it("gets all groups from user", async() => {
-      let userGroups = await factory.getUserAllGroups(
-        {from:accounts[0]}
-      );
+      let userGroups = await factory.getUserAllGroups(accounts[0]);
       assert.strictEqual(3, userGroups.length);
     });
   });
@@ -351,9 +329,7 @@ contract("VoteFactory", accounts => {
         from: accounts[1]
       });
 
-      let user = await factory.getUser({
-        from: accounts[1]
-      });
+      let user = await factory.getUser(accounts[1]);
       assert.equal(user['3'].length, 3);
     });
     it('register to a group with invalid parameters', async () => {

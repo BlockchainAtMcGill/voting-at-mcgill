@@ -76,7 +76,7 @@ const LoginUser = () => {
 
         // Calls VoteFactory Contract to create a new instance of Group
         var logInUser = async () => {
-            var isLogin = await factoryContract.methods.isUserLoggedIn().call();
+            var isLogin = await factoryContract.methods.isUserLoggedIn(user).call();
             setUserLogin(isLogin);
             var error = ``;
             if(factoryContract == ''){
@@ -105,7 +105,7 @@ const LoginUser = () => {
 
         // Verify the values of the newly created instance of Group
         var displayUser = async () => {
-            const summary = await factoryContract.methods.getUser().call();
+            const summary = await factoryContract.methods.getUser(user).call();
             console.log(summary);
         };
 

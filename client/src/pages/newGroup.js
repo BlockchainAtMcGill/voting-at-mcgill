@@ -94,8 +94,8 @@ const NewGroup = () => {
 
         // Verify the values of the newly created instance of Group
         var displayGroup = async () => {
-            var groupID = await factoryContract.methods.getNumOfGroups().call();
-            var group = await factoryContract.methods.getGroup(groupID - 1).call();
+            var groups = await factoryContract.methods.getExistingGroups().call();
+            var group = await factoryContract.methods.getGroup(groups.length - 1).call();
             console.log(group);
         };
 

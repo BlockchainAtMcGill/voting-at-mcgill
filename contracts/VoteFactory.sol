@@ -56,7 +56,7 @@ contract VoteFactory{
         
         require(groupID != 0);
         require(!compareStrings(g.name, "")); // Validates the group's existence
-        require(!isUserGroup(groupID));
+        // require(!isUserGroup(u.userAddress, groupID));
         
         // Update User
         u.groups.push(groupID);
@@ -137,14 +137,14 @@ contract VoteFactory{
      * OTHER METHODS
      */
     // Verify that the user is logged in 
-    function isUserLoggedIn() public view returns (bool) {
-        userStruct storage u = userInfo[msg.sender];
+    function isUserLoggedIn(address currentUser) public view returns (bool) {
+        userStruct storage u = userInfo[currentUser];
         return u.isLogin;
     }
     // Verify if the user is part of the group
-    function isUserGroup(uint32 groupID) public view returns (bool) {
+    function isUserGroup(address currentUser, uint32 groupID) public view returns (bool) {
         bool isStatus = false;
-        userStruct storage u = userInfo[msg.sender];
+        userStruct storage u = userInfo[currentUser];
         for (uint i = 0; i < u.groups.length; i++) {
             if (u.groups[i] == groupID) {
                 isStatus = true;
@@ -162,21 +162,15 @@ contract VoteFactory{
     }
     
     // Returns a specific group of the user
-    function getUserGroup(uint32 index) public view returns (uint32) {
-        userStruct storage u = userInfo[msg.sender];
+    function getUserGroup(address currentUser, uint32 index) public view returns (uint32) {
+        userStruct storage u = userInfo[currentUser];
         return u.groups[index];
     }
     
     // Returns the user's array of groups
-    function getUserAllGroups() public view returns (uint32[] memory) {
-        userStruct storage u = userInfo[msg.sender];
+    function getUserAllGroups(address currentUser) public view returns (uint32[] memory) {
+        userStruct storage u = userInfo[currentUser];
         return u.groups;
-    }
-    
-    // Returns all members of the group
-    function getAllMembers(uint32 groupID) public view returns (address[] memory) {
-        groupStruct storage g = groupInfo[groupID];
-        return g.members;
     }
     
     // Returns a specific group of the website
@@ -189,13 +183,9 @@ contract VoteFactory{
         return existingGroups;
     }
 
-    function getNumOfGroups() public view returns(uint256) {
-        return existingGroups.length;
-    }
-
     //NEED TO BE FIX (u.groups) FOLLOW VOTE.SOL SYNTAX
-    function getUser() public view returns (string memory aName, string memory aEmail, uint256 aStudentID, uint32[] memory aGroups, bool aIsAdmin, bool aIsLogin) {
-        userStruct storage u = userInfo[msg.sender];
+    function getUser(address currentUser) public view returns (string memory aName, string memory aEmail, uint256 aStudentID, uint32[] memory aGroups, bool aIsAdmin, bool aIsLogin) {
+        userStruct storage u = userInfo[currentUser];
         return(u.name, 
                u.email, 
                u.studentID, 

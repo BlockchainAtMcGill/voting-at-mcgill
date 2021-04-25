@@ -114,9 +114,7 @@ const RegisterUser = () => {
         // Verify the values of the newly created instance of Group
         var displayUser = async () => {
             if (!errorRegister) {
-                const summary = await factoryContract.methods.getUser().call({
-                    from: user
-                });
+                const summary = await factoryContract.methods.getUser(user).call();
                 console.log(summary);
             }
         };
@@ -130,7 +128,7 @@ const RegisterUser = () => {
 
         var  displayGroups = async () => {
             if (!errorRegister) {
-                const summary = await factoryContract.methods.getExistingGroups().call();
+                const summary = await factoryContract.methods.getUserAllGroups(user).call();
                 console.log(summary);
             }
         };
