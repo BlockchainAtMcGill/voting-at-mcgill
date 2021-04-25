@@ -5,7 +5,7 @@ import VoteContract from "../../../contracts/Vote.json";
 import { Form } from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css';
 import { Link } from '../../../../routes';
-import { Modal, Dimmer, Loader, Image, Segment } from 'semantic-ui-react'
+import { Modal, Dimmer, Loader, Image, Segment, Progress } from 'semantic-ui-react'
 import {
   PieChart,
   Pie,
@@ -31,7 +31,7 @@ const Vote = () => {
     const [load, setLoad] = useState(true)
     const [cAddresses, setCAddresses] = useState([])
     const [signerName, setName] = useState('');
-
+    const [goal, setGoal] = useState('');
     useEffect(() => {
         async function initWeb3() {
             web3Instance = await getWeb3();
@@ -66,6 +66,15 @@ const Vote = () => {
 
                 setCurrentVote(await instance.methods.getPetition().call())
                 console.log(currentVote)
+                const num =parseInt(currentVote[7]);
+
+
+                if(parseInt(num)<100){
+                  setGoal("100");
+                }
+                else{
+                  setGoal(toString(Math.floor(num/100)*100));
+                }
                 // Set web3, accounts, and contract to the state, and then proceed with an
             } catch (error) {
             // Catch any errors for any of the above operations.
@@ -139,7 +148,8 @@ const Vote = () => {
     }
 
     function formatVote() {
-        if (currentVote[3]==currentVote[3]){
+        if (currentVote){
+            var goalPercentage= parseInt(currentVote[7])/goal*100
             var startDate = new Date(parseInt(currentVote[4]) * 1)
             var endDate = new Date(parseInt(currentVote[5]) * 1)
             return <>
@@ -147,8 +157,8 @@ const Vote = () => {
                     <div className="content">
                         <div className="header container" style= {{color: '#f00000'}}>
                             {currentVote[3]}
-                            - 
-                            { currentVote.aVoteStatus == 0 ? " starts on " + new Date(currentVote.aStartDate * 1).toUTCString().slice(0,17) : 
+                            -
+                            { currentVote.aVoteStatus == 0 ? " starts on " + new Date(currentVote.aStartDate * 1).toUTCString().slice(0,17) :
                             ( currentVote.aVoteStatus == 1 ? " ends on " + new Date(currentVote.aEndDate * 1).toUTCString().slice(0,17):
                             " archived: " + new Date(currentVote.aEndDate * 1).toUTCString().slice(0,17)
                             )}
@@ -174,10 +184,21 @@ const Vote = () => {
 
                     <div className="extra content" style= {{color: '#f00000'}}>
                         <i className="check icon"></i>
+
                         {parseInt(currentVote[7])} People Signed This Petition
+                        <br></br>
+                        <br></br>
+
+                        <div class="ui red progress">
+                          <div class="bar">
+                            <div class="progress">{goalPercentage}%</div>
+                          </div>
+                          <div class="label">Get this petition to the next goal ({goal})</div>
+                        </div>
                     </div>
                     <br></br>
                     <br></br>
+
                     <br></br>
                       {VoteModal()}
                     <span className="floated right">{voted}</span>
