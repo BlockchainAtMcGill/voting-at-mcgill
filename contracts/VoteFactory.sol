@@ -20,12 +20,9 @@ contract VoteFactory{
         string email;
         uint256 studentID;
         string password;
-        // address[] running;
-        // address[] createdElection;
-        // address[] createdPetition;
         uint32[] groups;
         bool isAdmin;
-        bool isLogin; // NEW Check if the user is logged in
+        bool isLogin;
     }
     
     mapping(uint => groupStruct) public groupInfo; // KEY: groupID Value: group
@@ -41,6 +38,7 @@ contract VoteFactory{
     function createGroup(string memory name, string memory description) public {
         userStruct storage u = userInfo[msg.sender];
         groupStruct storage g = groupInfo[groupCount];
+        
         require(!compareStrings(groupInfo[0].name, ""));
         g.name = name;
         g.description = description;
@@ -117,6 +115,7 @@ contract VoteFactory{
        userStruct storage u = userInfo[msg.sender];
        require(studentID == u.studentID);
        require(compareStrings(password, u.password)); // NEW implemented the helper method
+       require(!u.isLogin);
        u.isLogin = true;
        return(u.name, u.email, u.groups, u.isAdmin);
     }
@@ -147,7 +146,10 @@ contract VoteFactory{
         bool isStatus = false;
         userStruct storage u = userInfo[msg.sender];
         for (uint i = 0; i < u.groups.length; i++) {
-            isStatus = (u.groups[i] == groupID);
+            if (u.groups[i] == groupID) {
+                isStatus = true;
+                break;
+            }
         }
         return isStatus;
     }
@@ -192,13 +194,14 @@ contract VoteFactory{
     }
 
     //NEED TO BE FIX (u.groups) FOLLOW VOTE.SOL SYNTAX
-    function getUser() public view returns (string memory aName, string memory aEmail, uint256 aStudentID, uint32[] memory aGroups, bool aIsAdmin) {
+    function getUser() public view returns (string memory aName, string memory aEmail, uint256 aStudentID, uint32[] memory aGroups, bool aIsAdmin, bool aIsLogin) {
         userStruct storage u = userInfo[msg.sender];
         return(u.name, 
                u.email, 
                u.studentID, 
                u.groups, 
-               u.isAdmin);
+               u.isAdmin,
+               u.isLogin);
     }
     
     function getDeployedVotes() public view returns (address[] memory) {

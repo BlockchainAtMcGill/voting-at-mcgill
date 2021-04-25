@@ -3,6 +3,7 @@ import { Header } from '../components/header';
 import VoteFactoryContract from "../contracts/VoteFactory.json";
 import { Form, Loader  } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
+import Router from "next/router";
 import 'semantic-ui-css/semantic.min.css';
 
 const adminTitle = {
@@ -16,6 +17,13 @@ const adminFields = {
     margin: "auto 5% auto 5%"
 };
 
+/**
+ * New Group Page - a Page where user can see all existing group and/or join a new group
+ * DISCLAMER - majority of the code is based on vote.js written by Simon Wang
+ * 
+ * @author Brandon Wong
+ * @author Simon Wang
+ */
 const NewGroup = () => {
     // Basic
     var web3Instance;
@@ -26,7 +34,6 @@ const NewGroup = () => {
     // Call the contract
     const [groupName, setGroupName] = useState('');
     const [description, setDescription] = useState('');
-    const [groupID, setGroupID] = useState('');
 
     useEffect(() => {
         async function initWeb3() {
@@ -38,16 +45,15 @@ const NewGroup = () => {
 
     var onSubmit = async (event) => {
         event.preventDefault();
-        var manager;
         var factoryContract;
-        
+        var user;
         // Initializes VoteFactory Contract
         var setupVoteFactory = async () => {
             if(web3 == '') {
                 return;
             }
             try {
-                [manager] = (await web3.eth.getAccounts());
+                [user] = (await web3.eth.getAccounts());
                 // Get the contract instance.
                 const networkId = await web3.eth.net.getId();
                 const deployedNetwork = VoteFactoryContract.networks[networkId];
@@ -72,25 +78,31 @@ const NewGroup = () => {
             if(factoryContract == ''){
                 return;
             }
-            // Calls the method createGroup from VoteFactory.sol
-            await factoryContract.methods.createGroup(groupName, description).send({
-                from: manager
-            });
-            setCreatingGroup(false);
-            setLoad(!Load);
+
+            try {
+                await factoryContract.methods.createGroup(groupName, description).send({
+                    from: user
+                });
+                setCreatingGroup(false);
+                setLoad(!Load);
+            } catch (error) {
+                alert (
+                    `Failed to create new group.`
+                );
+            }
         };
 
         // Verify the values of the newly created instance of Group
         var displayGroup = async () => {
             var groupID = await factoryContract.methods.getNumOfGroups().call();
-            console.log(groupID);
-            // const summary = await factoryContract.methods.getGroup(groupID - 1).call();
-            // console.log(summary);
+            var group = await factoryContract.methods.getGroup(groupID - 1).call();
+            console.log(group);
         };
 
         await setupVoteFactory();
         await createGroup();
         await displayGroup();
+        Router.push("/joinGroup");
     };
 
     return (

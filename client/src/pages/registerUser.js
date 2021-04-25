@@ -4,7 +4,8 @@ import VoteFactoryContract from "../contracts/VoteFactory.json";
 import { Form, Loader  } from "semantic-ui-react";
 import getWeb3 from "../getWeb3";
 import 'semantic-ui-css/semantic.min.css';
-import { Link } from '../../routes'
+import Router from "next/router";
+
 const adminTitle = {
     color: "red",
     marginBottom: "5%",
@@ -16,15 +17,20 @@ const adminFields = {
     margin: "auto 5% auto 5%"
 };
 
+/**
+ * Register User Page - a Page where user can see all existing group and/or join a new group
+ * DISCLAMER - majority of the code is based on vote.js written by Simon Wang
+ * 
+ * @author Brandon Wong
+ * @author Simon Wang
+ */
 const RegisterUser = () => {
-    // Basic
+
     var web3Instance;
     const [web3, setWeb3] = useState('');
     const [Load, setLoad] = useState(true);
     const [registeringUser, setRegisteringUser] = useState(false);
     const [errorRegister, setErrorRegister] = useState(false);
-
-    // Call the contract
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -40,8 +46,8 @@ const RegisterUser = () => {
 
     var onSubmit = async (event) => {
         event.preventDefault();
-        var user;
         var factoryContract;
+        var user;
 
         // Initializes VoteFactory Contract
         var setupVoteFactory = async () => {
@@ -49,7 +55,6 @@ const RegisterUser = () => {
                 return;
             }
             try {
-                [user] = (await web3.eth.getAccounts());
                 // Get the contract instance.
                 const networkId = await web3.eth.net.getId();
                 const deployedNetwork = VoteFactoryContract.networks[networkId];
@@ -58,6 +63,8 @@ const RegisterUser = () => {
                     deployedNetwork && deployedNetwork.address,
                 );
                 factoryContract = instance;
+
+                [user] = (await web3.eth.getAccounts());
 
                 // Set web3, accounts, and contract to the state, and then proceed with an
             } catch (error) {
@@ -133,7 +140,7 @@ const RegisterUser = () => {
         await displayUser();
         await displayDefaultGroup();
         await displayGroups();
-        Router.push("/");
+        Router.push("/loginUser");
     };
 
     return (
