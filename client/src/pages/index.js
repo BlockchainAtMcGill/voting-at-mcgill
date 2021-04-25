@@ -195,7 +195,7 @@ function App() {
                   
                   <div className="ui sub header" style={{marginLeft:10}}>
                     <i className="checkmark icon small"></i>  
-                    {vote.aTypeOfElection ?  "Election" : "Petition" }  | typeof vote : {vote.aVoteType == "0" ? "Majority" : "Two-Thirds"}
+                    {vote.aTypeOfElection ?  ("Election" + " | type of vote : " + (vote.aVoteType == "0" ? "Majority" : "Two-Thirds")) : "Petition" }  
                   </div>
                   <div className="ui feed" style={{marginLeft:10}}>{ vote.aDescription }</div>
                 </div>
