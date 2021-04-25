@@ -25,10 +25,10 @@ const NewPetition = () => {
     const [title, setTitle] = useState('');
     const [manager, setManager] = useState('');
     const [voteFactory, setVoteFactory] = useState('');
-    const [startDate, setStartDate] = useState(0);
-    const [groupsID, setGroupsID] = useState('');
-    const [selectedGroups, setSelectedGroups] = useState('');
-    const [endDate, setEndDate] = useState(0);
+    const [startDate, setStartDate] = useState('');
+    const [groupsID, setGroupsID] = useState([]);
+    const [selectedGroups, setSelectedGroups] = useState([]);
+    const [endDate, setEndDate] = useState('');
     const [description, setDescription] = useState('');
     
     
@@ -89,7 +89,7 @@ const NewPetition = () => {
         event.preventDefault();
         var voteContract;
         var addressOfVote;
-        var createVote = async () => {//uses voteFactory to create Vote
+        var createVote = async () => {//uses voteFactory to menu
             if(voteFactory == ''){
                 return;
             }

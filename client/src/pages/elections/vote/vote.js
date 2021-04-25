@@ -165,12 +165,7 @@ const Vote = () => {
         )
     //   }
     }
-    var endVote = async () => {
-        await voteInstance.methods.updateVoteStatus(2).send({
-            from: currentUser
-        });
-        setWinner(await voteInstance.methods.get_Winner().call());
-    }
+
 
     function getWinner(){
         return currentVote && winner ? <div>{"winner of vote: " +winner.aName}</div>  : <div>no winner yet</div>
@@ -247,7 +242,7 @@ const Vote = () => {
                 cy="50%"
                 outerRadius={100}
                 fill="#FF0000"
-                dataKey="value"
+                dataKey="value"z
                 label={({
                   cx,
                   cy,
@@ -344,6 +339,16 @@ const Vote = () => {
         voted = <></>
     }
 
+    function endVoteButton() {
+        return currentVote.aVoteStatus == "1" ? <button className="ui right floated inverted red button" onClick={endVote}>end vote</button> : <></>
+    }
+    var endVote = async () => {
+        await voteInstance.methods.updateVoteStatus(2).send({
+            from: currentUser
+        });
+        setWinner(await voteInstance.methods.get_Winner().call());
+    }
+
     function formatVote() {
         if (currentVote[3]==currentVote[3]) {
             var startDate = new Date(parseInt(currentVote[4]) * 1)
@@ -352,7 +357,13 @@ const Vote = () => {
                 <div className="ui card" style={long}>
                     <div className="content">
                         <div className="header container" style= {{color: '#f00000'}}>
-                            {currentVote.aTitle} type of election : {currentVote.aVoteType == "0" ? "Majority" : "Two-Thirds"}
+                            {currentVote.aTitle} type of election : {currentVote.aVoteType == "0" ? "Majority " : "Two-Thirds "}
+                            - 
+                            { currentVote.aVoteStatus == 0 ? " starts on " + new Date(currentVote.aStartDate * 1).toUTCString().slice(0,17) : 
+                            ( currentVote.aVoteStatus == 1 ? " ends on " + new Date(currentVote.aEndDate * 1).toUTCString().slice(0,17):
+                            " archived: " + new Date(currentVote.aEndDate * 1).toUTCString().slice(0,17)
+                            )
+                            }
                             <span className="floated right">{voted}</span>
                         </div>
                         <div className="meta">{startDate.toUTCString().slice(0,17)} to {endDate.toUTCString().slice(0,17)}</div>
@@ -382,7 +393,7 @@ const Vote = () => {
                     <br></br>
                     <br></br>
                     <br></br>
-                    <button className="ui right floated inverted red button" onClick={endVote}>end vote</button>
+                    {endVoteButton()}
                     <br></br>
 
                     {displayPer()}

@@ -128,6 +128,16 @@ const Vote = () => {
     } else {
         voted = <></>
     }
+
+    function endVoteButton() {
+        return currentVote.aVoteStatus == "1" ? <button className="ui right floated inverted red button" onClick={endVote}>end vote</button> : <></>
+    }
+    var endVote = async () => {
+        await voteInstance.methods.updateVoteStatus(2).send({
+            from: currentUser
+        });
+    }
+
     function formatVote() {
         if (currentVote[3]==currentVote[3]){
             var startDate = new Date(parseInt(currentVote[4]) * 1)
@@ -137,6 +147,11 @@ const Vote = () => {
                     <div className="content">
                         <div className="header container" style= {{color: '#f00000'}}>
                             {currentVote[3]}
+                            - 
+                            { currentVote.aVoteStatus == 0 ? " starts on " + new Date(currentVote.aStartDate * 1).toUTCString().slice(0,17) : 
+                            ( currentVote.aVoteStatus == 1 ? " ends on " + new Date(currentVote.aEndDate * 1).toUTCString().slice(0,17):
+                            " archived: " + new Date(currentVote.aEndDate * 1).toUTCString().slice(0,17)
+                            )}
                             <span className="floated right">{voted}</span>
                         </div>
                         <div className="meta">{startDate.toUTCString().slice(0,17)} to {endDate.toUTCString().slice(0,17)}</div>
@@ -167,6 +182,7 @@ const Vote = () => {
                       {VoteModal()}
                     <span className="floated right">{voted}</span>
                     <br></br>
+                    {endVoteButton()}
                     <h2 style={long}></h2>
                     <br></br>
 

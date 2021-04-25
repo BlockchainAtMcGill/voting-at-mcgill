@@ -14,7 +14,7 @@ const headersData = [
       key:1
     },
     {
-      label: "Create Vote",
+      label: "menu",
       href: "/adminHome",
       key:2
     },

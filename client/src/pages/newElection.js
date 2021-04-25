@@ -24,12 +24,12 @@ const NewElection = () => {
     const [web3, setWeb3] = useState('');
     const [manager, setManager] = useState('');
     const [voteFactory, setVoteFactory] = useState('');
-    const [groupsID, setGroupsID] = useState('');
+    const [groupsID, setGroupsID] = useState([]);
 
-    const [selectedGroups, setSelectedGroups] = useState('');
+    const [selectedGroups, setSelectedGroups] = useState([]);
     const [title, setTitle] = useState('');
-    const [startDate, setStartDate] = useState(0);
-    const [endDate, setEndDate] = useState(0);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const [electionType, setElectionType] = useState(0);
     const [description, setDescription] = useState('');
     
@@ -47,7 +47,6 @@ const NewElection = () => {
     useEffect(()=> {
         async function setup() {
             if(web3 == "") {
-              console.log('unable to get factory')
               return;
             }
             try {
@@ -82,7 +81,7 @@ const NewElection = () => {
         const response = await voteFactory.methods.getUserAllGroups().call();
         const temp = [];
         for (var i = 0; i < response.length; i++) {
-            temp[i] = { key: parseInt(response[i]), text: parseInt(response[i]), value: parseInt(response[i])};
+            temp.push({ key: parseInt(response[i]), text: parseInt(response[i]), value: parseInt(response[i])});
         }
         setGroupsID(temp);
         };
@@ -131,7 +130,7 @@ const NewElection = () => {
                 console.error(error);
             }
         };
-        var createVote = async () => {//uses voteFactory to create Vote
+        var createVote = async () => {//uses voteFactory to menu
             if(factoryContract == ''){
                 return;
             }
