@@ -7,7 +7,6 @@ import {
     Button
 } from "@material-ui/core";
 import Link from 'next/link'
-import { Home } from './home';
 const headersData = [
     {
       label: "Home",
@@ -15,7 +14,7 @@ const headersData = [
       key:1
     },
     {
-      label: "Create Vote",
+      label: "Menu",
       href: "/adminHome",
       key:2
     },
@@ -25,10 +24,20 @@ const headersData = [
       key:3
     },
     {
-      label: "Log Out",
-      href: "/logout",
+      label: "Log In",
+      href: "/loginUser",
       key:4
     },
+    {
+      label: "Log Out",
+      href: "/logoutUser",
+      key:5
+    }, 
+    {
+      label: "Register",
+      href: "/registerUser",
+      key:6
+    }
   ];
 
 const useStyles = makeStyles(() => ({
@@ -41,28 +50,45 @@ const useStyles = makeStyles(() => ({
         color: "#FFFEFE",
         textAlign: "left",
       },
+    web3: {
+      fontFamily: "Work Sans, sans-serif",
+      color: "#FFC0CB",
+      textAlign: "right",
+      right: 0
+    },
  }));
 
 export const Header = () => {
-    const { header, logoStyle } = useStyles();
+    const { header, logoStyle, web3 } = useStyles();
 
     const displayDesktop = () => {
         return (
           <Toolbar>
             {logo}
             {getMenuButtons()}
+            {connection}
           </Toolbar>
         );
     };
     const logo = (
         <Link href="/">
-        <Button style={{color:"#FFFEFE"}}>
+        <Button style={{color:"#FFFEFE"}} >
             <Typography variant="h6" component="h1" className={logoStyle} >
               McGill Votes
             </Typography>
         </Button>
         </Link>
       );
+    function clicked() {
+      ethereum.request({ method: 'eth_requestAccounts' });
+    }
+    const connection = (
+      <Button onClick={clicked}>
+          <Typography className={web3} >
+            Connect to Web3
+          </Typography>
+      </Button>
+    )
 
     const getMenuButtons = () => {
       return headersData.map(({ label, href }) => {

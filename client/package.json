@@ -4,14 +4,20 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.2",
+    "jquery": "^3.5.1",
     "next": "^10.0.5",
+    "next-routes": "^1.4.2",
     "react": "16.11.0",
     "react-dom": "16.11.0",
     "react-scripts": "3.2.0",
+    "recharts": "^2.0.8",
+    "regenerator-runtime": "^0.13.7",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^2.0.3",
     "web3": "1.2.2"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

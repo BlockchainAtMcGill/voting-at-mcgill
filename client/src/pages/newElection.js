@@ -1,14 +1,206 @@
+<<<<<<< HEAD
 import React from 'react';
 import * as m from '@material-ui/core';
+=======
+import React, { useState, useEffect } from 'react';
+>>>>>>> origin/working_main
 import { Header } from '../components/header';
+import VoteFactoryContract from "../contracts/VoteFactory.json";
+import VoteContract from "../contracts/Vote.json";
+import { Form } from "semantic-ui-react";
+import getWeb3 from "../getWeb3";
+import 'semantic-ui-css/semantic.min.css';
+import Router from 'next/router';
+import { Dropdown } from 'semantic-ui-react'
+
+const adminTitle = {
+    color: "red",
+    marginBottom: "5%",
+    fontSize: "3em",
+    textAlign: "center"
+};
+
+const adminFields = {
+    margin: "auto 5% auto 5%"
+};
 
 const NewElection = () => {
+
+    const [web3, setWeb3] = useState('');
+    const [manager, setManager] = useState('');
+    const [voteFactory, setVoteFactory] = useState('');
+    const [groupsID, setGroupsID] = useState([]);
+
+    const [selectedGroups, setSelectedGroups] = useState([]);
+    const [title, setTitle] = useState('');
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [electionType, setElectionType] = useState(0);
+    const [description, setDescription] = useState('');
+    
+    // initializing web3
+    useEffect(() => {
+        var web3Instance;
+        async function initWeb3() {
+            web3Instance = await getWeb3();
+            setWeb3(web3Instance);
+        }
+        initWeb3();
+    },[]);
+
+    // Initializing VoteFactory contract
+    useEffect(()=> {
+        async function setup() {
+            if(web3 == "") {
+              return;
+            }
+            try {
+              var [user] = await web3.eth.getAccounts();
+              setManager(user);
+              const networkId = await web3.eth.net.getId();
+              const deployedNetwork = VoteFactoryContract.networks[networkId];
+              const instance = new web3.eth.Contract(
+                VoteFactoryContract.abi,
+                deployedNetwork && deployedNetwork.address,
+              );
+              setVoteFactory(instance);
+          
+            } catch (error) {
+              alert(
+                `Failed to load web3, accounts, or contract. Check console for details.`,
+              );
+              console.error(error);
+            }
+          }
+            setup();
+
+    },[web3])
+
+    // Return all group IDs of a user as an array
+
+    useEffect(()=> {
+        var displayVotes = async () => {
+        if(voteFactory == '') {
+            return;
+        }
+        const response = await voteFactory.methods.getUserAllGroups(manager).call();
+        const temp = [];
+        for (var i = 0; i < response.length; i++) {
+            temp.push({ key: parseInt(response[i]), text: parseInt(response[i]), value: parseInt(response[i])});
+        }
+        setGroupsID(temp);
+        };
+        displayVotes();
+    },[voteFactory]);
+
+    const electionTypes = [
+        {
+            key: 'sm',
+            text: 'simple majority',
+            value: 0
+
+        },
+        {
+            key: 'tt',
+            text: 'two thirds',
+            value: 1
+        }
+    ];
+
+    var onSubmit = async (event) => {
+        event.preventDefault();
+        var factoryContract;
+        var voteContract;
+        var addressOfVote;
+        var setupVoteFactory = async () => { //initializes voteFactory
+            if(web3 == '') {
+                return;
+            }
+            try {
+                // Get the contract instance.
+                const networkId = await web3.eth.net.getId();
+                const deployedNetwork = VoteFactoryContract.networks[networkId];
+                const instance = new web3.eth.Contract(
+                    VoteFactoryContract.abi,
+                    deployedNetwork && deployedNetwork.address,
+                );
+                factoryContract = instance;
+
+                // Set web3, accounts, and contract to the state, and then proceed with an
+            } catch (error) {
+                // Catch any errors for any of the above operations.
+                alert(
+                    `Failed to load web3, accounts, or contract. Check console for details.`,
+                );
+                console.error(error);
+            }
+        };
+        var createVote = async () => {//uses voteFactory to menu
+            if(factoryContract == ''){
+                return;
+            }
+            // Get the value from the contract to prove it worked.
+            await factoryContract.methods.createVote(0).send({
+                from: manager
+            });
+        };
+        var getElectionAddress = async () => {//calls voteFactory method to get new Vote address
+            const response = await factoryContract.methods.getDeployedVotes().call();
+            addressOfVote = response[response.length - 1];
+        };
+        var initializeElection = async () => {//initializes vote contract
+            try {
+                // Get the contract instance.
+                const instance = await new web3.eth.Contract(
+                    VoteContract.abi,
+                    addressOfVote,
+                );
+                voteContract = instance;
+            } catch (error) {
+                // Catch any errors for any of the above operations.
+                alert(
+                    `Failed to load web3, accounts, or contract. Check console for details.`,
+                );
+                console.error(error);
+            }
+        };
+        var setUpElection = async() => {//call to vote contract to edit election
+            if (!voteContract) {
+                console.log("voteContract dne");
+                return;
+            }
+            //string memory aTitle, uint256 aStartDate, uint256 aEndDate, string memory aDescription, string memory aTypeOfElection
+            await voteContract.methods
+                .editVote(title, new Date(startDate).getTime(), new Date().getTime(),new Date(endDate).getTime(), description, electionType, selectedGroups)
+                .send({
+                    from: manager
+                })
+        };
+        var displayVote = async () => { // testing purposes
+            const summary = await voteContract.methods.getElection().call();
+            console.log(summary);
+        };
+        await setupVoteFactory();
+        await createVote();
+        await getElectionAddress();
+        await initializeElection();
+        await setUpElection();
+        await displayVote();
+        Router.push("/");
+    };
+
+    const onChange = (event, result) => {
+        const { name, value } = result || event.target;
+        setSelectedGroups(value)
+      };
+
     return (
         <>
             <Header/>
             <br></br>
             <br></br>
             <br></br>
+<<<<<<< HEAD
             <h1>New Election</h1>
             <div>
                 <p>Election Title:</p>
@@ -20,7 +212,67 @@ const NewElection = () => {
                     <m.Button>Publish Election</m.Button>
                 </div>
             </div>
+=======
+            <h1 style={adminTitle}>New Election</h1>
+            <Form onSubmit={onSubmit} style={adminFields}>
+                <div>
+                    <Form.Input required label="Election title"
+                                 value={title}
+                                 onChange={event => setTitle(event.target.value)}
+                    >
+                    </Form.Input>
+                </div>
+                <br></br>
+                <div>
+                    <Form.Input label="Start date" type="date"
+                                 value={startDate}
+                                 onChange={event => setStartDate(event.target.value)}
+                    >
+
+                    </Form.Input>
+                </div>
+                <br></br>
+                <div>
+                    <Form.Input required label="End date" type="date"
+                                 value={endDate}
+                                 onChange={event => setEndDate(event.target.value)}
+                    />
+                </div>
+                <br></br>
+                <div>
+                    <Form.Select
+                        fluid
+                        label='Type of election'
+                        options={electionTypes}
+                        placeholder='Type of election'
+                        value={electionType}
+                        onChange={event => setElectionType(event.target.value)}
+                    />
+                </div>
+                <br></br>
+
+                <Dropdown placeholder='group IDs' fluid multiple selection options={groupsID} onChange = {onChange}/>
+
+                <br></br>
+                
+                <div>
+                    <Form.TextArea required
+                                 label="Description"
+                                 value={description}
+                                 onChange={event => setDescription(event.target.value)}/>
+                </div>
+
+                <br></br>
+
+                <div>
+                    <Form.Button>Cancel</Form.Button>
+                    <Form.Button type="submit" onSubmit={onSubmit}>Publish Election</Form.Button>
+                </div>
+
+
+            </Form>
+>>>>>>> origin/working_main
         </>
     )
-}
+};
 export default NewElection;

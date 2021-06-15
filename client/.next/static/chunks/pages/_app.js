@@ -7394,7 +7394,11 @@ if (false) {} else {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! next-client-pages-loader?page=%2F_app&absolutePagePath=next%2Fdist%2Fpages%2F_app! */"./node_modules/next/dist/build/webpack/loaders/next-client-pages-loader.js?page=%2F_app&absolutePagePath=next%2Fdist%2Fpages%2F_app!./");
+<<<<<<< HEAD
 module.exports = __webpack_require__(/*! C:\Users\user\Documents\GitHub\voting-at-mcgill\client\node_modules\next\dist\client\router.js */"./node_modules/next/dist/client/router.js");
+=======
+module.exports = __webpack_require__(/*! C:\Users\foubroker\Desktop\BAM\voting-at-mcgill-2\client\node_modules\next\dist\client\router.js */"./node_modules/next/dist/client/router.js");
+>>>>>>> origin/working_main
 
 
 /***/ })
