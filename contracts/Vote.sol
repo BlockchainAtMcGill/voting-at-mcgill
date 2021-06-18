@@ -98,7 +98,7 @@ contract Vote{
     function enterElection(string memory aName, string memory aDescription,uint256 aCurrentDate)// should check if user with current address already exists
     public typeElection {
         //Check if the registration is before the required deadline
-        // require(aCurrentDate < currentElection.startDate);
+        require(aCurrentDate < startDate);
         //enter candidate
         candidate storage currentCandidate = candidates[msg.sender];
         currentCandidate.name = aName;

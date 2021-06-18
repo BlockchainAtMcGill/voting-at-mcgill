@@ -29,10 +29,15 @@
       "static/chunks/webpack.js",
       "static/chunks/pages/_error.js"
     ],
-    "/elections/vote/vote": [
+    "/loginUser": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
-      "static/chunks/pages/elections/vote/vote.js"
+      "static/chunks/pages/loginUser.js"
+    ],
+    "/registerUser": [
+      "static/chunks/main.js",
+      "static/chunks/webpack.js",
+      "static/chunks/pages/registerUser.js"
     ]
   },
   "ampFirstPages": []
