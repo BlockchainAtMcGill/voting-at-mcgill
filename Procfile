@@ -1,1 +1,1 @@
-web: cd client && npm run dev
+worker: cd client && npm run dev
