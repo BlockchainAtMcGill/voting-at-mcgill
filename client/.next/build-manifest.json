@@ -33,11 +33,6 @@
       "static/chunks/main.js",
       "static/chunks/webpack.js",
       "static/chunks/pages/loginUser.js"
-    ],
-    "/registerUser": [
-      "static/chunks/main.js",
-      "static/chunks/webpack.js",
-      "static/chunks/pages/registerUser.js"
     ]
   },
   "ampFirstPages": []

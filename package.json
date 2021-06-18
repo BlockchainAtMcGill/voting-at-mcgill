@@ -2,5 +2,8 @@
   "dependencies": {
     "@truffle/hdwallet-provider": "^1.4.1",
     "dotenv": "^10.0.0"
+  },
+  "engines": {
+    "node": "14.x"
   }
 }
